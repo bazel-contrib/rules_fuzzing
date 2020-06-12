@@ -7,6 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run all tests
+        working-directory: ./
         run: |
           bazel test //...
-        working-directory: .
