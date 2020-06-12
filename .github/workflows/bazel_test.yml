@@ -8,11 +8,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Display current directory
-        working-directory: ./
-        run: |
-          echo `pwd`
-          echo `ls`
       - name: Run all tests
         working-directory: ./
         run: |
