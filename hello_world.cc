@@ -1,3 +1,4 @@
+//This is an example file that will be replaced with the actual fuzz target rule functionality.
 #include <ctime>
 #include <string>
 #include <iostream>
