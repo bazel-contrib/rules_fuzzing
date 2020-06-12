@@ -1,0 +1,11 @@
+name: Bazel Test
+
+on: [push, pull_request]
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dummy test
+        run: |
+          bazel test //...
