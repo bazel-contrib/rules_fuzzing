@@ -1,0 +1,14 @@
+name: Bazel Test
+
+on: [push, pull_request]
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Run all tests
+        working-directory: ./
+        run: |
+          bazel test //...
