@@ -14,7 +14,7 @@
 # limitations under the License.
 # 
 
-# This file will contain basic functions for fuzz test. 
+''' This file will contain basic functions for fuzz test. '''
 
 load("@rules_cc//cc:defs.bzl", "cc_test")
 
