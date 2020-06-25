@@ -13,3 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # 
+
+#Simple Bazel build file that will be replaced with the actual fuzz target rule functionality.
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
+cc_test(
+    name = "dummy_test",
+    srcs = ["dummy_test.cc"],
+)
