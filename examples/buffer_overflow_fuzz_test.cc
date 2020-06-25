@@ -14,10 +14,20 @@
  *limitations under the License.
  */
 
-//This is an example file that will be replaced with the actual fuzz target rule functionality.
-#include <iostream>
+// A fuzz target that causes an ASAN buffer overflow for a particular input.
+ 
+#include <stdint.h>
+#include <stddef.h>
 
-int main(int argc, char** argv) {
-  std::cout << "hello world!" << std::endl;
+bool doBufferOverflow(const uint8_t *Data, size_t DataSize) {
+  return DataSize >= 3 &&
+      Data[0] == 'F' &&
+      Data[1] == 'U' &&
+      Data[2] == 'Z' &&
+      Data[3] == 'Z';  // :‑<
+}
+
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
+  doBufferOverflow(Data, Size);
   return 0;
 }

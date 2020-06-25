@@ -14,10 +14,25 @@
  *limitations under the License.
  */
 
-//This is an example file that will be replaced with the actual fuzz target rule functionality.
-#include <iostream>
+// A fuzz target that creates a memory leak and causes OOM errors.
 
-int main(int argc, char** argv) {
-  std::cout << "hello world!" << std::endl;
-  return 0;
+#include <stdint.h>
+#include <stddef.h>
+
+void leakMemory() {
+    int* zombiePtr = new int(100);
+    return;
+}
+
+void doOOM(const uint8_t *Data, size_t DataSize) {
+    for (size_t i = 0; i < (1 << 30); i++)
+    {
+        leakMemory();
+    }
+    return;
+}
+
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
+    doOOM(Data, Size);
+    return 0;
 }
