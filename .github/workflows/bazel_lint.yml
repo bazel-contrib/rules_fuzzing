@@ -14,23 +14,23 @@
 # limitations under the License.
 #
 
-name: cpplint
+name: bazel_lint
 on: 
   push:
     paths:
-      - '**.cc' 
-      - '**.h' 
-      - '**.cpp' 
+      - '**BUILD' 
+      - '**.bzl' 
   pull_request:
     paths:
-      - '**.cc' 
-      - '**.h' 
-      - '**.cpp' 
+      - '**BUILD' 
+      - '**.bzl' 
 jobs:
-  cpplint:
+  bazel_lint:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - uses: actions/setup-python@v1
-    - run: pip install cpplint
-    - run: cpplint --recursive .
+    - uses: actions/setup-go@v2
+      with:
+        go-version: '^1.13.1' # The Go version to download (if necessary) and use.
+    - run: go get github.com/bazelbuild/buildtools/buildifier
+    - run: buildifier -mode=check $(find . -type f \( -name BUILD.bazel -or -name BUILD -or -name *.bzl \))
