@@ -1,5 +1,15 @@
 name: cpplint
-on: [push, pull_request]
+on: 
+  push:
+    paths:
+      - '**.cc' 
+      - '**.h' 
+      - '**.cpp' 
+  pull_request:
+    paths:
+      - '**.cc' 
+      - '**.h' 
+      - '**.cpp' 
 jobs:
   cpplint:
     runs-on: ubuntu-latest
