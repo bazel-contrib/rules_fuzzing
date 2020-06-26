@@ -1,5 +1,5 @@
 #
-#  Copyright 2020 Google LLC
+# Copyright 2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,11 +14,13 @@
 # limitations under the License.
 #
 
+# Simple fuzz targets that demonstrate the Bazel extension functionality and serve as regression tests.
+
 load("//:fuzz_test.bzl", "cc_fuzz_test")
 
 cc_fuzz_test(
-    name = "dummy_fuzz_test",
-    srcs = ["dummy_fuzz_test.cc"],
+    name = "empty_fuzz_test",
+    srcs = ["empty_fuzz_test.cc"],
 )
 
 cc_fuzz_test(

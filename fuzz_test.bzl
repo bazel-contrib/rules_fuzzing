@@ -21,14 +21,16 @@ load("@rules_cc//cc:defs.bzl", "cc_test")
 def cc_fuzz_test(
         name,
         srcs,
+        copts = [],
         linkopts = [],
         deps = [],
         visibility = None):
     """ At present this cc_fuzz_test is just a wrapper of cc_test """
 
     cc_test(
-        name = name + "_with_libfuzzer",
+        name = name,
         srcs = srcs,
+        copts = ["-fsanitize=fuzzer"] + copts,
         linkopts = ["-fsanitize=fuzzer"] + linkopts,
         deps = deps,
         visibility = visibility,
