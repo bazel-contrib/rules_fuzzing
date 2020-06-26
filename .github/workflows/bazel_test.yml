@@ -19,7 +19,7 @@ name: Bazel Test
 on: [push, pull_request]
 
 jobs:
-  linux:
+  bazel_test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
