@@ -14,9 +14,12 @@
 # limitations under the License.
 #
 
-# Simple Bazel build file that will be replaced with the actual fuzz target rule functionality.
+# Bazel build file that builds third party libraries.
 
-cc_test(
-    name = "dummy_test",
-    srcs = ["dummy_test.cc"],
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+cc_library(
+    name = "fuzzed_data_provider_lib",
+    hdrs = ["FuzzedDataProvider.h"],
+    visibility = ["//visibility:public"],
 )

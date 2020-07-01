@@ -37,3 +37,14 @@ cc_fuzz_test(
     name = "hang_fuzz_test",
     srcs = ["hang_fuzz_test.cc"],
 )
+
+cc_fuzz_test(
+    name = "msan_fuzz_test",
+    srcs = ["msan_fuzz_test.cc"],
+)
+
+cc_fuzz_test(
+    name = "fuzzed_data_provider_fuzz_test",
+    srcs = ["fuzzed_data_provider_fuzz_test.cc"],
+    deps = ["//third_party:fuzzed_data_provider_lib"],
+)

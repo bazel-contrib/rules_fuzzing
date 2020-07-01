@@ -14,20 +14,19 @@
 // limitations under the License.
 //
 
-// A fuzz target that causes an ASAN buffer overflow for a particular input.
+// A fuzz target that causes an MSAN error (e.g., uninitialized variables).
 
 #include <cstdint>
 #include <cstddef>
 
-bool DoBufferOverflow(const uint8_t *Data, size_t DataSize) {
-  return DataSize >= 3 &&
-      Data[0] == 'F' &&
-      Data[1] == 'U' &&
-      Data[2] == 'Z' &&
-      Data[3] == 'Z';  // :‑<
+int DoMsan() {
+    int a;
+    // The if block is necessary to cause the MSan error
+    if (a) return a;
+    return 1;
 }
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
-  DoBufferOverflow(Data, Size);
-  return 0;
+    DoMsan();
+    return 0;
 }

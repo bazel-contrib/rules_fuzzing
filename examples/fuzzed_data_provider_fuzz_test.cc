@@ -14,20 +14,21 @@
 // limitations under the License.
 //
 
-// A fuzz target that causes an ASAN buffer overflow for a particular input.
+// A fuzz target that demonstrates the use of FuzzedDataProvider.
 
 #include <cstdint>
 #include <cstddef>
-
-bool DoBufferOverflow(const uint8_t *Data, size_t DataSize) {
-  return DataSize >= 3 &&
-      Data[0] == 'F' &&
-      Data[1] == 'U' &&
-      Data[2] == 'Z' &&
-      Data[3] == 'Z';  // :‑<
-}
+#include "third_party/FuzzedDataProvider.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
-  DoBufferOverflow(Data, Size);
-  return 0;
+    FuzzedDataProvider fuzzed_data(Data, Size);
+
+    // Intentionally using uint16_t here to avoid empty |second_part|.
+    size_t first_part_size = fuzzed_data.ConsumeIntegral<uint16_t>();
+    std::vector<uint8_t> first_part =
+        fuzzed_data.ConsumeBytes<uint8_t>(first_part_size);
+    std::vector<uint8_t> second_part =
+      fuzzed_data.ConsumeRemainingBytes<uint8_t>();
+
+    return 0;
 }
