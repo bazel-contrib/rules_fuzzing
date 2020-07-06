@@ -16,9 +16,9 @@
 
 // A fuzz target that demonstrates the use of FuzzedDataProvider.
 
+#include <fuzzer/FuzzedDataProvider.h>
 #include <cstdint>
 #include <cstddef>
-#include "third_party/FuzzedDataProvider.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
     FuzzedDataProvider fuzzed_data(Data, Size);
