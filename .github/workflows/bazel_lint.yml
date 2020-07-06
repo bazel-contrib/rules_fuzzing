@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-# Lint bazel and BUILD files
+# Lint Bazel and BUILD files
 
 name: bazel_lint
 on:
