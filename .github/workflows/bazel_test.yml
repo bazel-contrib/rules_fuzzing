@@ -31,13 +31,14 @@ jobs:
           wget https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.0/clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz                                                                        
           tar -xf clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz --strip-components 1  
           export PATH=bin/clang10/bin:$PATH
-          cd ../../
       - name: Run all tests
         working-directory: ./
         # Run all bazel test but only need to build //examples/...
         # Add bazel test --config=clang //... --test_tag_filters=test
         # in the future if any test rules are added
         run: |
+          export PATH=bin/clang10/bin:$PATH
           echo $PATH
           ls bin/clang10/
+          clang --version
           bazel build --verbose_failures --build_tag_filters=fuzz_test --config=asan-libfuzzer --action_env=PATH=bin/clang10/bin:$PATH --action_env=CC=clang --action_env=CC=clang++ --action_env=LLVM_CONFIG=bin/clang10/bin/llvm-config --repo_env=LLVM_CONFIG=bin/clang10/bin/llvm-config --linkopt=-Lbin/clang10/lib --linkopt=-Wl,-rpath,bin/clang10/lib //examples/...
