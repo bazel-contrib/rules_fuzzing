@@ -27,11 +27,11 @@ jobs:
         shell: bash
         run: |
           sudo apt-get install clang-10
+          export PATH=$(dirname `which clang-10`):$PATH
       - name: Run all tests
         working-directory: ./
         # Run all bazel test but only need to build //examples/...
         # Add bazel test --config=clang //... --test_tag_filters=test
         # in the future if any test rules are added
         run: |
-          export PATH=$(dirname `which clang-10`):$PATH
-          bazel build --build_tag_filters=fuzz_test --config=asan-libfuzzer //examples/...
+          bazel build --build_tag_filters=fuzz_test,-FDP --config=asan-libfuzzer //examples/...
