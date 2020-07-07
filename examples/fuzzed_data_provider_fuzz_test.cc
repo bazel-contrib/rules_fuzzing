@@ -23,8 +23,7 @@
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
     FuzzedDataProvider fuzzed_data(Data, Size);
 
-    // Intentionally using uint16_t here to avoid empty |second_part|.
-    size_t first_part_size = fuzzed_data.ConsumeIntegral<uint16_t>();
+    const auto first_part_size = fuzzed_data.ConsumeIntegral<uint16_t>();
     std::vector<uint8_t> first_part =
         fuzzed_data.ConsumeBytes<uint8_t>(first_part_size);
     std::vector<uint8_t> second_part =

@@ -15,15 +15,18 @@
 #
 
 # Common flags for Clang
-build:clang --repo_env=CC=clang
+build:clang --action_env=CC=clang
+build:clang --action_env=CXX=clang++
 
 # Flags for Clang with ASAN and libfuzzer
 build:asan-libfuzzer --config=clang
 build:asan-libfuzzer --linkopt=-fsanitize=fuzzer,address
 build:asan-libfuzzer --copt=-fsanitize=fuzzer,address
 
-# Flags for Clang with MSAN
-build:msan --config=clang
-build:msan --linkopt=-fsanitize=memory,fuzzer
-build:msan --copt=-fsanitize=memory,fuzzer
-build:msan --copt=-fsanitize-memory-track-origins=2
+# Flags for Clang with MSAN and libfuzzer
+build:msan-libfuzzer --config=clang
+build:msan-libfuzzer --linkopt=-fsanitize=memory,fuzzer
+build:msan-libfuzzer --copt=-fsanitize=memory,fuzzer
+
+# Flags for Clang with MSAN and libfuzzer, outputting detailed report
+build:msan-libfuzzer-repro --copt=-fsanitize-memory-track-origins=2

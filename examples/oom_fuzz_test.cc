@@ -23,13 +23,13 @@ void LeakMemory() {
     int* zombie_ptr = new int(100);
 }
 
-void DoOom() {
+void TriggerOomError() {
     for (size_t i = 0; i < (1 << 30); ++i) {
         LeakMemory();
     }
 }
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
-    DoOom();
+    TriggerOomError();
     return 0;
 }

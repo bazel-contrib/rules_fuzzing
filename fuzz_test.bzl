@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-""" This file will contain basic functions for fuzz test. """
+""" This file contains basic functions for fuzz test. """
 
 load("@rules_cc//cc:defs.bzl", "cc_test")
 
@@ -24,6 +24,7 @@ def cc_fuzz_test(
         copts = [],
         linkopts = [],
         deps = [],
+        tags = [],
         visibility = None):
     """ At present this cc_fuzz_test is just a wrapper of cc_test """
 
@@ -33,5 +34,6 @@ def cc_fuzz_test(
         copts = ["-fsanitize=fuzzer"] + copts,
         linkopts = ["-fsanitize=fuzzer"] + linkopts,
         deps = deps,
+        tags = tags,
         visibility = visibility,
     )

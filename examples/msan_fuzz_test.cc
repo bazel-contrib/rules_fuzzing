@@ -19,14 +19,8 @@
 #include <cstdint>
 #include <cstddef>
 
-int DoMsan() {
-    int a;
-    // The if block is necessary to cause the MSan error
-    if (a) return a;
-    return 1;
-}
-
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
-    DoMsan();
+    int a;
+    if (a) ++a;
     return 0;
 }
