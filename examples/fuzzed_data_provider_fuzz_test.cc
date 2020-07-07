@@ -12,16 +12,15 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
-// A fuzz target that demonstrates the use of FuzzedDataProvider.
+// A fuzz target that demonstrates the use of FuzzeddataProvider.
 
 #include <fuzzer/FuzzedDataProvider.h>
 #include <cstdint>
 #include <cstddef>
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
-    FuzzedDataProvider fuzzed_data(Data, Size);
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+    FuzzedDataProvider fuzzed_data(data, size);
 
     const auto first_part_size = fuzzed_data.ConsumeIntegral<uint16_t>();
     std::vector<uint8_t> first_part =

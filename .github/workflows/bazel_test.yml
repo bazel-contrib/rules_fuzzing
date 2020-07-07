@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
 
 name: Bazel Test
 
@@ -24,9 +23,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Install deps
+        shell: bash
+        run: |
+          sudo apt-get install clang-10
       - name: Run all tests
         working-directory: ./
         # Run all bazel test but only need to build //examples/...
+        # Add bazel test --config=clang //... --test_tag_filters=test
+        # in the future if any test rules are added
         run: |
-          bazel test --config=clang //... --test_tag_filters=-fuzz_test
-          bazel build --build_tag_filters=-FDP --config=asan-libfuzzer //examples/...
+          bazel build --build_tag_filters=fuzz_test --config=asan-libfuzzer //examples/...

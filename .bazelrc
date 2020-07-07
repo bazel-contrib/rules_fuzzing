@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
 
 # Common flags for Clang
 build:clang --action_env=CC=clang
@@ -29,4 +28,5 @@ build:msan-libfuzzer --linkopt=-fsanitize=memory,fuzzer
 build:msan-libfuzzer --copt=-fsanitize=memory,fuzzer
 
 # Flags for Clang with MSAN and libfuzzer, outputting detailed report
+build:msan-libfuzzer-repro --config=msan-libfuzzer
 build:msan-libfuzzer-repro --copt=-fsanitize-memory-track-origins=2

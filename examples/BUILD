@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
 
 # Simple fuzz targets that demonstrate the Bazel extension functionality and serve as regression tests.
 
@@ -21,38 +20,29 @@ load("//:fuzz_test.bzl", "cc_fuzz_test")
 cc_fuzz_test(
     name = "buffer_overflow_fuzz_test",
     srcs = ["buffer_overflow_fuzz_test.cc"],
-    tags = ["fuzz_test"],
 )
 
 cc_fuzz_test(
     name = "empty_fuzz_test",
     srcs = ["empty_fuzz_test.cc"],
-    tags = ["fuzz_test"],
 )
 
 cc_fuzz_test(
     name = "fuzzed_data_provider_fuzz_test",
     srcs = ["fuzzed_data_provider_fuzz_test.cc"],
-    tags = [
-        "FDP",
-        "fuzz_test",
-    ],
 )
 
 cc_fuzz_test(
     name = "hang_fuzz_test",
     srcs = ["hang_fuzz_test.cc"],
-    tags = ["fuzz_test"],
 )
 
 cc_fuzz_test(
     name = "msan_fuzz_test",
     srcs = ["msan_fuzz_test.cc"],
-    tags = ["fuzz_test"],
 )
 
 cc_fuzz_test(
     name = "oom_fuzz_test",
     srcs = ["oom_fuzz_test.cc"],
-    tags = ["fuzz_test"],
 )

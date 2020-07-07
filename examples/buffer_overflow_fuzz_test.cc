@@ -12,22 +12,21 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
 
 // A fuzz target that causes an ASAN buffer overflow for a particular input.
 
 #include <cstdint>
 #include <cstddef>
 
-bool DoBufferOverflow(const uint8_t *Data, size_t Size) {
-  return Size >= 3 &&
-      Data[0] == 'F' &&
-      Data[1] == 'U' &&
-      Data[2] == 'Z' &&
-      Data[3] == 'Z';  // :‑<
+bool TriggerBufferOverflow(const uint8_t *data, size_t size) {
+  return size >= 3 &&
+      data[0] == 'F' &&
+      data[1] == 'U' &&
+      data[2] == 'Z' &&
+      data[3] == 'Z';  // :‑<
 }
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
-  DoBufferOverflow(Data, Size);
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+  TriggerBufferOverflow(data, size);
   return 0;
 }
