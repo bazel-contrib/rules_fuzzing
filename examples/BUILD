@@ -33,7 +33,10 @@ cc_fuzz_test(
 cc_fuzz_test(
     name = "fuzzed_data_provider_fuzz_test",
     srcs = ["fuzzed_data_provider_fuzz_test.cc"],
-    tags = ["fuzz_test"],
+    tags = [
+        "FDP",
+        "fuzz_test",
+    ],
 )
 
 cc_fuzz_test(

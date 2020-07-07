@@ -21,6 +21,7 @@
 
 void LeakMemory() {
     int* zombie_ptr = new int(100);
+    zombie_ptr[0] = 0;
 }
 
 void TriggerOomError() {
