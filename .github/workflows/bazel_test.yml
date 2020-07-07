@@ -26,7 +26,11 @@ jobs:
       - name: Install deps
         shell: bash
         run: |
-          sudo apt-get install clang-10
+          mkdir -p bin/clang10
+          cd bin/clang10
+          wget https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.0/clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz                                                                        
+          tar -xf clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz --strip-components 1  
+          export PATH=bin/clang10/bin:$PATH
       - name: Run all tests
         working-directory: ./
         # Run all bazel test but only need to build //examples/...
