@@ -1,14 +1,33 @@
+#
+# Copyright 2020 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 name: Bazel Test
 
 on: [push, pull_request]
 
 jobs:
-  linux:
+  bazel_test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Run all tests
         working-directory: ./
+        # Build //examples/...
+        # Add "bazel test --config=clang //... --test_tag_filters=test"in the future if any test rules are added
+        # The -FDP is for filtering out the files which contains "#include <fuzzer/FuzzedDataProvider.h>",
+        # The "<fuzzer/FDP...>" is only supported since clang-10 while the clang version in github runner is 9
         run: |
-          bazel test //...
+          bazel build --verbose_failures --build_tag_filters=fuzz_test,-FDP --config=asan-libfuzzer //examples/...
