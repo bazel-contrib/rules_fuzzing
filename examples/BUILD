@@ -41,6 +41,7 @@ cc_fuzz_test(
 cc_fuzz_test(
     name = "msan_fuzz_test",
     srcs = ["msan_fuzz_test.cc"],
+    copts = ["-Wno-uninitialized"],
 )
 
 cc_fuzz_test(
