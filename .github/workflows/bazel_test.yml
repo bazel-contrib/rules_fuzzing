@@ -23,22 +23,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Install deps
-        shell: bash
-        run: |
-          mkdir -p bin/clang10
-          cd bin/clang10
-          wget https://github.com/llvm/llvm-project/releases/download/llvmorg-10.0.0/clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz                                                                        
-          tar -xf clang+llvm-10.0.0-x86_64-linux-gnu-ubuntu-18.04.tar.xz --strip-components 1  
-          export PATH=bin/clang10/bin:$PATH
       - name: Run all tests
         working-directory: ./
-        # Run all bazel test but only need to build //examples/...
-        # Add bazel test --config=clang //... --test_tag_filters=test
-        # in the future if any test rules are added
+        # Build //examples/...
+        # Add "bazel test --config=clang //... --test_tag_filters=test"in the future if any test rules are added
+        # The -FDP is for filtering out the files which contains "#include <fuzzer/FuzzedDataProvider.h>",
+        # The "<fuzzer/FDP...>" is only supported since clang-10 while the clang version in github runner is 9
         run: |
-          export PATH=bin/clang10/bin:$PATH
-          echo $PATH
-          ls bin/clang10/
-          clang --version
-          bazel build --verbose_failures --build_tag_filters=fuzz_test --config=asan-libfuzzer --action_env=PATH=bin/clang10/bin:$PATH --action_env=CC=bin/clang10/bin/clang --action_env=CXX=bin/clang10/bin/clang++ --action_env=LLVM_CONFIG=bin/clang10/bin/llvm-config --repo_env=LLVM_CONFIG=bin/clang10/bin/llvm-config --linkopt=-Lbin/clang10/lib --linkopt=-Wl,-rpath,bin/clang10/lib //examples/...
+          bazel build --verbose_failures --build_tag_filters=fuzz_test,-FDP --config=asan-libfuzzer //examples/...
