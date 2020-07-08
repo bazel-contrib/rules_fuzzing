@@ -38,9 +38,11 @@ cc_fuzz_test(
     srcs = ["hang_fuzz_test.cc"],
 )
 
+# This test is designed to trigger an uninitialized memory issue
 cc_fuzz_test(
     name = "msan_fuzz_test",
     srcs = ["msan_fuzz_test.cc"],
+    copts = ["-Wno-uninitialized"],
 )
 
 cc_fuzz_test(
