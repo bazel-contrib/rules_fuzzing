@@ -15,7 +15,7 @@
 
 # Simple fuzz targets that demonstrate the Bazel extension functionality and serve as regression tests.
 
-load("//:fuzz_test.bzl", "cc_fuzz_test")
+load("//fuzzing:cc_deps.bzl", "cc_fuzz_test")
 
 cc_fuzz_test(
     name = "buffer_overflow_fuzz_test",
