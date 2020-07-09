@@ -12,3 +12,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+# This package contains tool scripts
+
+load("@rules_python//python:defs.bzl", "py_binary")
+
+py_binary(
+    name = "launcher",
+    srcs = ["launcher.py"],
+)
