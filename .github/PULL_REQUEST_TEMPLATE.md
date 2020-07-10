@@ -1,5 +1,5 @@
-Commit Message:
-Additional Description:
-Testing:
-Docs Changes:
-[Optional Fixes #Issue]
+**Commit Message:**
+**Additional Description:**
+**Testing:**
+**Docs Changes:**
+**[Optional Fixes #Issue]**
