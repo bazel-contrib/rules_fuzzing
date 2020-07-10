@@ -1,6 +1,12 @@
-Fixes #<issue_number_goes_here>
+For an explanation of how to fill out the fields, please see the relevant section
+in [PULL_REQUESTS.md](https://github.com/envoyproxy/envoy/blob/master/PULL_REQUESTS.md)
 
-> It's a good idea to open an issue first for discussion.
-
-- [ ] Tests pass
-- [ ] Appropriate changes to README are included in PR
+Commit Message:
+Additional Description:
+Risk Level:
+Testing:
+Docs Changes:
+Release Notes:
+[Optional Runtime guard:]
+[Optional Fixes #Issue]
+[Optional Deprecated:]
