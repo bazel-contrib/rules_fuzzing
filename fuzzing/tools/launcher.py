@@ -10,16 +10,20 @@ import os
 
 FLAGS = flags.FLAGS
 
-flags.DEFINE_integer('timeout', 20, 'test timeout.', lower_bound=0)
+flags.DEFINE_integer(
+    'timeout_secs',
+    20,
+    'The maximum duration, in seconds, of the fuzzer run launched.',
+    lower_bound=0)
 
 
 def main(argv):
     if len(argv) != 2:
         raise app.UsageError(
-            "This script receives 2 arguments. It should look like:" +
-            "\n\tpython " + __file__ + " EXECUTABLE --timout=TIMEOUT")
+            "This script receives 1 argument. It should look like:" +
+            "\n\tpython " + __file__ + " EXECUTABLE")
 
-    os.execl(argv[1], argv[1], "-timeout=" + str(FLAGS.timeout))
+    os.execl(argv[1], argv[1], "-timeout=" + str(FLAGS.timeout_secs))
 
 
 if __name__ == '__main__':

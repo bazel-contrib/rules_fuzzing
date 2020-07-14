@@ -20,4 +20,5 @@ load("@rules_python//python:defs.bzl", "py_binary")
 py_binary(
     name = "launcher",
     srcs = ["launcher.py"],
+    visibility = ["//visibility:public"],
 )
