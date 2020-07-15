@@ -13,9 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-""" This file contains basic functions for fuzz test. """
+"""This file contains basic functions for cc fuzz test."""
 
 load("@rules_cc//cc:defs.bzl", "cc_test")
+load("//fuzzing:common.bzl", "fuzzing_launcher")
 
 def cc_fuzz_test(
         name,
@@ -25,7 +26,10 @@ def cc_fuzz_test(
         deps = [],
         tags = [],
         visibility = None):
-    """ At present this cc_fuzz_test is just a wrapper of cc_test """
+    """This macro provide two targets:
+    <name>: the executable file built by cc_test.
+    <name>_run: an executable to launch the fuzz test.
+"""
 
     cc_test(
         name = name,
@@ -35,4 +39,12 @@ def cc_fuzz_test(
         deps = deps,
         tags = tags + ["fuzz_test"],
         visibility = visibility,
+    )
+
+    fuzzing_launcher(
+        name = name + "_run",
+        target = name,
+        # Since the script depends on the _fuzz_test above, which is a cc_test,
+        # this attribute must be set.
+        testonly = True,
     )
