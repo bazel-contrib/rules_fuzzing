@@ -23,7 +23,10 @@ def main(argv):
             "This script receives 1 argument. It should look like:" +
             "\n\tpython " + __file__ + " EXECUTABLE")
 
-    os.execl(argv[1], argv[1], "-timeout=" + str(FLAGS.timeout_secs))
+    os.execv(argv[1], [
+        argv[1], "-max_total_time=" + str(FLAGS.timeout_secs),
+        "-timeout=" + str(FLAGS.timeout_secs)
+    ])
 
 
 if __name__ == '__main__':
