@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-""" This file contains common rules for fuzzing test. """
+"""This file contains common rules for fuzzing test."""
 
 def _fuzzing_launcher_impl(ctx):
     # Generate a script to launcher the fuzzing test.

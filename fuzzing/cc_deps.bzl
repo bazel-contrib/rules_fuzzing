@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-""" This file contains basic functions for cc fuzz test. """
+"""This file contains basic functions for cc fuzz test."""
 
 load("@rules_cc//cc:defs.bzl", "cc_test")
 load("//fuzzing:common.bzl", "fuzzing_launcher")
@@ -29,7 +29,7 @@ def cc_fuzz_test(
     """This macro provide two targets:
     <name>: the executable file built by cc_test.
     <name>_run: an executable to launch the fuzz test.
-    """
+"""
 
     cc_test(
         name = name,
