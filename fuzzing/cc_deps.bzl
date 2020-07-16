@@ -58,11 +58,3 @@ def cc_fuzz_test(
             name = name + "_corpus",
             srcs = corpus,
         )
-
-    fuzzing_corpus(
-        name = name + "_corpus",
-        srcs = [
-            "f1.txt",
-            "ttt/f2.txt",
-        ],
-    )
