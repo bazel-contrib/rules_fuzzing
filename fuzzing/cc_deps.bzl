@@ -16,7 +16,8 @@
 """This file contains basic functions for cc fuzz test."""
 
 load("@rules_cc//cc:defs.bzl", "cc_test")
-load("//fuzzing:common.bzl", "fuzzing_launcher")
+load("//fuzzing:common.bzl", "fuzzing_corpus", "fuzzing_launcher")
+load("@rules_pkg//:pkg.bzl", "pkg_zip")
 
 def cc_fuzz_test(
         name,
@@ -25,8 +26,11 @@ def cc_fuzz_test(
         linkopts = [],
         deps = [],
         tags = [],
+        corpus = [],
         visibility = None):
-    """This macro provide two targets:
+    """Macro for c++ fuzzing test
+
+    This macro provide two targets:
     <name>: the executable file built by cc_test.
     <name>_run: an executable to launch the fuzz test.
 """
@@ -47,4 +51,18 @@ def cc_fuzz_test(
         # Since the script depends on the _fuzz_test above, which is a cc_test,
         # this attribute must be set.
         testonly = True,
+    )
+
+    if corpus:
+        fuzzing_corpus(
+            name = name + "_corpus",
+            srcs = corpus,
+        )
+
+    fuzzing_corpus(
+        name = name + "_corpus",
+        srcs = [
+            "f1.txt",
+            "ttt/f2.txt",
+        ],
     )

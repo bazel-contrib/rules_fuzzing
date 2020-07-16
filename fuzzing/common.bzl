@@ -56,3 +56,33 @@ Rule for creating a script to run the fuzzing test
     },
     executable = True,
 )
+
+def _fuzzing_corpus_impl(ctx):
+    dir = ctx.actions.declare_directory(ctx.attr.name)
+    command = "cp "
+
+    # Merge the file path to the cp command
+    for f in ctx.files.srcs:
+        command += f.short_path + " "
+    ctx.actions.run_shell(
+        inputs = ctx.files.srcs,
+        outputs = [dir],
+        command = command + dir.path,
+    )
+
+    return [DefaultInfo(files = depset([dir]))]
+
+fuzzing_corpus = rule(
+    implementation = _fuzzing_corpus_impl,
+    doc = """
+This rule provides a <name>_corpus directory collecting all the corpora files 
+specified in the corpus attribute of the cc_fuzz_test rule, 
+and a <name>_corpus.zip with the corpus files as a ZIP archive
+""",
+    attrs = {
+        "srcs": attr.label_list(
+            doc = "The corpus files for the fuzzing test.",
+            allow_files = True,
+        ),
+    },
+)
