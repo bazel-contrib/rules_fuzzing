@@ -23,6 +23,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Install deps 
+        run: |
+          pip install absl-py
       - name: Run all tests
         working-directory: ./
         # Build //examples/...
