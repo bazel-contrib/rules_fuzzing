@@ -26,6 +26,7 @@ jobs:
       - name: Install deps 
         run: |
           pip install wheel absl-py
+          pip3 install wheel absl-py
       - name: Run all tests
         working-directory: ./
         # Build //examples/...
