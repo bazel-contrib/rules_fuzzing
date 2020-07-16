@@ -17,7 +17,6 @@
 
 load("@rules_cc//cc:defs.bzl", "cc_test")
 load("//fuzzing:common.bzl", "fuzzing_corpus", "fuzzing_launcher")
-load("@rules_pkg//:pkg.bzl", "pkg_zip")
 
 def cc_fuzz_test(
         name,
