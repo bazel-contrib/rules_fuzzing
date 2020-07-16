@@ -21,8 +21,7 @@ load("//fuzzing:common.bzl", "fuzzing_launcher")
 def cc_fuzz_test(
         name,
         srcs,
-        **kwargs,
-        ):
+        **kwargs):
     """Macro for c++ fuzzing test
 
     This macro provide two targets:
@@ -32,12 +31,11 @@ def cc_fuzz_test(
 
     # Add fuzz_test tag
     kwargs["tags"] = ["fuzz_test"] + (kwargs["tags"] if "tags" in kwargs else [])
-    print(name, kwargs)
 
     cc_test(
         name = name,
         srcs = srcs,
-        **kwargs,
+        **kwargs
     )
 
     fuzzing_launcher(
