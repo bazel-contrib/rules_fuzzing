@@ -76,8 +76,7 @@ fuzzing_corpus = rule(
     implementation = _fuzzing_corpus_impl,
     doc = """
 This rule provides a <name>_corpus directory collecting all the corpora files 
-specified in the corpus attribute of the cc_fuzz_test rule, 
-and a <name>_corpus.zip with the corpus files as a ZIP archive
+specified in the srcs attribute.
 """,
     attrs = {
         "srcs": attr.label_list(
