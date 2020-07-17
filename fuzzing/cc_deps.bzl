@@ -20,7 +20,6 @@ load("//fuzzing:common.bzl", "fuzzing_launcher")
 
 def cc_fuzz_test(
         name,
-        srcs,
         **kwargs):
     """Macro for c++ fuzzing test
 
@@ -30,11 +29,10 @@ def cc_fuzz_test(
 """
 
     # Add fuzz_test tag
-    kwargs["tags"] = ["fuzz_test"] + (kwargs["tags"] if "tags" in kwargs else [])
+    kwargs.setdefault("tags", []).append("fuzz_test")
 
     cc_test(
         name = name,
-        srcs = srcs,
         **kwargs
     )
 
