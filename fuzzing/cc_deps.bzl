@@ -16,6 +16,7 @@
 """This file contains basic functions for cc fuzz test."""
 
 load("@rules_cc//cc:defs.bzl", "cc_test")
+load("@rules_pkg//:pkg.bzl", "pkg_zip")
 load("//fuzzing:common.bzl", "fuzzing_corpus", "fuzzing_launcher")
 
 def cc_fuzz_test(
@@ -55,5 +56,9 @@ def cc_fuzz_test(
     if corpus:
         fuzzing_corpus(
             name = name + "_corpus",
+            srcs = corpus,
+        )
+        pkg_zip(
+            name = name + "_corpus_zip",
             srcs = corpus,
         )
