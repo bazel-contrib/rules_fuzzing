@@ -26,8 +26,10 @@ jobs:
       - name: Install deps 
         run: |
           pip --version
-          pip install wheel setuptools absl-py
-          pip3 install wheel setuptools absl-py
+          sudo apt-get install python3-setuptools
+          sudo apt-get install python-setuptools
+          pip install wheel absl-py
+          pip3 install wheel absl-py
       - name: Run all tests
         working-directory: ./
         # Build //examples/...
@@ -36,5 +38,6 @@ jobs:
         # The "<fuzzer/FDP...>" is only supported since clang-10 while the clang version in github runner is 9
         run: |
           python --version
+          alias python='python3'
           bazel build --verbose_failures --build_tag_filters=fuzz_test,-FDP --config=asan-libfuzzer //examples/...
           bazel run //examples:empty_fuzz_test_run --config=asan-libfuzzer -- --timeout_secs=5
