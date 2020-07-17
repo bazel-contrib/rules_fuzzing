@@ -23,6 +23,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Install deps 
+        run: |
+          sudo apt-get install python3-setuptools
+          pip3 install wheel absl-py
       - name: Run all tests
         working-directory: ./
         # Build //examples/...
@@ -30,4 +34,6 @@ jobs:
         # The -FDP is for filtering out the files which contains "#include <fuzzer/FuzzedDataProvider.h>",
         # The "<fuzzer/FDP...>" is only supported since clang-10 while the clang version in github runner is 9
         run: |
+          alias python='python3'
           bazel build --verbose_failures --build_tag_filters=fuzz_test,-FDP --config=asan-libfuzzer //examples/...
+          bazel run //examples:empty_fuzz_test_run --config=asan-libfuzzer -- --timeout_secs=5

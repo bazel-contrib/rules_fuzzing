@@ -21,28 +21,20 @@ load("//fuzzing:common.bzl", "fuzzing_corpus", "fuzzing_launcher")
 
 def cc_fuzz_test(
         name,
-        srcs,
-        copts = [],
-        linkopts = [],
-        deps = [],
-        tags = [],
-        corpus = [],
-        visibility = None):
+        **kwargs):
     """Macro for c++ fuzzing test
 
-    This macro provide two targets:
+    This macro provides two targets:
     <name>: the executable file built by cc_test.
     <name>_run: an executable to launch the fuzz test.
 """
 
+    # Add fuzz_test tag
+    kwargs.setdefault("tags", []).append("fuzz_test")
+
     cc_test(
         name = name,
-        srcs = srcs,
-        copts = ["-fsanitize=fuzzer"] + copts,
-        linkopts = ["-fsanitize=fuzzer"] + linkopts,
-        deps = deps,
-        tags = tags + ["fuzz_test"],
-        visibility = visibility,
+        **kwargs
     )
 
     fuzzing_launcher(
@@ -53,12 +45,12 @@ def cc_fuzz_test(
         testonly = True,
     )
 
-    if corpus:
+    if "corpus" in kwargs:
         fuzzing_corpus(
             name = name + "_corpus",
-            srcs = corpus,
+            srcs = kwargs["corpus"],
         )
         pkg_zip(
             name = name + "_corpus_zip",
-            srcs = corpus,
+            srcs = kwargs["corpus"],
         )
