@@ -25,9 +25,9 @@ jobs:
         uses: actions/checkout@v2
       - name: Install deps 
         run: |
-          pip install wheel absl-py
-          pip3 install wheel absl-py
           pip --version
+          pip install wheel setuptools absl-py
+          pip3 install wheel setuptools absl-py
       - name: Run all tests
         working-directory: ./
         # Build //examples/...
