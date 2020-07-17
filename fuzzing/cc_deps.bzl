@@ -23,7 +23,7 @@ def cc_fuzz_test(
         **kwargs):
     """Macro for c++ fuzzing test
 
-    This macro provide two targets:
+    This macro provides two targets:
     <name>: the executable file built by cc_test.
     <name>_run: an executable to launch the fuzz test.
 """
