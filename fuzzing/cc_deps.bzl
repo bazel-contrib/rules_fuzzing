@@ -21,6 +21,7 @@ load("//fuzzing:common.bzl", "fuzzing_corpus", "fuzzing_launcher")
 
 def cc_fuzz_test(
         name,
+        corpus = [],
         **kwargs):
     """Macro for c++ fuzzing test
 
@@ -45,7 +46,7 @@ def cc_fuzz_test(
         testonly = True,
     )
 
-    if "corpus" in kwargs:
+    if corpus:
         fuzzing_corpus(
             name = name + "_corpus",
             srcs = kwargs["corpus"],
