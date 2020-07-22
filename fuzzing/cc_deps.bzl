@@ -16,10 +16,12 @@
 """This file contains basic functions for cc fuzz test."""
 
 load("@rules_cc//cc:defs.bzl", "cc_test")
-load("//fuzzing:common.bzl", "fuzzing_launcher")
+load("@rules_pkg//:pkg.bzl", "pkg_zip")
+load("//fuzzing:common.bzl", "fuzzing_corpus", "fuzzing_launcher")
 
 def cc_fuzz_test(
         name,
+        corpus = None,
         **kwargs):
     """Macro for c++ fuzzing test
 
@@ -43,3 +45,13 @@ def cc_fuzz_test(
         # this attribute must be set.
         testonly = True,
     )
+
+    if corpus:
+        fuzzing_corpus(
+            name = name + "_corpus",
+            srcs = corpus,
+        )
+        pkg_zip(
+            name = name + "_corpus_zip",
+            srcs = corpus,
+        )
