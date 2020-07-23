@@ -38,14 +38,6 @@ def cc_fuzz_test(
         **kwargs
     )
 
-    fuzzing_launcher(
-        name = name + "_run",
-        target = name,
-        # Since the script depends on the _fuzz_test above, which is a cc_test,
-        # this attribute must be set.
-        testonly = True,
-    )
-
     if corpus:
         fuzzing_corpus(
             name = name + "_corpus",
@@ -54,4 +46,20 @@ def cc_fuzz_test(
         pkg_zip(
             name = name + "_corpus_zip",
             srcs = corpus,
+        )
+        fuzzing_launcher(
+            name = name + "_run",
+            target = name,
+            corpus = name + "_corpus",
+            # Since the script depends on the _fuzz_test above, which is a cc_test,
+            # this attribute must be set.
+            testonly = True,
+        )
+    else:
+        fuzzing_launcher(
+            name = name + "_run",
+            target = name,
+            # Since the script depends on the _fuzz_test above, which is a cc_test,
+            # this attribute must be set.
+            testonly = True,
         )
