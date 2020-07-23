@@ -82,7 +82,7 @@ def _fuzzing_corpus_impl(ctx):
         command = "cp $@",
     )
 
-    return [DefaultInfo(runfiles = ctx.runfiles(files = [corpus_dir]),files = depset([corpus_dir]))]
+    return [DefaultInfo(runfiles = ctx.runfiles(files = [corpus_dir]), files = depset([corpus_dir]))]
 
 fuzzing_corpus = rule(
     implementation = _fuzzing_corpus_impl,
