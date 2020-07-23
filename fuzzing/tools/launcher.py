@@ -31,7 +31,7 @@ flags.DEFINE_integer(
     "The maximum duration, in seconds, of the fuzzer run launched.",
     lower_bound=0)
 
-flags.DEFINE_string("corpus_dir", "", 'The directory containing corpus.')
+flags.DEFINE_string("corpus_dir", "", "The directory containing corpus.")
 
 
 def main(argv):
@@ -52,5 +52,5 @@ def main(argv):
         ])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(main)
