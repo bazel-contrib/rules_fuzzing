@@ -41,7 +41,7 @@ exec {launcher_path} {target_binary_path} --corpus_dir={corpus_dir} "$@"
 fuzzing_launcher = rule(
     implementation = _fuzzing_launcher_impl,
     doc = """
-Rule for creating a script to run the fuzzing test
+Rule for creating a script to run the fuzzing test.
 """,
     attrs = {
         "_launcher": attr.label(
