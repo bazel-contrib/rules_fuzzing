@@ -33,6 +33,8 @@ cc_fuzz_test(
     srcs = ["empty_fuzz_test.cc"],
     corpus = [
         "corpus_1.txt",
+        # Single * only searches the files under that directory 
+        # whereas double * will do the search recursively
         "corpus_dir/**",
     ],
 )
