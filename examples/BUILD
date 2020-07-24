@@ -22,9 +22,13 @@ cc_fuzz_test(
     srcs = ["buffer_overflow_fuzz_test.cc"],
 )
 
-# This target shows how to create a fuzz test target with corpus files
 cc_fuzz_test(
     name = "empty_fuzz_test",
+    srcs = ["empty_fuzz_test.cc"],
+)
+
+cc_fuzz_test(
+    name = "empty_fuzz_test_with_corpus",
     srcs = ["empty_fuzz_test.cc"],
     corpus = [
         "corpus_1.txt",

@@ -31,7 +31,10 @@ flags.DEFINE_integer(
     "The maximum duration, in seconds, of the fuzzer run launched.",
     lower_bound=0)
 
-flags.DEFINE_string("corpus_dir", "", "The directory containing corpus.")
+flags.DEFINE_string(
+    "corpus_dir", "",
+    "If non-empty, a directory that will be used as a seed corpus for the fuzzer run."
+)
 
 
 def main(argv):
@@ -40,16 +43,12 @@ def main(argv):
             "This script receives 1 argument. It should look like:" +
             "\n\tpython " + __file__ + " EXECUTABLE")
 
+    command_args = [argv[1]]
+    command_args.append("-max_total_time=" + str(FLAGS.timeout_secs))
+    command_args.append("-timeout=" + str(FLAGS.timeout_secs))
     if FLAGS.corpus_dir:
-        os.execv(argv[1], [
-            argv[1], FLAGS.corpus_dir, "-max_total_time=" +
-            str(FLAGS.timeout_secs), "-timeout=" + str(FLAGS.timeout_secs)
-        ])
-    else:
-        os.execv(argv[1], [
-            argv[1], "-max_total_time=" + str(FLAGS.timeout_secs),
-            "-timeout=" + str(FLAGS.timeout_secs)
-        ])
+        command_args.append(FLAGS.corpus_dir)
+    os.execv(argv[1], command_args)
 
 
 if __name__ == "__main__":

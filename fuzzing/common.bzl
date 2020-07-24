@@ -23,7 +23,6 @@ def _fuzzing_launcher_impl(ctx):
 exec {launcher_path} {target_binary_path} --corpus_dir={corpus_dir} "$@"
 """
 
-    print(ctx.file.corpus.short_path)
     script_content = script_template.format(
         launcher_path = ctx.executable._launcher.short_path,
         target_binary_path = ctx.executable.target.short_path,
@@ -82,7 +81,10 @@ def _fuzzing_corpus_impl(ctx):
         command = "cp $@",
     )
 
-    return [DefaultInfo(runfiles = ctx.runfiles(files = [corpus_dir]), files = depset([corpus_dir]))]
+    return [DefaultInfo(
+        runfiles = ctx.runfiles(files = [corpus_dir]),
+        files = depset([corpus_dir]),
+    )]
 
 fuzzing_corpus = rule(
     implementation = _fuzzing_corpus_impl,
