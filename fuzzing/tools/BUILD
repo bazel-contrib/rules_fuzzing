@@ -15,10 +15,32 @@
 
 # This package contains tool scripts
 
-load("@rules_python//python:defs.bzl", "py_binary")
+load("@rules_python//python:defs.bzl", "py_binary", "py_library", "py_test")
 
 py_binary(
     name = "launcher",
     srcs = ["launcher.py"],
     visibility = ["//visibility:public"],
+)
+
+py_library(
+    name = "dict_validator_lib",
+    srcs = ["dict_validator.py"],
+    visibility = ["//visibility:public"],
+)
+
+py_binary(
+    name = "dict_validator",
+    srcs = ["dict_validator.py"],
+    visibility = ["//visibility:public"],
+)
+
+py_test(
+    name = "dict_validator_test",
+    srcs = ["dict_validator_test.py"],
+    data = [
+        "dict_data/invalid.dict",
+        "dict_data/valid.dict",
+    ],
+    deps = [":dict_validator_lib"],
 )

@@ -15,7 +15,7 @@
 
 # Lint as: python3
 """
-This script is used to validate the format of the fuzzing dictionary
+Validates and merges a set of fuzzing dictionary files into a single output.
 """
 
 from absl import app
@@ -24,43 +24,36 @@ from string import hexdigits
 
 FLAGS = flags.FLAGS
 
+flags.DEFINE_list("dict_list", [],
+                  "Each element in the list stands for a dictionary file")
+
+flags.DEFINE_string("output_file", "output.dict",
+                    "The name of the output merged dictionary file")
+
 
 # Validate a single entry in the dictionary
-def validate_entry(line):
-    line = line.strip()
-    if not line or line.startswith('#'):
-        return True
-    if len(line) < 2 or line[-1] != '"':
-        return False
-
-    left, right = 0, len(line) - 1
-    # Find the opening "
-    while left < right and line[left] != '"':
-        left += 1
-
-    if left >= right:
-        return False
-
+def validate_entry(entry):
     # Use set to contain hex digits to decrease the query time complexity
     hex_set = set(hexdigits)
-    while left < right:
-        left += 1
-        chr = line[left]  # Single character
+    pos, end = 0, len(entry) - 1
+    while pos < end:
+        pos += 1
+        chr = entry[pos]  # Single character
 
         if not (chr.isprintable() or chr.isspace()):
             return False
 
         # Handle '\\'
         if chr == '\\':
-            if left + 1 <= right and (line[left + 1] == '\\' or
-                                      line[left + 1] == '"'):
-                left += 1
+            if pos + 1 <= end and (entry[pos + 1] == '\\' or
+                                   entry[pos + 1] == '"'):
+                pos += 1
                 continue
 
             # Handle '\xAB'
-            if left + 3 <= right and line[left + 1] == 'x' and line[
-                    left + 2] in hex_set and line[left + 3] in hex_set:
-                left += 3
+            if pos + 3 <= end and entry[pos + 1] == 'x' and entry[
+                    pos + 2] in hex_set and entry[pos + 3] in hex_set:
+                pos += 3
                 continue
 
             return False
@@ -68,20 +61,37 @@ def validate_entry(line):
     return True
 
 
-def main(argv):
-    if len(argv) != 2:
-        raise app.UsageError(
-            "This script receives 1 argument. It should look like:" +
-            "\n\tpython " + __file__ + " DICTIONARY)+_FILE")
-    dic_path = argv[1]
-    with open(dic_path, "r") as dic:
-        for line in dic.readlines():
-            if not validate_entry(line):
-                print("ERROR: invalid dictionary entry \'" + line.strip() +
-                      "\'")
-                return -1
+def validate_line(line):
+    line = line.strip()
+    if not line or line.startswith('#'):
+        return True
+    if len(line) < 2 or line[-1] != '"':
+        return False
 
-    print("The dictionary is successfully validated")
+    left = 0
+    # Find the opening "
+    while left < len(line) - 1 and line[left] != '"':
+        left += 1
+
+    if left >= len(line) - 1:
+        return False
+
+    return validate_entry(line[left:])
+
+
+def main(argv):
+    with open(FLAGS.output_file, 'w') as output:
+        for dic_path in FLAGS.dict_list:
+            print(dic_path)
+            with open(dic_path, 'r') as dic:
+                for line in dic.readlines():
+                    if not validate_line(line):
+                        print("ERROR: invalid dictionary entry \'" +
+                              line.strip() + "\'")
+                        return -1
+                    output.write(line)
+
+    print("The dictionary is successfully validated.")
     return 0
 
 
