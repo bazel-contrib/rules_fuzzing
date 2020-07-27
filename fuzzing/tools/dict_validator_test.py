@@ -18,19 +18,23 @@
 Tests for dict_validator.py
 """
 
-from string import hexdigits
+from bazel_tools.tools.python.runfiles import runfiles
 from dict_validator import validate_line
+from string import hexdigits
 import sys
 
 if __name__ == '__main__':
-    with open("dict_data/valid.dict", 'r') as dic:
+    rf = runfiles.Create()
+    with open(rf.Rlocation("__main__/fuzzing/tools/dict_data/valid.dict"),
+              'r') as dic:
         for line in dic.readlines():
             if not validate_line(line):
                 print("ERROR: valid dictionary entry '" + line.strip() +
                       "' can't pass the check")
                 sys.exit(-1)
 
-    with open("dict_data/invalid.dict", 'r') as dic:
+    with open(rf.Rlocation("__main__/fuzzing/tools/dict_data/invalid.dict"),
+              'r') as dic:
         for line in dic.readlines():
             if validate_line(line):
                 print("ERROR: invalid dictionary entry '" + line.strip() +

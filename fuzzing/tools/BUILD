@@ -17,15 +17,15 @@
 
 load("@rules_python//python:defs.bzl", "py_binary", "py_library", "py_test")
 
-py_binary(
-    name = "launcher",
-    srcs = ["launcher.py"],
-    visibility = ["//visibility:public"],
-)
-
 py_library(
     name = "dict_validator_lib",
     srcs = ["dict_validator.py"],
+    visibility = ["//visibility:public"],
+)
+
+py_binary(
+    name = "launcher",
+    srcs = ["launcher.py"],
     visibility = ["//visibility:public"],
 )
 
@@ -42,5 +42,8 @@ py_test(
         "dict_data/invalid.dict",
         "dict_data/valid.dict",
     ],
-    deps = [":dict_validator_lib"],
+    deps = [
+        ":dict_validator_lib",
+        "@bazel_tools//tools/python/runfiles",
+    ],
 )
