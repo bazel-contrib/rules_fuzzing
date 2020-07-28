@@ -20,7 +20,6 @@ Tests for dict_validator.py
 
 from bazel_tools.tools.python.runfiles import runfiles
 from dict_validator import validate_line
-from string import hexdigits
 import sys
 
 if __name__ == '__main__':

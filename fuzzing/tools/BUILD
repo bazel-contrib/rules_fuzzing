@@ -47,3 +47,11 @@ py_test(
         "@bazel_tools//tools/python/runfiles",
     ],
 )
+
+py_test(
+    name = "dict_validator_unit_test",
+    srcs = ["dict_validator_unit_test.py"],
+    deps = [
+        ":dict_validator_lib",
+    ],
+)
