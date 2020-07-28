@@ -25,3 +25,4 @@ kw2="\"ac\\dc\""
 kw3="\xF7\xF8""
 # the name of the keyword followed by '=' may be omitted:
 "foo\x0Abar"
+"ab""
