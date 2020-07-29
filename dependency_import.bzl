@@ -13,10 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load(":repositories.bzl", "fuzzing_rule_dependencies")
+# Loads the dependencies of the external dependencies
 
-fuzzing_rule_dependencies()
+load("@rules_python//python:repositories.bzl", "py_repositories")
+load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
 
-load(":dependency_import.bzl", "fuzzing_dependency_imports")
-
-fuzzing_dependency_imports()
+def fuzzing_dependency_imports():
+    py_repositories()
+    rules_pkg_dependencies()
