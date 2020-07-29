@@ -38,20 +38,22 @@ def cc_fuzz_test(
         **kwargs
     )
 
+    if corpus:
+        corpus_list = native.glob(corpus)
+        fuzzing_corpus(
+            name = name + "_corpus",
+            srcs = corpus_list,
+        )
+        pkg_zip(
+            name = name + "_corpus_zip",
+            srcs = corpus_list,
+        )
+
     fuzzing_launcher(
         name = name + "_run",
         target = name,
+        corpus = name + "_corpus" if corpus else None,
         # Since the script depends on the _fuzz_test above, which is a cc_test,
         # this attribute must be set.
         testonly = True,
     )
-
-    if corpus:
-        fuzzing_corpus(
-            name = name + "_corpus",
-            srcs = corpus,
-        )
-        pkg_zip(
-            name = name + "_corpus_zip",
-            srcs = corpus,
-        )
