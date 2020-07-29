@@ -16,34 +16,43 @@
 """This file contains basic functions for cc fuzz test."""
 
 load("@rules_cc//cc:defs.bzl", "cc_test")
-load("//fuzzing:common.bzl", "fuzzing_launcher")
+load("@rules_pkg//:pkg.bzl", "pkg_zip")
+load("//fuzzing:common.bzl", "fuzzing_corpus", "fuzzing_launcher")
 
 def cc_fuzz_test(
         name,
-        srcs,
-        copts = [],
-        linkopts = [],
-        deps = [],
-        tags = [],
-        visibility = None):
-    """This macro provide two targets:
+        corpus = None,
+        **kwargs):
+    """Macro for c++ fuzzing test
+
+    This macro provides two targets:
     <name>: the executable file built by cc_test.
     <name>_run: an executable to launch the fuzz test.
 """
 
+    # Add fuzz_test tag
+    kwargs.setdefault("tags", []).append("fuzz_test")
+
     cc_test(
         name = name,
-        srcs = srcs,
-        copts = ["-fsanitize=fuzzer"] + copts,
-        linkopts = ["-fsanitize=fuzzer"] + linkopts,
-        deps = deps,
-        tags = tags + ["fuzz_test"],
-        visibility = visibility,
+        **kwargs
     )
+
+    if corpus:
+        corpus_list = native.glob(corpus)
+        fuzzing_corpus(
+            name = name + "_corpus",
+            srcs = corpus_list,
+        )
+        pkg_zip(
+            name = name + "_corpus_zip",
+            srcs = corpus_list,
+        )
 
     fuzzing_launcher(
         name = name + "_run",
         target = name,
+        corpus = name + "_corpus" if corpus else None,
         # Since the script depends on the _fuzz_test above, which is a cc_test,
         # this attribute must be set.
         testonly = True,
