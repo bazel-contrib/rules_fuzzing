@@ -18,9 +18,8 @@
 load("@rules_python//python:defs.bzl", "py_binary", "py_library", "py_test")
 
 py_library(
-    name = "dict_validator_lib",
-    srcs = ["dict_validator.py"],
-    visibility = ["//visibility:public"],
+    name = "dict_validate_lib",
+    srcs = ["dict_validate_lib.py"],
 )
 
 py_binary(
@@ -33,25 +32,11 @@ py_binary(
     name = "dict_validator",
     srcs = ["dict_validator.py"],
     visibility = ["//visibility:public"],
+    deps = [":dict_validate_lib"],
 )
 
 py_test(
-    name = "dict_validator_test",
-    srcs = ["dict_validator_test.py"],
-    data = [
-        "dict_data/invalid.dict",
-        "dict_data/valid.dict",
-    ],
-    deps = [
-        ":dict_validator_lib",
-        "@bazel_tools//tools/python/runfiles",
-    ],
-)
-
-py_test(
-    name = "dict_validator_unit_test",
-    srcs = ["dict_validator_unit_test.py"],
-    deps = [
-        ":dict_validator_lib",
-    ],
+    name = "dict_validate_lib_test",
+    srcs = ["dict_validate_lib_test.py"],
+    deps = [":dict_validate_lib"],
 )
