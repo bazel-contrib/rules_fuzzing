@@ -13,10 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-workspace(name = "bazel_rules_fuzzing")
+workspace(name = "rules_fuzzing")
 
-load(":repositories.bzl", "bazel_rules_fuzzing_dependencies")
-bazel_rules_fuzzing_dependencies()
+load("//fuzzing:repositories.bzl", "rules_fuzzing_dependencies")
+rules_fuzzing_dependencies()
 
 load("@rules_python//python:repositories.bzl", "py_repositories")
 py_repositories()

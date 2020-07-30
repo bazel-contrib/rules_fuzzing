@@ -17,7 +17,7 @@
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-def bazel_rules_fuzzing_dependencies():
+def rules_fuzzing_dependencies():
     http_archive(
         name = "rules_python",
         url = "https://github.com/bazelbuild/rules_python/releases/download/0.0.2/rules_python-0.0.2.tar.gz",
