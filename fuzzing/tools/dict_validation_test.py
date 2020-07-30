@@ -19,51 +19,40 @@ Unit tests for dict_validator.py
 """
 
 import unittest
-from dict_validate_lib import validate_line
+from dict_validation import validate_line
 
 
 class DictValidatorTest(unittest.TestCase):
 
     def test_plain_entries(self):
-        lines = """kw1="blah"
-":path"
-"keep-alive"
-"ab""
-"te" """
-        for line in lines.split('\n'):
-            self.assertTrue(validate_line(line))
+        self.assertTrue(validate_line('kw1="blah"'))
+        self.assertTrue(validate_line('":path"'))
+        self.assertTrue(validate_line('"keep-alive"'))
+        self.assertTrue(validate_line('"te"'))
+        self.assertTrue(validate_line('"ab""'))
 
     def test_escaped_words(self):
-        line = 'kw2="\\"ac\\\\dc\\""'
-        self.assertTrue(validate_line(line))
+        self.assertTrue(validate_line('kw2="\\"ac\\\\dc\\""'))
+        self.assertTrue(validate_line('kw3="\\xF7\\xF8"'))
+        self.assertTrue(validate_line('"foo\\x0Abar"'))
 
-    def test_hex_escapes(self):
-        lines = """kw3="\\xF7\\xF8""
-"foo\\x0Abar" """
-        for line in lines.split('\n'):
-            self.assertTrue(validate_line(line))
-        invalid_hex_str = '"\\A"'
-        self.assertFalse(validate_line(invalid_hex_str))
+    def test_invalid_escaped_words(self):
+        self.assertFalse(validate_line('"\\A"'))
 
     def test_comment(self):
-        line = """# valid dictionary entries"""
-        self.assertTrue(validate_line(line))
+        self.assertTrue(validate_line('# valid dictionary entries'))
 
     def test_empty_string(self):
-        line = ""
-        self.assertTrue(validate_line(line))
+        self.assertTrue(validate_line(''))
 
     def test_spaces(self):
-        line = "   "
-        self.assertTrue(validate_line(line))
+        self.assertTrue(validate_line('   '))
 
     def test_plain_words(self):
-        line = "Invalid dictionary entries"
-        self.assertFalse(validate_line(line))
+        self.assertFalse(validate_line('Invalid dictionary entries'))
 
     def test_single_quote(self):
-        line = '"'
-        self.assertFalse(validate_line(line))
+        self.assertFalse(validate_line('"'))
 
 
 if __name__ == '__main__':

@@ -17,10 +17,8 @@
 
 load("@rules_python//python:defs.bzl", "py_binary", "py_library", "py_test")
 
-py_library(
-    name = "dict_validate_lib",
-    srcs = ["dict_validate_lib.py"],
-)
+# Tools.
+########
 
 py_binary(
     name = "launcher",
@@ -29,14 +27,25 @@ py_binary(
 )
 
 py_binary(
-    name = "dict_validator",
-    srcs = ["dict_validator.py"],
+    name = "validate_dict",
+    srcs = ["validate_dict.py"],
     visibility = ["//visibility:public"],
-    deps = [":dict_validate_lib"],
+    deps = [":dict_validation"],
 )
 
+# Libraries.
+############
+
+py_library(
+    name = "dict_validation",
+    srcs = ["dict_validation.py"],
+)
+
+# Tests.
+########
+
 py_test(
-    name = "dict_validate_lib_test",
-    srcs = ["dict_validate_lib_test.py"],
-    deps = [":dict_validate_lib"],
+    name = "dict_validation_test",
+    srcs = ["dict_validation_test.py"],
+    deps = [":dict_validation"],
 )

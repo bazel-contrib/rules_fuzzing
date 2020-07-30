@@ -23,6 +23,16 @@ from string import hexdigits
 
 # Validate a single entry in the dictionary
 def validate_entry(entry):
+    """Validates a single fuzzing dictionary entry.
+
+    Args:
+        entry: a string containing a single entry.
+
+    Returns:
+        True if the argument is a valid fuzzing dictionary entry, 
+        otherwise False.
+    """
+
     # Use set to contain hex digits to decrease the query time complexity
     hex_set = set(hexdigits)
     pos, end = 0, len(entry) - 1
@@ -51,8 +61,16 @@ def validate_entry(entry):
     return True
 
 
-# Validate a single line in the dictionary
 def validate_line(line):
+    """Validates a single line in the fuzzing dictionary entry.
+
+    Args:
+        line: a string containing a single line in the fuzzing dictionary.
+
+    Returns:
+        True if the argument is allowed to exist in a fuzzing dictionary, 
+        otherwise False.
+    """
     line = line.strip()
     if not line or line.startswith('#'):
         return True

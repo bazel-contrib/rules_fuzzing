@@ -20,7 +20,7 @@ Validates and merges a set of fuzzing dictionary files into a single output.
 
 from absl import app
 from absl import flags
-from dict_validate_lib import validate_line
+from dict_validation import validate_line
 from sys import stderr
 
 FLAGS = flags.FLAGS
