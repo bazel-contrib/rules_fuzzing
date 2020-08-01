@@ -28,22 +28,32 @@ FLAGS = flags.FLAGS
 flags.DEFINE_list("dict_list", [],
                   "Each element in the list stands for a dictionary file")
 
-flags.DEFINE_string("output_file", "output.dict",
+flags.DEFINE_string("output_file", "",
                     "The name of the output merged dictionary file")
 
 
-def main(argv):
-    with open(FLAGS.output_file, 'w') as output:
-        for dic_path in FLAGS.dict_list:
-            with open(dic_path, 'r') as dic:
-                for line in dic.readlines():
-                    if not validate_line(line):
-                        print("ERROR: invalid dictionary entry \'" +
-                              line.strip() + "\'",
-                              file=stderr)
-                        return -1
-                    output.write(line)
+def validate_dic(dic_path, output_stream):
+    with open(dic_path, 'r') as dic:
+        for line in dic.readlines():
+            if not validate_line(line):
+                print("ERROR: invalid dictionary entry \'" + line.strip() +
+                      "\'",
+                      file=stderr)
+                return False
+            if output_stream:
+                output_stream.write(line)
+    return True
 
+
+def main(argv):
+    output = open(FLAGS.output_file, 'w') if FLAGS.output_file else None
+    try:
+        for dic_path in FLAGS.dict_list:
+            if not validate_dic(dic_path, output):
+                return -1
+    finally:
+        if output:
+            output.close()
     return 0
 
 

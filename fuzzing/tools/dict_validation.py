@@ -21,7 +21,6 @@ Validates the fuzzing dictionary.
 from string import hexdigits
 
 
-# Validate a single entry in the dictionary
 def validate_entry(entry):
     """Validates a single fuzzing dictionary entry.
 
@@ -38,7 +37,7 @@ def validate_entry(entry):
     pos, end = 0, len(entry) - 1
     while pos < end:
         pos += 1
-        chr = entry[pos]  # Single character
+        chr = entry[pos]
 
         if not (chr.isprintable() or chr.isspace()):
             return False
