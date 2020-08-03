@@ -47,6 +47,6 @@ py_library(
 py_test(
     name = "dict_validation_test",
     srcs = ["dict_validation_test.py"],
-    deps = [":dict_validation"],
     tags = ["test"],
+    deps = [":dict_validation"],
 )
