@@ -32,9 +32,9 @@ flags.DEFINE_string("output_file", "",
                     "The name of the output merged dictionary file")
 
 
-def validate_dic(dic_path, output_stream):
-    with open(dic_path, 'r') as dic:
-        for line in dic.readlines():
+def validate_dict(dict_path, output_stream):
+    with open(dict_path, 'r') as dict:
+        for line in dict.readlines():
             if not validate_line(line):
                 print("ERROR: invalid dictionary entry \'" + line.strip() +
                       "\'",
@@ -48,8 +48,8 @@ def validate_dic(dic_path, output_stream):
 def main(argv):
     output = open(FLAGS.output_file, 'w') if FLAGS.output_file else None
     try:
-        for dic_path in FLAGS.dict_list:
-            if not validate_dic(dic_path, output):
+        for dict_path in FLAGS.dict_list:
+            if not validate_dict(dict_path, output):
                 return -1
     finally:
         if output:
