@@ -28,7 +28,7 @@ jobs:
           sudo apt-get install python3-setuptools
           pip3 install wheel absl-py
           alias python='python3'
-      - name: Build examples
+      - name: Build fuzz test examples
         # The -FDP is for filtering out the files which contains "#include <fuzzer/FuzzedDataProvider.h>",
         # The "<fuzzer/FDP...>" is only supported since clang-10 while the clang version in github runner is 9
         run: |
