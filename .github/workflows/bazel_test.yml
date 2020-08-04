@@ -35,7 +35,7 @@ jobs:
           bazel build --verbose_failures --build_tag_filters=fuzz_test,-FDP --config=asan-libfuzzer //examples/...
       - name: Run common tests
         run: |
-          bazel test --config=clang //... --test_tag_filters=test --build_tag_filters=test
+          bazel test --config=clang //... --test_tag_filters=-fuzz_test --build_tests_only
       - name: Run dedicated tests
         run: |
           bazel run //examples:empty_fuzz_test_run --config=asan-libfuzzer -- --timeout_secs=5
