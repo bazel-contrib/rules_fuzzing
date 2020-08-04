@@ -99,3 +99,50 @@ specified in the srcs attribute.
         ),
     },
 )
+
+def _fuzzing_dictionary_impl(ctx):
+    output_dict = ctx.actions.declare_file(ctx.attr.output)
+    output_arg = "--output_file=" + output_dict.path
+    dict_args = "--dict_list=" + ctx.files.dicts[0].path
+
+    for single_dict in ctx.files.dicts[1:]:
+        dict_args += "," + single_dict.path
+
+    ctx.actions.run(
+        inputs = ctx.files.dicts,
+        outputs = [output_dict],
+        arguments = [dict_args, output_arg],
+        executable = ctx.executable._validate_dict,
+    )
+
+    runfiles = ctx.runfiles(files = [output_dict])
+    runfiles.merge(ctx.attr._validate_dict[DefaultInfo].default_runfiles)
+
+    return [DefaultInfo(
+        runfiles = runfiles,
+        files = depset([output_dict]),
+    )]
+
+fuzzing_dictionary = rule(
+    implementation = _fuzzing_dictionary_impl,
+    doc = """
+Rule to validate the fuzzing dictionaries and output a merged dictionary.
+""",
+    attrs = {
+        "_validate_dict": attr.label(
+            default = Label("//fuzzing/tools:validate_dict"),
+            doc = "The tool script to validate and merge the dictionaries.",
+            executable = True,
+            cfg = "host",
+        ),
+        "dicts": attr.label_list(
+            doc = "The fuzzing directories.",
+            allow_files = True,
+            mandatory = True,
+        ),
+        "output": attr.string(
+            doc = "The name of the merged dictionary.",
+            mandatory = True,
+        ),
+    },
+)
