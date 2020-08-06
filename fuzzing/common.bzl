@@ -78,7 +78,7 @@ def _fuzzing_corpus_impl(ctx):
         inputs = ctx.files.srcs,
         outputs = [corpus_dir],
         arguments = [cp_args],
-        command = "cp $@",
+        command = "mkdir " + corpus_dir.path + "; cp $@",
     )
 
     return [DefaultInfo(
