@@ -69,7 +69,7 @@ def _fuzzing_corpus_impl(ctx):
     cp_args = ctx.actions.args()
 
     for input_file in ctx.files.srcs:
-        cp_args.add(input_file)
+        cp_args.add(input_file.path)
 
     # Add destination to the arguments
     cp_args.add(corpus_dir.path)
