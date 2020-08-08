@@ -15,19 +15,22 @@
 
 """This file contains common rules for fuzzing test."""
 
+load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
+
 def _fuzzing_launcher_impl(ctx):
     # Generate a script to launcher the fuzzing test.
     script = ctx.actions.declare_file("%s" % ctx.label.name)
 
     script_template = """#!/bin/sh
-exec {launcher_path} {target_binary_path} --corpus_dir={corpus_dir} "$@"
-"""
+exec {launcher_path} {target_binary_path} --corpus_dir={corpus_dir} "$@" """
 
     script_content = script_template.format(
         launcher_path = ctx.executable._launcher.short_path,
         target_binary_path = ctx.executable.target.short_path,
         corpus_dir = ctx.file.corpus.short_path if ctx.attr.corpus else "",
     )
+    if ctx.attr._engine[BuildSettingInfo].value == "default":
+        script_content += " --regression=True"
     ctx.actions.write(script, script_content, is_executable = True)
 
     # Merge the dependencies.
@@ -49,6 +52,10 @@ Rule for creating a script to run the fuzzing test.
             doc = "The launcher script to start the fuzzing test.",
             executable = True,
             cfg = "host",
+        ),
+        "_engine": attr.label(
+            default = ":engine",
+            doc = "The engine type.",
         ),
         "target": attr.label(
             executable = True,

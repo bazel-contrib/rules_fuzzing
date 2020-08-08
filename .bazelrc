@@ -21,12 +21,15 @@ build:clang --action_env=CXX=clang++
 build:asan-libfuzzer --config=clang
 build:asan-libfuzzer --linkopt=-fsanitize=fuzzer,address
 build:asan-libfuzzer --copt=-fsanitize=fuzzer,address
+build:asan-libfuzzer --//fuzzing:engine=libfuzzer
 
 # Flags for Clang with MSAN and libfuzzer
 build:msan-libfuzzer --config=clang
 build:msan-libfuzzer --linkopt=-fsanitize=memory,fuzzer
 build:msan-libfuzzer --copt=-fsanitize=memory,fuzzer
+build:asan-libfuzzer --//fuzzing:engine=libfuzzer
 
 # Flags for Clang with MSAN and libfuzzer, outputting detailed report
 build:msan-libfuzzer-repro --config=msan-libfuzzer
 build:msan-libfuzzer-repro --copt=-fsanitize-memory-track-origins=2
+build:asan-libfuzzer --//fuzzing:engine=libfuzzer
