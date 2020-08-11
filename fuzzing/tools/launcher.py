@@ -37,8 +37,7 @@ flags.DEFINE_string(
 )
 
 flags.DEFINE_enum(
-    "engine", "default",
-    ["default", "libfuzzer"],
+    "engine", "default", ["default", "libfuzzer"],
     "The type of the engine, the default is to run a gUnit test.")
 
 flags.DEFINE_bool(

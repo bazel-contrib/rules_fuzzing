@@ -72,7 +72,7 @@ Rule for creating a script to run the fuzzing test.
         "is_regression": attr.bool(
             doc = "If set true the target is for a regression test.",
             default = True,
-        )
+        ),
     },
     executable = True,
 )
