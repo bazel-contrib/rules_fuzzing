@@ -67,9 +67,7 @@ Rule for creating a script to run the fuzzing test.
 def _fuzzing_corpus_impl(ctx):
     corpus_dir = ctx.actions.declare_directory(ctx.attr.name)
     cp_args = ctx.actions.args()
-
-    for input_file in ctx.files.srcs:
-        cp_args.add(input_file)
+    cp_args.add_all(ctx.files.srcs)
 
     # Add destination to the arguments
     cp_args.add(corpus_dir.path)
@@ -78,7 +76,7 @@ def _fuzzing_corpus_impl(ctx):
         inputs = ctx.files.srcs,
         outputs = [corpus_dir],
         arguments = [cp_args],
-        command = "mkdir " + corpus_dir.path + "; cp $@",
+        command = "mkdir " + corpus_dir.path + "; cp -r $@",
     )
 
     return [DefaultInfo(
