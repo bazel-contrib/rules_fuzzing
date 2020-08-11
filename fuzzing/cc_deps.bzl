@@ -53,6 +53,7 @@ def cc_fuzz_test(
         name = name + "_run",
         target = name,
         corpus = name + "_corpus" if corpus else None,
+        is_regression = False,
         # Since the script depends on the _fuzz_test above, which is a cc_test,
         # this attribute must be set.
         testonly = True,
