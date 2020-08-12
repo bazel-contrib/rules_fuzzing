@@ -1,5 +1,3 @@
-<!-- Generated with Stardoc: http://skydoc.bazel.build -->
-
 <a name="#cc_fuzz_test"></a>
 
 ## cc_fuzz_test
