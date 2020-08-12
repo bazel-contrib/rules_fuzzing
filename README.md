@@ -30,7 +30,13 @@ rules_fuzzing_dependencies()
 
 Tiny example:
 
+Assume that you have a `fuzz_test.cc` file to do the fuzzing test and corpus files `corpus_1.txt` and `corpus_dir/*`.
+
+You can create a fuzz test target in the `BUILD` like below:
+
 ```python
+load("@rules_fuzzing//fuzzing:cc_deps.bzl", "cc_fuzz_test")
+
 cc_fuzz_test(
     name = "fuzz_test",
     srcs = ["fuzz_test.cc"],
