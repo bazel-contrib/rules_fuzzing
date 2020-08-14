@@ -21,14 +21,14 @@ load("@rules_python//python:defs.bzl", "py_binary", "py_library", "py_test")
 ########
 
 py_binary(
-    name = "make_corpus_dir",
-    srcs = ["make_corpus_dir.py"],
+    name = "launcher",
+    srcs = ["launcher.py"],
     visibility = ["//visibility:public"],
 )
 
 py_binary(
-    name = "launcher",
-    srcs = ["launcher.py"],
+    name = "make_corpus_dir",
+    srcs = ["make_corpus_dir.py"],
     visibility = ["//visibility:public"],
 )
 
