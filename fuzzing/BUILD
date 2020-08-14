@@ -12,3 +12,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
+
+string_flag(
+    name = "engine",
+    build_setting_default = "default",
+    values = [
+        "default",
+        "libfuzzer",
+    ],
+    visibility = ["//visibility:public"],
+)
