@@ -15,14 +15,15 @@
 
 # Lint as: python3
 """
-Copys and renames a set of corpus files into a given directory.
+Copies and renames a set of corpus files into a given directory.
 """
 
 from absl import app
 from absl import flags
 from sys import stderr
-from shutil import copy
+import glob
 import os
+import shutil
 
 FLAGS = flags.FLAGS
 
@@ -37,18 +38,26 @@ flags.mark_flag_as_required("output_dir")
 def main(argv):
     if not os.path.exists(FLAGS.output_dir):
         os.makedirs(FLAGS.output_dir)
+
+    expanded_file_list = []
     for corpus in FLAGS.corpus_list:
         if not os.path.exists(corpus):
             print("ERROR: file " + corpus + " doesn't exist.", file=stderr)
             return -1
-        dest = FLAGS.output_dir + "/" + corpus.replace("/", "-")
-
+        if os.path.isdir(corpus):
+            # The first element in glob("dir/**") is "dir/", which needs to be excluded
+            expanded_file_list += glob.glob(os.path.join(corpus, "**"), recursive=True)[1:]
+        else:
+            expanded_file_list.append(corpus)
+    
+    for corpus in expanded_file_list:
+        dest = os.path.join(FLAGS.output_dir, corpus.replace("/", "-"))
         # Whatever the separator we choose, there is an chance that
         # the dest name conflicts with another file
         if os.path.exists(dest):
             print("ERROR: file " + dest + " existed.", file=stderr)
             return -1
-        copy(corpus, dest)
+        shutil.copy(corpus, dest)
     return 0
 
 

@@ -74,7 +74,7 @@ def _fuzzing_corpus_impl(ctx):
         inputs = ctx.files.srcs,
         outputs = [corpus_dir],
         arguments = [cp_args],
-        executable = ctx.executable._copy_tool,
+        executable = ctx.executable._corpus_tool,
     )
 
     return [DefaultInfo(
@@ -89,8 +89,8 @@ This rule provides a <name>_corpus directory collecting all the corpora files
 specified in the srcs attribute.
 """,
     attrs = {
-        "_copy_tool": attr.label(
-            default = Label("//fuzzing/tools:copy_corpus"),
+        "_corpus_tool": attr.label(
+            default = Label("//fuzzing/tools:make_corpus_dir"),
             doc = "The tool script to copy and rename the corpus.",
             executable = True,
             cfg = "host",

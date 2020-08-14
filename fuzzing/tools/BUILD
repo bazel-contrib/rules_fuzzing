@@ -21,8 +21,8 @@ load("@rules_python//python:defs.bzl", "py_binary", "py_library", "py_test")
 ########
 
 py_binary(
-    name = "copy_corpus",
-    srcs = ["copy_corpus.py"],
+    name = "make_corpus_dir",
+    srcs = ["make_corpus_dir.py"],
     visibility = ["//visibility:public"],
 )
 
