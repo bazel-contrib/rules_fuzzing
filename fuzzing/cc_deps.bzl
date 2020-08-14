@@ -45,7 +45,7 @@ def cc_fuzz_test(
         )
         pkg_zip(
             name = name + "_corpus_zip",
-            srcs = corpus,
+            srcs = [name + "_corpus"],
         )
 
     fuzzing_launcher(
