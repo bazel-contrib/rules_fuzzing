@@ -30,6 +30,9 @@ rules_pkg_dependencies()
 load("@rules_python//python:pip.bzl", "pip3_import", "pip_repositories")
 pip_repositories()
 pip3_import(
-    name = "absl_py_pip3",
+    name = "fuzzing_py_deps",
     requirements = "//fuzzing:requirements.txt",
 )
+
+load("@fuzzing_py_deps//:requirements.bzl", fuzzing_py_install = "pip_install")
+fuzzing_py_install()
