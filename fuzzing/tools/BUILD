@@ -27,6 +27,12 @@ py_binary(
 )
 
 py_binary(
+    name = "make_corpus_dir",
+    srcs = ["make_corpus_dir.py"],
+    visibility = ["//visibility:public"],
+)
+
+py_binary(
     name = "validate_dict",
     srcs = ["validate_dict.py"],
     visibility = ["//visibility:public"],
