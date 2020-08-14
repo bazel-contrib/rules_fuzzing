@@ -37,9 +37,9 @@ cc_fuzz_test(
     name = "empty_fuzz_test_with_corpus",
     srcs = ["empty_fuzz_test.cc"],
     corpus = [
-        "corpus_0.txt",  # test single file
-        ":corpus_filegroup",  # test filegroup
-        "test_corpus_dir",  # test directory
+        "corpus_0.txt",
+        ":corpus_filegroup",
+        "test_corpus_dir",
     ],
 )
 
