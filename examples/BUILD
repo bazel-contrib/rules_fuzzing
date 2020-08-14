@@ -27,15 +27,19 @@ cc_fuzz_test(
     srcs = ["empty_fuzz_test.cc"],
 )
 
+filegroup(
+    name = "corpus_filegroup",
+    srcs = ["corpus_1.txt"] + glob(["corpus_dir/**"]),
+)
+
 # This target shows how to create a fuzz test target with corpus files
 cc_fuzz_test(
     name = "empty_fuzz_test_with_corpus",
     srcs = ["empty_fuzz_test.cc"],
     corpus = [
-        "corpus_1.txt",
-        # Single * only searches the files under that directory
-        # whereas double * will do the search recursively
-        "corpus_dir/**",
+        "corpus_0.txt",
+        ":corpus_filegroup",
+        "test_corpus_dir",
     ],
 )
 
