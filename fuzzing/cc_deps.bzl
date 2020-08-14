@@ -39,14 +39,13 @@ def cc_fuzz_test(
     )
 
     if corpus:
-        corpus_list = native.glob(corpus)
         fuzzing_corpus(
             name = name + "_corpus",
-            srcs = corpus_list,
+            srcs = corpus,
         )
         pkg_zip(
             name = name + "_corpus_zip",
-            srcs = corpus_list,
+            srcs = [name + "_corpus"],
         )
 
     fuzzing_launcher(
