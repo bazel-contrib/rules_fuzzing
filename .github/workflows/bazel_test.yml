@@ -23,9 +23,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Install deps 
-        run: |
-          alias python='python3'
       - name: Build fuzz test examples
         # The -FDP is for filtering out the files which contains "#include <fuzzer/FuzzedDataProvider.h>",
         # The "<fuzzer/FDP...>" is only supported since clang-10 while the clang version in github runner is 9

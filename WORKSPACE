@@ -18,21 +18,8 @@ workspace(name = "rules_fuzzing")
 load("//fuzzing:repositories.bzl", "rules_fuzzing_dependencies")
 rules_fuzzing_dependencies()
 
-load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
-bazel_skylib_workspace()
-
-load("@rules_python//python:repositories.bzl", "py_repositories")
-py_repositories()
-
-load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
-rules_pkg_dependencies()
-
-load("@rules_python//python:pip.bzl", "pip3_import", "pip_repositories")
-pip_repositories()
-pip3_import(
-    name = "fuzzing_py_deps",
-    requirements = "//fuzzing:requirements.txt",
-)
+load("//fuzzing:dependency_imports.bzl", "fuzzing_dependency_imports")
+fuzzing_dependency_imports()
 
 load("@fuzzing_py_deps//:requirements.bzl", fuzzing_py_install = "pip_install")
 fuzzing_py_install()
