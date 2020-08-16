@@ -43,7 +43,7 @@ cc_fuzz_test(
 )
 ```
 
-If your `.bazelrc` has config `libfuzzer`:
+If your `.bazelrc` in the project root directory has config `libfuzzer`:
 
 ```
 build:libfuzzer --action_env=CC=clang
