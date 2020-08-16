@@ -2,9 +2,9 @@
 
 ## cc_fuzz_test
 
-<pre>
-cc_fuzz_test(<a href="#cc_fuzz_test-name">name</a>, <a href="#cc_fuzz_test-corpus">corpus</a>, <a href="#cc_fuzz_test-kwargs">**kwargs</a>)
-</pre>
+```
+cc_fuzz_test(name, corpus, **kwargs)
+```
 
 Macro for c++ fuzzing test
 
@@ -21,7 +21,5 @@ This macro provides below targets:
 | Name  | Description | Default Value |
 | :-------------: | :-------------: | :-------------: |
 | name |  A unique name for this target.   |  none |
-| corpus |  A list containing corpus files.   |  <code>None</code> |
+| corpus |  A list containing corpus files, the element can be a file, a directory, or a [filegroup](https://docs.bazel.build/versions/master/be/general.html#filegroup).   |  `None` |
 | kwargs |  Keyword arguments.   |  none |
-
-

@@ -25,10 +25,17 @@ def cc_fuzz_test(
         **kwargs):
     """Macro for c++ fuzzing test
 
-    This macro provides two targets:
+    This macro provides below targets:
     <name>: the executable file built by cc_test.
     <name>_run: an executable to launch the fuzz test.
-"""
+    <name>_corpus: an target to generate a directory containing all corpus files if the argument corpus is passed.
+    <name>_corpus_zip: an target to generate a zip file containing corpus files if the argument corpus is passed.
+
+    Args:
+        name: a unique name for this target.
+        corpus: a list containing corpus files.
+        **kwargs: keyword arguments.
+    """
 
     # Add fuzz_test tag
     kwargs.setdefault("tags", []).append("fuzz_test")

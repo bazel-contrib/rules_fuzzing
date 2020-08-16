@@ -8,14 +8,13 @@ for defining fuzz tests in Bazel projects.
 
 ## Getting started
 
-To import rules_fuzzing in your project, you first need to add codes below to your `WORKSPACE` file:
+To import the fuzzing rules in your project, you first need to add the snippet below to your `WORKSPACE` file:
 
 ```python
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 http_archive(
         name = "rules_fuzzing",
         sha256 = "8d98c444600ce25082b320a3364150806109fe33620a4e1c5bb856861591acb9",
-        strip_prefix = "bazel-rules-fuzzing-8520424714e827ff0360283e3237e35c8723d931",
         urls = ["https://github.com/googleinterns/bazel-rules-fuzzing/archive/8520424714e827ff0360283e3237e35c8723d931.zip"],
 load("@rules_fuzzing//fuzzing:repositories.bzl", "rules_fuzzing_dependencies")
 rules_fuzzing_dependencies()
@@ -44,19 +43,28 @@ cc_fuzz_test(
 )
 ```
 
-With the config setting in `.bazelrc`, you then can run the fuzz test above using command
+If your `.bazelrc` has config `libfuzzer`:
+
+```
+build:libfuzzer --action_env=CC=clang
+build:libfuzzer --action_env=CXX=clang++
+build:libfuzzer --linkopt=-fsanitize=fuzzer
+build:libfuzzer --copt=-fsanitize=fuzzer
+```
+
+you then can run the fuzz test above using command
 
 ```python
-bazel run fuzz_test_run --config=asan-libfuzzer
+bazel run fuzz_test_run --config=libfuzzer
 ```
 
 You can also control the fuzzing test running time by passing `--timeout_secs` like
 
 ```python
-bazel run fuzz_test_run --config=asan-libfuzzer -- --timeout_secs=20
+bazel run fuzz_test_run --config=libfuzzer -- --timeout_secs=20
 ```
 
-Feel free to copy the config setting in `.bazelrc` to yours.
+Feel free to copy the config setting in [.bazelrc](https://github.com/googleinterns/bazel-rules-fuzzing/blob/master/.bazelrc) to yours.
 
 
 See the [examples](https://github.com/googleinterns/bazel-rules-fuzzing/tree/master/examples)
