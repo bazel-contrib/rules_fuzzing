@@ -29,5 +29,5 @@ def fuzzing_dependency_imports():
 
     pip3_import(
         name = "fuzzing_py_deps",
-        requirements = "//fuzzing:requirements.txt",
+        requirements = "@rules_fuzzing//fuzzing:requirements.txt",
     )
