@@ -16,8 +16,15 @@ http_archive(
         name = "rules_fuzzing",
         sha256 = "8d98c444600ce25082b320a3364150806109fe33620a4e1c5bb856861591acb9",
         urls = ["https://github.com/googleinterns/bazel-rules-fuzzing/archive/8520424714e827ff0360283e3237e35c8723d931.zip"],
+)
 load("@rules_fuzzing//fuzzing:repositories.bzl", "rules_fuzzing_dependencies")
 rules_fuzzing_dependencies()
+
+load("@rules_fuzzing//fuzzing:dependency_imports.bzl", "fuzzing_dependency_imports")
+fuzzing_dependency_imports()
+
+load("@fuzzing_py_deps//:requirements.bzl", fuzzing_py_install = "pip_install")
+fuzzing_py_install()
 ```
 
 ## Rule reference
