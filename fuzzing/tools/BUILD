@@ -16,6 +16,7 @@
 # This package contains tool scripts
 
 load("@rules_python//python:defs.bzl", "py_binary", "py_library", "py_test")
+load("@fuzzing_py_deps//:requirements.bzl", "requirement")
 
 # Tools.
 ########
@@ -24,19 +25,24 @@ py_binary(
     name = "launcher",
     srcs = ["launcher.py"],
     visibility = ["//visibility:public"],
+    deps = [requirement("absl-py")],
 )
 
 py_binary(
     name = "make_corpus_dir",
     srcs = ["make_corpus_dir.py"],
     visibility = ["//visibility:public"],
+    deps = [requirement("absl-py")],
 )
 
 py_binary(
     name = "validate_dict",
     srcs = ["validate_dict.py"],
     visibility = ["//visibility:public"],
-    deps = [":dict_validation"],
+    deps = [
+        ":dict_validation",
+        requirement("absl-py"),
+    ],
 )
 
 # Libraries.
