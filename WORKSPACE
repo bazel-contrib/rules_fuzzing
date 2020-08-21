@@ -15,11 +15,11 @@
 
 workspace(name = "rules_fuzzing")
 
-load("//fuzzing:repositories.bzl", "rules_fuzzing_dependencies")
+load("@rules_fuzzing//fuzzing:repositories.bzl", "rules_fuzzing_dependencies")
 rules_fuzzing_dependencies()
 
-load("@rules_python//python:repositories.bzl", "py_repositories")
-py_repositories()
+load("@rules_fuzzing//fuzzing:dependency_imports.bzl", "fuzzing_dependency_imports")
+fuzzing_dependency_imports()
 
-load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
-rules_pkg_dependencies()
+load("@fuzzing_py_deps//:requirements.bzl", fuzzing_py_install = "pip_install")
+fuzzing_py_install()

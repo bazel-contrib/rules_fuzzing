@@ -15,18 +15,26 @@
 
 """This file contains common rules for fuzzing test."""
 
+load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
+
 def _fuzzing_launcher_impl(ctx):
     # Generate a script to launcher the fuzzing test.
     script = ctx.actions.declare_file("%s" % ctx.label.name)
+    args = [
+        ctx.executable._launcher.short_path,
+        ctx.executable.target.short_path,
+        "--corpus_dir=" + ctx.file.corpus.short_path if ctx.attr.corpus else "",
+        "--engine=" + ctx.attr._engine[BuildSettingInfo].value,
+    ]
+
+    if ctx.attr.is_regression:
+        args.append("--regression=True")
 
     script_template = """#!/bin/sh
-exec {launcher_path} {target_binary_path} --corpus_dir={corpus_dir} "$@"
-"""
+exec {launcher_args} "$@" """
 
     script_content = script_template.format(
-        launcher_path = ctx.executable._launcher.short_path,
-        target_binary_path = ctx.executable.target.short_path,
-        corpus_dir = ctx.file.corpus.short_path if ctx.attr.corpus else "",
+        launcher_args = " ".join(args),
     )
     ctx.actions.write(script, script_content, is_executable = True)
 
@@ -50,6 +58,11 @@ Rule for creating a script to run the fuzzing test.
             executable = True,
             cfg = "host",
         ),
+        "_engine": attr.label(
+            default = ":engine",
+            doc = "The engine type.",
+            providers = [BuildSettingInfo],
+        ),
         "target": attr.label(
             executable = True,
             doc = "The fuzzing test to run.",
@@ -60,6 +73,10 @@ Rule for creating a script to run the fuzzing test.
             doc = "The target to create a directory containing corpus files.",
             allow_single_file = True,
         ),
+        "is_regression": attr.bool(
+            doc = "If set true the target is for a regression test.",
+            default = True,
+        ),
     },
     executable = True,
 )
@@ -67,18 +84,14 @@ Rule for creating a script to run the fuzzing test.
 def _fuzzing_corpus_impl(ctx):
     corpus_dir = ctx.actions.declare_directory(ctx.attr.name)
     cp_args = ctx.actions.args()
+    cp_args.add_joined("--corpus_list", ctx.files.srcs, join_with = ",")
+    cp_args.add("--output_dir=" + corpus_dir.path)
 
-    for input_file in ctx.files.srcs:
-        cp_args.add(input_file)
-
-    # Add destination to the arguments
-    cp_args.add(corpus_dir.path)
-
-    ctx.actions.run_shell(
+    ctx.actions.run(
         inputs = ctx.files.srcs,
         outputs = [corpus_dir],
         arguments = [cp_args],
-        command = "mkdir " + corpus_dir.path + "; cp $@",
+        executable = ctx.executable._corpus_tool,
     )
 
     return [DefaultInfo(
@@ -93,6 +106,12 @@ This rule provides a <name>_corpus directory collecting all the corpora files
 specified in the srcs attribute.
 """,
     attrs = {
+        "_corpus_tool": attr.label(
+            default = Label("//fuzzing/tools:make_corpus_dir"),
+            doc = "The tool script to copy and rename the corpus.",
+            executable = True,
+            cfg = "host",
+        ),
         "srcs": attr.label_list(
             doc = "The corpus files for the fuzzing test.",
             allow_files = True,
