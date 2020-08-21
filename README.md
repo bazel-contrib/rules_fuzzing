@@ -14,8 +14,9 @@ To import the fuzzing rules in your project, you first need to add the snippet b
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 http_archive(
         name = "rules_fuzzing",
-        sha256 = "8d98c444600ce25082b320a3364150806109fe33620a4e1c5bb856861591acb9",
-        urls = ["https://github.com/googleinterns/bazel-rules-fuzzing/archive/8520424714e827ff0360283e3237e35c8723d931.zip"],
+        sha256 = "3bf7f43c095bc1aa0b6bde9d110b5b7c2e1ecb5c65919b01d19c591172230fd9",
+        strip_prefix = "bazel-rules-fuzzing-9ae0b0a1f4cca0ea2e26e9f7da0754904488398a",
+        urls = ["https://github.com/googleinterns/bazel-rules-fuzzing/archive/9ae0b0a1f4cca0ea2e26e9f7da0754904488398a.zip"],
 )
 load("@rules_fuzzing//fuzzing:repositories.bzl", "rules_fuzzing_dependencies")
 rules_fuzzing_dependencies()
@@ -26,11 +27,6 @@ fuzzing_dependency_imports()
 load("@fuzzing_py_deps//:requirements.bzl", fuzzing_py_install = "pip_install")
 fuzzing_py_install()
 ```
-
-## Rule reference
-
-* [cc fuzzing rules](docs/cc_deps.md)
-* [common rules](docs/common.md)
 
 ## Examples
 
