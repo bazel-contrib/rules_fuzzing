@@ -43,6 +43,20 @@ cc_fuzz_test(
     ],
 )
 
+# This target shows how to create a fuzz test target with dictionaries
+cc_fuzz_test(
+    name = "empty_fuzz_test_with_dict",
+    srcs = ["empty_fuzz_test.cc"],
+    dicts = ["dict_dir/valid.dict"],
+)
+
+# This target is expect to fail due to the invalid dictionary
+cc_fuzz_test(
+    name = "empty_fuzz_test_with_invalid_dict",
+    srcs = ["empty_fuzz_test.cc"],
+    dicts = glob(["dict_dir/**"]),
+)
+
 cc_fuzz_test(
     name = "fuzzed_data_provider_fuzz_test",
     srcs = ["fuzzed_data_provider_fuzz_test.cc"],

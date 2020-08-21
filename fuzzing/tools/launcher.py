@@ -25,6 +25,14 @@ import os
 
 FLAGS = flags.FLAGS
 
+flags.DEFINE_bool(
+    "regression", False,
+    "If set True, the script will trigger the target as a regression test.")
+
+flags.DEFINE_enum(
+    "engine", "default", ["default", "libfuzzer"],
+    "The type of the engine, the default is to run a gUnit test.")
+
 flags.DEFINE_integer(
     "timeout_secs",
     20,
@@ -36,13 +44,8 @@ flags.DEFINE_string(
     "If non-empty, a directory that will be used as a seed corpus for the fuzzer run."
 )
 
-flags.DEFINE_enum(
-    "engine", "default", ["default", "libfuzzer"],
-    "The type of the engine, the default is to run a gUnit test.")
-
-flags.DEFINE_bool(
-    "regression", False,
-    "If set True, the script will trigger the target as a regression test.")
+flags.DEFINE_string("dict", "",
+                    "If non-empty, a dictionary file of input keywords.")
 
 
 def main(argv):
@@ -57,6 +60,8 @@ def main(argv):
         command_args.append("-timeout=" + str(FLAGS.timeout_secs))
         if FLAGS.regression:
             command_args.append("-runs=0")
+        if FLAGS.dict:
+            command_args.append("-dict=" + FLAGS.dict)
     if FLAGS.corpus_dir:
         command_args.append(FLAGS.corpus_dir)
     os.execv(argv[1], command_args)
