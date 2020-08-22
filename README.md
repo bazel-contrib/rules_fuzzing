@@ -53,6 +53,7 @@ build:libfuzzer --action_env=CC=clang
 build:libfuzzer --action_env=CXX=clang++
 build:libfuzzer --linkopt=-fsanitize=fuzzer
 build:libfuzzer --copt=-fsanitize=fuzzer
+build:libfuzzer --@rules_fuzzing//fuzzing:engine=libfuzzer
 ```
 
 you then can run the fuzz test above using command
@@ -65,6 +66,12 @@ You can also control the fuzzing test running time by passing `--timeout_secs` l
 
 ```python
 bazel run fuzz_test_run --config=libfuzzer -- --timeout_secs=20
+```
+
+If you only want to run the regression test on the corpus, set `--regression`:
+
+```python
+bazel run fuzz_test_run --config=libfuzzer -- --regression=True
 ```
 
 Feel free to copy the config setting in [.bazelrc](https://github.com/googleinterns/bazel-rules-fuzzing/blob/master/.bazelrc) to yours.
