@@ -50,7 +50,10 @@ cc_fuzz_test(
     dicts = ["dict_dir/valid.dict"],
 )
 
-# Building and runing this target are expected to get an error message due to the invalid dictionary.
+# This target shows a fuzz test target with an invalid dictionary.
+# Building and runing empty_fuzz_test_with_invalid_dict should be ok,
+# but building and running empty_fuzz_test_with_invalid_dict_run are expected to get an error message
+# due to the invalid dictionary.
 cc_fuzz_test(
     name = "empty_fuzz_test_with_invalid_dict",
     srcs = ["empty_fuzz_test.cc"],
