@@ -50,11 +50,11 @@ cc_fuzz_test(
     dicts = ["dict_dir/valid.dict"],
 )
 
-# This target is expect to fail due to the invalid dictionary
+# Building and runing this target are expected to get an error message due to the invalid dictionary,
 cc_fuzz_test(
     name = "empty_fuzz_test_with_invalid_dict",
     srcs = ["empty_fuzz_test.cc"],
-    dicts = glob(["dict_dir/**"]),
+    dicts = ["dict_dir/invalid.dict"],
 )
 
 cc_fuzz_test(
