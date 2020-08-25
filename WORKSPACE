@@ -23,6 +23,6 @@ rules_fuzzing_dependencies()
 load("@rules_fuzzing//fuzzing:dependency_imports.bzl", "fuzzing_dependency_imports")
 fuzzing_dependency_imports()
 
-# Install python dependencies.
+# Installs python dependencies.
 load("@fuzzing_py_deps//:requirements.bzl", fuzzing_py_install = "pip_install")
 fuzzing_py_install()
