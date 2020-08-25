@@ -28,6 +28,11 @@ load("@fuzzing_py_deps//:requirements.bzl", fuzzing_py_install = "pip_install")
 fuzzing_py_install()
 ```
 
+## Rule reference
+
+* [cc fuzzing rules](fuzzing/cc_deps.bzl)
+* [common rules](fuzzing/common.bzl)
+
 ## Examples
 
 Tiny example:
