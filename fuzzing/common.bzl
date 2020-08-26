@@ -24,6 +24,7 @@ def _fuzzing_launcher_impl(ctx):
         ctx.executable._launcher.short_path,
         ctx.executable.target.short_path,
         "--corpus_dir=" + ctx.file.corpus.short_path if ctx.attr.corpus else "",
+        "--dict=" + ctx.file.dict.short_path if ctx.attr.dict else "",
         "--engine=" + ctx.attr._engine[BuildSettingInfo].value,
     ]
 
@@ -43,6 +44,8 @@ exec {launcher_args} "$@" """
     runfiles = runfiles.merge(ctx.attr.target[DefaultInfo].default_runfiles)
     if ctx.attr.corpus:
         runfiles = runfiles.merge(ctx.attr.corpus[DefaultInfo].default_runfiles)
+    if ctx.attr.dict:
+        runfiles = runfiles.merge(ctx.attr.dict[DefaultInfo].default_runfiles)
 
     return [DefaultInfo(executable = script, runfiles = runfiles)]
 
@@ -71,6 +74,10 @@ Rule for creating a script to run the fuzzing test.
         ),
         "corpus": attr.label(
             doc = "The target to create a directory containing corpus files.",
+            allow_single_file = True,
+        ),
+        "dict": attr.label(
+            doc = "The target to validate and merge the dictionaries.",
             allow_single_file = True,
         ),
         "is_regression": attr.bool(
@@ -133,7 +140,6 @@ def _fuzzing_dictionary_impl(ctx):
     )
 
     runfiles = ctx.runfiles(files = [output_dict])
-    runfiles.merge(ctx.attr._validation_tool[DefaultInfo].default_runfiles)
 
     return [DefaultInfo(
         runfiles = runfiles,

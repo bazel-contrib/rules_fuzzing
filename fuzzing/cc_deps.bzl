@@ -17,11 +17,12 @@
 
 load("@rules_cc//cc:defs.bzl", "cc_test")
 load("@rules_pkg//:pkg.bzl", "pkg_zip")
-load("//fuzzing:common.bzl", "fuzzing_corpus", "fuzzing_launcher")
+load("//fuzzing:common.bzl", "fuzzing_corpus", "fuzzing_dictionary", "fuzzing_launcher")
 
 def cc_fuzz_test(
         name,
         corpus = None,
+        dicts = None,
         **kwargs):
     """Macro for c++ fuzzing test
 
@@ -54,11 +55,18 @@ def cc_fuzz_test(
             name = name + "_corpus_zip",
             srcs = [name + "_corpus"],
         )
+    if dicts:
+        fuzzing_dictionary(
+            name = name + "_dict",
+            dicts = dicts,
+            output = name + ".dict",
+        )
 
     fuzzing_launcher(
         name = name + "_run",
         target = name,
         corpus = name + "_corpus" if corpus else None,
+        dict = name + "_dict" if dicts else None,
         is_regression = False,
         # Since the script depends on the _fuzz_test above, which is a cc_test,
         # this attribute must be set.

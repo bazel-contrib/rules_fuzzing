@@ -32,7 +32,7 @@ filegroup(
     srcs = ["corpus_1.txt"] + glob(["corpus_dir/**"]),
 )
 
-# This target shows how to create a fuzz test target with corpus files
+# This target shows how to create a fuzz test target with corpus files.
 cc_fuzz_test(
     name = "empty_fuzz_test_with_corpus",
     srcs = ["empty_fuzz_test.cc"],
@@ -41,6 +41,23 @@ cc_fuzz_test(
         ":corpus_filegroup",
         "test_corpus_dir",
     ],
+)
+
+# This target shows how to create a fuzz test target with dictionaries.
+cc_fuzz_test(
+    name = "empty_fuzz_test_with_dict",
+    srcs = ["empty_fuzz_test.cc"],
+    dicts = ["dict_dir/valid.dict"],
+)
+
+# This target shows a fuzz test target with an invalid dictionary.
+# Building and runing empty_fuzz_test_with_invalid_dict should be ok,
+# but building and running empty_fuzz_test_with_invalid_dict_run are expected to get an error message
+# due to the invalid dictionary.
+cc_fuzz_test(
+    name = "empty_fuzz_test_with_invalid_dict",
+    srcs = ["empty_fuzz_test.cc"],
+    dicts = ["dict_dir/invalid.dict"],
 )
 
 cc_fuzz_test(
@@ -54,7 +71,7 @@ cc_fuzz_test(
     srcs = ["hang_fuzz_test.cc"],
 )
 
-# This test is designed to trigger an uninitialized memory issue
+# This test is designed to trigger an uninitialized memory issue.
 cc_fuzz_test(
     name = "msan_fuzz_test",
     srcs = ["msan_fuzz_test.cc"],
