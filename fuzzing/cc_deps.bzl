@@ -35,6 +35,7 @@ def cc_fuzz_test(
     Args:
         name: a unique name for this target.
         corpus: a list containing corpus files.
+        dicts: a list containing dictionaries.
         **kwargs: keyword arguments.
     """
 
@@ -67,7 +68,6 @@ def cc_fuzz_test(
         target = name,
         corpus = name + "_corpus" if corpus else None,
         dict = name + "_dict" if dicts else None,
-        is_regression = False,
         # Since the script depends on the _fuzz_test above, which is a cc_test,
         # this attribute must be set.
         testonly = True,

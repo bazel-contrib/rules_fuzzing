@@ -35,7 +35,7 @@ flags.DEFINE_enum(
 
 flags.DEFINE_integer(
     "timeout_secs",
-    20,
+    0,
     "The maximum duration, in seconds, of the fuzzer run launched.",
     lower_bound=0)
 

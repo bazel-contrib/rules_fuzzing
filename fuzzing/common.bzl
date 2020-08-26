@@ -28,9 +28,6 @@ def _fuzzing_launcher_impl(ctx):
         "--engine=" + ctx.attr._engine[BuildSettingInfo].value,
     ]
 
-    if ctx.attr.is_regression:
-        args.append("--regression=True")
-
     script_template = """#!/bin/sh
 exec {launcher_args} "$@" """
 
@@ -79,10 +76,6 @@ Rule for creating a script to run the fuzzing test.
         "dict": attr.label(
             doc = "The target to validate and merge the dictionaries.",
             allow_single_file = True,
-        ),
-        "is_regression": attr.bool(
-            doc = "If set true the target is for a regression test.",
-            default = True,
         ),
     },
     executable = True,
