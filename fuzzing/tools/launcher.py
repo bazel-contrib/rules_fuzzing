@@ -40,7 +40,7 @@ flags.DEFINE_integer(
     lower_bound=0)
 
 flags.DEFINE_list(
-    "optional_args", None,
+    "fuzzer_extra_args", None,
     "If non-empty, the elements will be passed to the fuzzer as arguments.")
 
 flags.DEFINE_string(
@@ -68,8 +68,8 @@ def main(argv):
             command_args.append("-dict=" + FLAGS.dict)
     if FLAGS.corpus_dir:
         command_args.append(FLAGS.corpus_dir)
-    if FLAGS.optional_args:
-        command_args.extend(FLAGS.optional_args)
+    if FLAGS.fuzzer_extra_args:
+        command_args.extend(FLAGS.fuzzer_extra_args)
     os.execv(argv[1], command_args)
 
 
