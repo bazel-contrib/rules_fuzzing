@@ -39,9 +39,13 @@ flags.DEFINE_integer(
     "The maximum duration, in seconds, of the fuzzer run launched.",
     lower_bound=0)
 
+flags.DEFINE_list(
+    "optional_args", None,
+    "If non-empty, the elements will be passed to the fuzzer as arguments.")
+
 flags.DEFINE_string(
     "corpus_dir", "",
-    "If non-empty, a directory that will be used as a seed corpus for the fuzzer run."
+    "If non-empty, a directory that will be used as a seed corpus for the fuzzer."
 )
 
 flags.DEFINE_string("dict", "",
@@ -64,6 +68,8 @@ def main(argv):
             command_args.append("-dict=" + FLAGS.dict)
     if FLAGS.corpus_dir:
         command_args.append(FLAGS.corpus_dir)
+    if FLAGS.optional_args:
+        command_args.extend(FLAGS.optional_args)
     os.execv(argv[1], command_args)
 
 
