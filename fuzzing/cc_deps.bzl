@@ -41,6 +41,8 @@ def cc_fuzz_test(
 
     # Add fuzz_test tag
     kwargs.setdefault("tags", []).append("fuzz_test")
+    # Figure out how to add fuzzing_engine main function to the deps
+    # kwargs.setdefault("deps", []).append("@")
 
     cc_test(
         name = name,

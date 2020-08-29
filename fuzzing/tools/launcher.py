@@ -29,10 +29,6 @@ flags.DEFINE_bool(
     "regression", False,
     "If set True, the script will trigger the target as a regression test.")
 
-flags.DEFINE_enum(
-    "engine", "default", ["default", "libfuzzer"],
-    "The type of the engine, the default is to run a gUnit test.")
-
 flags.DEFINE_integer(
     "timeout_secs",
     0,
@@ -51,6 +47,10 @@ flags.DEFINE_string(
 flags.DEFINE_string("dict", "",
                     "If non-empty, a dictionary file of input keywords.")
 
+flags.DEFINE_string("launcher_script", "", "The path of the launcher script.")
+
+flags.mark_flag_as_required('launcher_script')
+
 
 def main(argv):
     if len(argv) != 2:
@@ -58,18 +58,15 @@ def main(argv):
             "This script receives 1 argument. It should look like:" +
             "\n\tpython " + __file__ + " EXECUTABLE")
 
-    command_args = [argv[1]]
-    if FLAGS.engine == "libfuzzer":
-        command_args.append("-max_total_time=" + str(FLAGS.timeout_secs))
-        command_args.append("-timeout=" + str(FLAGS.timeout_secs))
-        if FLAGS.regression:
-            command_args.append("-runs=0")
-        if FLAGS.dict:
-            command_args.append("-dict=" + FLAGS.dict)
+    os.environ["FUZZING_BINARY"] = argv[1]
     if FLAGS.corpus_dir:
-        command_args.append(FLAGS.corpus_dir)
-    if FLAGS.fuzzer_extra_args:
-        command_args.extend(FLAGS.fuzzer_extra_args)
+        os.environ["FUZZING_SEED_CORPUS"] = FLAGS.corpus_dir
+    if FLAGS.dict:
+        os.environ["FUZZING_DICT_PATH"] = FLAGS.dict
+
+    os.environ["FUZZING_TIMEOUT_SEC"] = FLAGS.timeout_secs
+    command_args = [argv[1]] + FLAGS.fuzzer_extra_args
+
     os.execv(argv[1], command_args)
 
 

@@ -15,7 +15,49 @@
 
 """This file contains common rules for fuzzing test."""
 
-load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
+CcFuzzingEngineInfo = provider(
+    doc = """
+Information that specifies how to build and run a fuzz target using a
+particular fuzzing engine.""",
+    fields = {
+        "display_name": "The name of the fuzzing engine.",
+        "cc_library_info": "The C++ information of the fuzzing engine library",
+        "engine_runfiles": "The runfiles of the fuzzing engine.",
+        "launcher_script": "The file of the launcher script.",
+    },
+)
+
+def _cc_fuzzing_engine_impl(ctx):
+    return [
+        CcFuzzingEngineInfo(
+            display_name = ctx.attrs.display_name,
+            cc_library_info = ctx.attrs.main_library[CCInfo],
+            engine_runfiles = ctx.attrs.main_library,
+            launcher_script = ctx.attribute.launcher_script,
+        ),
+    ]
+
+cc_fuzzing_engine = rule(
+    implementation = _fuzzing_corpus_impl,
+    doc = """
+Rule for defining the fuzzing engine.
+""",
+    attrs = {
+        "display_name": attr.string(
+            doc = "The name of the fuzzing engine.",
+            mandatory = True,
+        ),
+        "main_library": attr.label(
+            doc = "The target containing the engine implementation and main() function.",
+            cfg = "host",
+        ),
+        "launcher_script": attr.label(
+            doc = "The launcher script for this fuzzing engine to start the fuzzing test.",
+            executable = True,
+            cfg = "host",
+        ),
+    },
+)
 
 def _fuzzing_launcher_impl(ctx):
     # Generate a script to launcher the fuzzing test.
@@ -25,7 +67,7 @@ def _fuzzing_launcher_impl(ctx):
         ctx.executable.target.short_path,
         "--corpus_dir=" + ctx.file.corpus.short_path if ctx.attr.corpus else "",
         "--dict=" + ctx.file.dict.short_path if ctx.attr.dict else "",
-        "--engine=" + ctx.attr._engine[BuildSettingInfo].value,
+        "--script=" + ctx.attr._engine[CcFuzzingEngineInfo].launcher_script,
     ]
 
     script_template = """#!/bin/sh
@@ -61,7 +103,6 @@ Rule for creating a script to run the fuzzing test.
         "_engine": attr.label(
             default = ":engine",
             doc = "The engine type.",
-            providers = [BuildSettingInfo],
         ),
         "target": attr.label(
             executable = True,

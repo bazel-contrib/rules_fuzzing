@@ -13,7 +13,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-label_flag(
-    name = "engine",
-    build_setting_default = "@rules_fuzzing//fuzzing/engines:libfuzzer",
+load("@rules_fuzzing//fuzzing:common.bzl", "cc_fuzzing_engine")
+
+cc_fuzzing_engine(
+    name = "libfuzzer",
+    display_name = "LibFuzzer",
+    # main_library = ":libfuzzer_main",
+    launcher_script = "libfuzzer.sh",
 )
+
+# Defines the entry point for libFuzzer executables.
+# cc_library(
+#     name = "libfuzzer_main",
+#     deps = [...],
+# )
