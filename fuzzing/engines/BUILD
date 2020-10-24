@@ -30,3 +30,17 @@ cc_library(
     name = "libfuzzer_stub",
     srcs = ["libfuzzer_stub.cc"],
 )
+
+# Honggfuzz specification.
+##########################
+
+cc_fuzzing_engine(
+    name = "honggfuzz",
+    data = {
+        "@honggfuzz//:honggfuzz": "HONGGFUZZ_PATH",
+    },
+    display_name = "Honggfuzz",
+    launcher = "honggfuzz_launcher.sh",
+    library = "@honggfuzz//:honggfuzz_engine",
+    visibility = ["//visibility:public"],
+)
