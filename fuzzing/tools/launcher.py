@@ -18,19 +18,25 @@ This is the launcher script to provide a uniform command line interface
 behind a number of arbitrary fuzzing engines.
 """
 
+import os
+import shutil
+import sys
+
 from absl import app
 from absl import flags
-import os
 
 FLAGS = flags.FLAGS
+
+flags.DEFINE_string(
+    "engine_launcher", None,
+    "Path to a shell script that launches the fuzzing engine executable with the appropriate command line arguments."
+)
+
+flags.DEFINE_string("binary_path", None, "Path to the fuzz test binary.")
 
 flags.DEFINE_bool(
     "regression", False,
     "If set True, the script will trigger the target as a regression test.")
-
-flags.DEFINE_enum(
-    "engine", "default", ["default", "libfuzzer"],
-    "The type of the engine, the default is to run a gUnit test.")
 
 flags.DEFINE_integer(
     "timeout_secs",
@@ -38,38 +44,59 @@ flags.DEFINE_integer(
     "The maximum duration, in seconds, of the fuzzer run launched.",
     lower_bound=0)
 
-flags.DEFINE_list(
-    "fuzzer_extra_args", None,
-    "If non-empty, the elements will be passed to the fuzzer as arguments.")
-
 flags.DEFINE_string(
-    "corpus_dir", "",
+    "corpus_dir", None,
     "If non-empty, a directory that will be used as a seed corpus for the fuzzer."
 )
 
-flags.DEFINE_string("dict", "",
+flags.DEFINE_string("dictionary_path", None,
                     "If non-empty, a dictionary file of input keywords.")
+
+flags.DEFINE_string(
+    "fuzzing_output_root", "/tmp/fuzzing",
+    "The root directory for storing all generated artifacts during fuzzing.")
+
+flags.DEFINE_bool(
+    "clean", False,
+    "If set, cleans up the output directory of the target before fuzzing.")
+
+flags.mark_flag_as_required("engine_launcher")
+flags.mark_flag_as_required("binary_path")
 
 
 def main(argv):
-    if len(argv) != 2:
-        raise app.UsageError(
-            "This script receives 1 argument. It should look like:" +
-            "\n\tpython " + __file__ + " EXECUTABLE")
+    # TODO(sbucur): Obtain a target-specific path here.
+    target_output_root = os.path.join(FLAGS.fuzzing_output_root)
+    print("Using test output root: %s" % target_output_root, file=sys.stderr)
+    if FLAGS.clean:
+        print("Cleaning up the test output root before starting fuzzing...",
+              file=sys.stderr)
+        try:
+            shutil.rmtree(target_output_root)
+        except FileNotFoundError:
+            pass
+    os.makedirs(target_output_root, exist_ok=True)
 
-    command_args = [argv[1]]
-    if FLAGS.engine == "libfuzzer":
-        command_args.append("-max_total_time=" + str(FLAGS.timeout_secs))
-        command_args.append("-timeout=" + str(FLAGS.timeout_secs))
-        if FLAGS.regression:
-            command_args.append("-runs=0")
-        if FLAGS.dict:
-            command_args.append("-dict=" + FLAGS.dict)
+    corpus_output_path = os.path.join(target_output_root, 'corpus')
+    print('Writing new corpus elements at: %s' % corpus_output_path,
+          file=sys.stderr)
+    os.makedirs(corpus_output_path, exist_ok=True)
+
+    artifacts_output_path = os.path.join(target_output_root, 'artifacts')
+    print('Writing new artifacts at: %s' % artifacts_output_path)
+    os.makedirs(artifacts_output_path, exist_ok=True)
+
+    os.environ["FUZZER_BINARY"] = FLAGS.binary_path
+    os.environ["FUZZER_TIMEOUT_SECS"] = str(FLAGS.timeout_secs)
+    os.environ["FUZZER_IS_REGRESSION"] = "1" if FLAGS.regression else "0"
+    os.environ["FUZZER_OUTPUT_ROOT"] = target_output_root
+    os.environ["FUZZER_OUTPUT_CORPUS_DIR"] = corpus_output_path
+    os.environ["FUZZER_ARTIFACTS_DIR"] = artifacts_output_path
+    if FLAGS.dictionary_path:
+        os.environ["FUZZER_DICTIONARY_PATH"] = FLAGS.dictionary_path
     if FLAGS.corpus_dir:
-        command_args.append(FLAGS.corpus_dir)
-    if FLAGS.fuzzer_extra_args:
-        command_args.extend(FLAGS.fuzzer_extra_args)
-    os.execv(argv[1], command_args)
+        os.environ["FUZZER_SEED_CORPUS_DIR"] = FLAGS.corpus_dir
+    os.execv("/bin/bash", ["/bin/bash", FLAGS.engine_launcher, "--"] + argv[1:])
 
 
 if __name__ == "__main__":
