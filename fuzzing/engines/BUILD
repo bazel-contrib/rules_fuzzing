@@ -30,4 +30,3 @@ cc_library(
     name = "libfuzzer_stub",
     srcs = ["libfuzzer_stub.cc"],
 )
-
