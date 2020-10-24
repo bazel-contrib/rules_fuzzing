@@ -15,12 +15,20 @@
 # TODO(sbucur): Add a flag for the fuzzer timeout.
 
 command_line=("${FUZZER_BINARY}")
+
+# libFuzzer flags.
+
 if [[ -n "${FUZZER_DICTIONARY_PATH}" ]]; then
     command_line+=("-dict=${FUZZER_DICTIONARY_PATH}")
 fi
 command_line+=("-artifact_prefix=${FUZZER_ARTIFACTS_DIR}/")
-command_line+=("${FUZZER_OUTPUT_CORPUS_DIR}")
+if [[ "${FUZZER_TIMEOUT_SECS}" -gt 0 ]]; then
+    command_line+=("-max_total_time=${FUZZER_TIMEOUT_SECS}")
+fi
 
+# Corpus sources.
+
+command_line+=("${FUZZER_OUTPUT_CORPUS_DIR}")
 if [[ -n "${FUZZER_SEED_CORPUS_DIR}" ]]; then
     command_line+=("${FUZZER_SEED_CORPUS_DIR}")
 fi
