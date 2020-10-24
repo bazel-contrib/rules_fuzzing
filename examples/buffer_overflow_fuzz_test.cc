@@ -15,15 +15,18 @@
 
 // A fuzz target that causes an ASAN buffer overflow for a particular input.
 
+#include <cstdio>
 #include <cstdint>
 #include <cstddef>
 
-bool TriggerBufferOverflow(const uint8_t *data, size_t size) {
-  return size >= 3 &&
+void TriggerBufferOverflow(const uint8_t *data, size_t size) {
+  if (size >= 3 &&
       data[0] == 'F' &&
       data[1] == 'U' &&
       data[2] == 'Z' &&
-      data[3] == 'Z';  // :‑<
+      data[3] == 'Z') {
+    fprintf(stderr, "BUFFER OVERFLOW!\n");
+  }
 }
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
