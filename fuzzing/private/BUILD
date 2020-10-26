@@ -15,5 +15,5 @@
 load(":engine_test.bzl", "engine_test_suite")
 
 engine_test_suite(
-    name = "engine_test"
+    name = "engine_test",
 )
