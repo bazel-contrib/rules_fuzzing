@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# TODO(sbucur): Add a flag for the fuzzer timeout.
+# The command line arguments for launching fuzz tests linked with the
+# libFuzzer engine. The launch configuration is supplied by the launcher
+# script through environment variables.
 
 command_line=("${FUZZER_BINARY}")
 
