@@ -88,3 +88,20 @@ Feel free to copy the config setting in [.bazelrc](https://github.com/googleinte
 
 See the [examples](https://github.com/googleinterns/bazel-rules-fuzzing/tree/master/examples)
 directory for more examples.
+
+## Defining fuzzing engines
+
+> TODO: Fill in the missing documentation here.
+
+A fuzzing engine launcher script receives configuration through the following environment variables:
+
+| Variable                   | Description |
+|----------------------------|-------------|
+| `FUZZER_BINARY`            | The path to the fuzz target executable. |
+| `FUZZER_TIMEOUT_SECS`      | If set, a positive integer representing the timeout in seconds for the entire fuzzer run. |
+| `FUZZER_IS_REGRESSION`     | Set to `1` if the fuzzer should run in regression mode (just execute the input tests), or `0` if this is a continuous fuzzer run. |
+| `FUZZER_DICTIONARY_PATH`   | If set, provides a path to a fuzzing dictionary file. |
+| `FUZZER_SEED_CORPUS_DIR`   | If set, provides a directory path to a seed corpus. |
+| `FUZZER_OUTPUT_ROOT`       | A writable path that can be used by the fuzzer during its execution (e.g., as a workspace or for generated artifacts). See the variables below for specific categories of output. |
+| `FUZZER_OUTPUT_CORPUS_DIR` | A path under `FUZZER_OUTPUT_ROOT` where the new generated tests should be stored. |
+| `FUZZER_ARTIFACTS_DIR`     | A path under `FUZZER_OUTPUT_ROOT` where generated crashes and other relevant artifacts should be stored. |

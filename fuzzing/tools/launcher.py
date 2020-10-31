@@ -14,8 +14,14 @@
 
 # Lint as: python3
 """
-This is the launcher script to provide a uniform command line interface 
-behind a number of arbitrary fuzzing engines.
+Wrapper tool providing a uniform flag interface for launching fuzz tests.
+
+This tool acts as a frontend to fuzz test launching. It receives fuzz test
+execution parameters as a set of user-provided flags and relays the
+configuration to a pluggable backend launcher script via environment
+variables. The backend launcher implements the engine-specific logic of
+translating the environment variables into the final command that launches
+the fuzzer executable.
 """
 
 import os
