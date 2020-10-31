@@ -28,11 +28,11 @@ def cc_fuzz_test(
     This macro provides below targets:
     <name>: the executable file built by cc_test.
     <name>_run: an executable to launch the fuzz test.
-    <name>_corpus: an target to generate a directory containing all corpus files if the argument corpus is passed.
+    <name>_corpus: a target to generate a directory containing all corpus files if the argument corpus is passed.
     <name>_corpus_zip: an target to generate a zip file containing corpus files if the argument corpus is passed.
 
     Args:
-        name: A unique name for this target.
+        name: A unique name for this target. Required.
         corpus: A list containing corpus files.
         dicts: A list containing dictionaries.
         **binary_kwargs: Keyword arguments directly forwarded to the fuzz test binary rule.
