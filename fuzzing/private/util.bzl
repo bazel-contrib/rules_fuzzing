@@ -12,10 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""This file contains basic functions for cc fuzz test."""
+"""Miscellaneous utilities."""
 
-load("//fuzzing/private:fuzz_test.bzl", _cc_fuzz_test = "cc_fuzz_test")
-load("//fuzzing/private:engine.bzl", _cc_fuzzing_engine = "cc_fuzzing_engine")
+def _generate_file_impl(ctx):
+    ctx.actions.write(ctx.outputs.output, ctx.attr.contents)
 
-cc_fuzz_test = _cc_fuzz_test
-cc_fuzzing_engine = _cc_fuzzing_engine
+generate_file = rule(
+    implementation = _generate_file_impl,
+    doc = """
+Generates a file with a specified content string.
+""",
+    attrs = {
+        "contents": attr.string(
+            doc = "The file contents.",
+            mandatory = True,
+        ),
+        "output": attr.output(
+            doc = "The output file to write.",
+            mandatory = True,
+        ),
+    },
+)

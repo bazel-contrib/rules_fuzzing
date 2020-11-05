@@ -12,8 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-label_flag(
-    name = "cc_engine",
-    build_setting_default = "//fuzzing/engines:libfuzzer",
+load("//fuzzing:cc_deps.bzl", "cc_fuzzing_engine")
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+# libFuzzer specification.
+##########################
+
+cc_fuzzing_engine(
+    name = "libfuzzer",
+    display_name = "libFuzzer",
+    launcher = "libfuzzer_launcher.sh",
+    library = ":libfuzzer_stub",
     visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "libfuzzer_stub",
+    srcs = ["libfuzzer_stub.cc"],
 )

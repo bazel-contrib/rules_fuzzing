@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-label_flag(
-    name = "cc_engine",
-    build_setting_default = "//fuzzing/engines:libfuzzer",
-    visibility = ["//visibility:public"],
+load(":engine_test.bzl", "engine_test_suite")
+
+engine_test_suite(
+    name = "engine_test",
 )

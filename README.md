@@ -6,6 +6,17 @@ for defining fuzz tests in Bazel projects.
 
 **This is not an officially supported Google product.**
 
+## Requirements
+
+To use the Bazel rules for fuzzing, your C++ toolchain should be Clang-based and configured to build the fuzz tests under several compiler instrumentation modes.
+
+The most convenient way to set up your toolchain is by editing the [`.bazelrc` file](https://docs.bazel.build/versions/master/guide.html#bazelrc-the-bazel-configuration-file) of your project and grouping the build configuration options into `--config` groups. We recommend using [this setup](/.bazelrc), which you can copy and paste in your own `.bazelrc` file. The setup defines the following build modes:
+
+- `--config=asan-libfuzzer` builds the fuzz target in [libFuzzer](https://llvm.org/docs/LibFuzzer.html) mode, with [Address Sanitizer (ASAN)](https://clang.llvm.org/docs/AddressSanitizer.html) instrumentation.
+- `--config=msan-libfuzzer` builds the fuzz target in libFuzzer mode, with [Memory Sanitizer (MSAN)](https://clang.llvm.org/docs/MemorySanitizer.html) instrumentation.
+
+The rest of the documentation assumes the build configuration options are accessible through these names.
+
 ## Getting started
 
 To import the fuzzing rules in your project, you first need to add the snippet below to your `WORKSPACE` file:
@@ -54,32 +65,22 @@ cc_fuzz_test(
 )
 ```
 
-If your `.bazelrc` in the project root directory has config `libfuzzer`:
+To run the fuzz target, use the following command:
 
-```
-build:libfuzzer --action_env=CC=clang
-build:libfuzzer --action_env=CXX=clang++
-build:libfuzzer --linkopt=-fsanitize=fuzzer
-build:libfuzzer --copt=-fsanitize=fuzzer
-build:libfuzzer --@rules_fuzzing//fuzzing:engine=libfuzzer
-```
-
-you then can run the fuzz test above using command
-
-```python
-bazel run fuzz_test_run --config=libfuzzer
+```sh
+$ bazel run fuzz_test_run --config=libfuzzer
 ```
 
 You can also control the fuzzing test running time by passing `--timeout_secs` like
 
-```python
-bazel run fuzz_test_run --config=libfuzzer -- --timeout_secs=20
+```sh
+$ bazel run fuzz_test_run --config=libfuzzer -- --timeout_secs=20
 ```
 
 If you only want to run the regression test on the corpus, set `--regression`:
 
-```python
-bazel run fuzz_test_run --config=libfuzzer -- --regression=True
+```sh
+$ bazel run fuzz_test_run --config=libfuzzer -- --regression=True
 ```
 
 Feel free to copy the config setting in [.bazelrc](https://github.com/googleinterns/bazel-rules-fuzzing/blob/master/.bazelrc) to yours.
@@ -87,3 +88,20 @@ Feel free to copy the config setting in [.bazelrc](https://github.com/googleinte
 
 See the [examples](https://github.com/googleinterns/bazel-rules-fuzzing/tree/master/examples)
 directory for more examples.
+
+## Defining fuzzing engines
+
+> TODO: Fill in the missing documentation here.
+
+A fuzzing engine launcher script receives configuration through the following environment variables:
+
+| Variable                   | Description |
+|----------------------------|-------------|
+| `FUZZER_BINARY`            | The path to the fuzz target executable. |
+| `FUZZER_TIMEOUT_SECS`      | If set, a positive integer representing the timeout in seconds for the entire fuzzer run. |
+| `FUZZER_IS_REGRESSION`     | Set to `1` if the fuzzer should run in regression mode (just execute the input tests), or `0` if this is a continuous fuzzer run. |
+| `FUZZER_DICTIONARY_PATH`   | If set, provides a path to a fuzzing dictionary file. |
+| `FUZZER_SEED_CORPUS_DIR`   | If set, provides a directory path to a seed corpus. |
+| `FUZZER_OUTPUT_ROOT`       | A writable path that can be used by the fuzzer during its execution (e.g., as a workspace or for generated artifacts). See the variables below for specific categories of output. |
+| `FUZZER_OUTPUT_CORPUS_DIR` | A path under `FUZZER_OUTPUT_ROOT` where the new generated tests should be stored. |
+| `FUZZER_ARTIFACTS_DIR`     | A path under `FUZZER_OUTPUT_ROOT` where generated crashes and other relevant artifacts should be stored. |

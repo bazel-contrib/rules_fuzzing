@@ -12,22 +12,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Common flags for Clang
+# TODO(sbucur): Verify whether this can be specified directly in Starlark,
+# perhaps using a C++ toolchain customization.
+
+# Common flags for Clang.
 build:clang --action_env=CC=clang
 build:clang --action_env=CXX=clang++
 
-# Flags for Clang with ASAN and libfuzzer
-build:asan-libfuzzer --config=clang
+# Common fuzzing flags. To be only used by other configs.
+build:_fuzzer_common --config=clang
+build:_fuzzer_common --copt=-DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
+
+# Flags for Clang with ASAN and libfuzzer.
+build:asan-libfuzzer --config=_fuzzer_common
 build:asan-libfuzzer --linkopt=-fsanitize=fuzzer,address
 build:asan-libfuzzer --copt=-fsanitize=fuzzer,address
-build:asan-libfuzzer --//fuzzing:engine=libfuzzer
+build:asan-libfuzzer --//fuzzing:cc_engine=//fuzzing/engines:libfuzzer
 
-# Flags for Clang with MSAN and libfuzzer
-build:msan-libfuzzer --config=clang
+# Flags for Clang with MSAN and libfuzzer.
+build:msan-libfuzzer --config=_fuzzer_common
 build:msan-libfuzzer --linkopt=-fsanitize=memory,fuzzer
 build:msan-libfuzzer --copt=-fsanitize=memory,fuzzer
-build:msan-libfuzzer --//fuzzing:engine=libfuzzer
+build:msan-libfuzzer --//fuzzing:cc_engine=//fuzzing/engines:libfuzzer
 
-# Flags for Clang with MSAN and libfuzzer, outputting detailed report
+# Flags for Clang with MSAN and libfuzzer, outputting detailed report.
 build:msan-libfuzzer-repro --config=msan-libfuzzer
 build:msan-libfuzzer-repro --copt=-fsanitize-memory-track-origins=2

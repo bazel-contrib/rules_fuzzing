@@ -12,36 +12,51 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""This file contains common rules for fuzzing test."""
+"""Common building blocks for fuzz test definitions."""
 
-load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
+load("//fuzzing/private:engine.bzl", "CcFuzzingEngineInfo")
 
-def _fuzzing_launcher_impl(ctx):
-    # Generate a script to launcher the fuzzing test.
-    script = ctx.actions.declare_file("%s" % ctx.label.name)
-    args = [
-        ctx.executable._launcher.short_path,
-        ctx.executable.target.short_path,
-        "--corpus_dir=" + ctx.file.corpus.short_path if ctx.attr.corpus else "",
-        "--dict=" + ctx.file.dict.short_path if ctx.attr.dict else "",
-        "--engine=" + ctx.attr._engine[BuildSettingInfo].value,
-    ]
+def _fuzzing_launcher_script(ctx):
+    engine_info = ctx.attr.engine[CcFuzzingEngineInfo]
+    script = ctx.actions.declare_file(ctx.label.name)
 
-    script_template = """#!/bin/sh
-exec {launcher_args} "$@" """
-
+    script_template = """
+{environment}
+echo "Launching {binary_path} as a {engine_name} fuzz test..."
+exec "{launcher}" \
+    --engine_launcher="{engine_launcher}" \
+    --binary_path="{binary_path}" \
+    --corpus_dir="{corpus_dir}" \
+    --dictionary_path="{dictionary_path}" \
+    "$@"
+"""
     script_content = script_template.format(
-        launcher_args = " ".join(args),
+        environment = "\n".join([
+            "export %s='%s'" % (var, file.short_path)
+            for var, file in engine_info.environment.items()
+        ]),
+        launcher = ctx.executable._launcher.short_path,
+        binary_path = ctx.executable.binary.short_path,
+        engine_launcher = engine_info.launcher.short_path,
+        engine_name = engine_info.display_name,
+        corpus_dir = ctx.file.corpus.short_path if ctx.attr.corpus else "",
+        dictionary_path = ctx.file.dictionary.short_path if ctx.attr.dictionary else "",
     )
     ctx.actions.write(script, script_content, is_executable = True)
+    return script
 
-    # Merge the dependencies.
-    runfiles = ctx.attr._launcher[DefaultInfo].default_runfiles
-    runfiles = runfiles.merge(ctx.attr.target[DefaultInfo].default_runfiles)
+def _fuzzing_launcher_impl(ctx):
+    script = _fuzzing_launcher_script(ctx)
+
+    engine_info = ctx.attr.engine[CcFuzzingEngineInfo]
+    runfiles = ctx.runfiles(files = [engine_info.launcher])
+    runfiles = runfiles.merge(engine_info.runfiles)
+    runfiles = runfiles.merge(ctx.attr._launcher[DefaultInfo].default_runfiles)
+    runfiles = runfiles.merge(ctx.attr.binary[DefaultInfo].default_runfiles)
     if ctx.attr.corpus:
         runfiles = runfiles.merge(ctx.attr.corpus[DefaultInfo].default_runfiles)
-    if ctx.attr.dict:
-        runfiles = runfiles.merge(ctx.attr.dict[DefaultInfo].default_runfiles)
+    if ctx.attr.dictionary:
+        runfiles = runfiles.merge(ctx.attr.dictionary[DefaultInfo].default_runfiles)
 
     return [DefaultInfo(executable = script, runfiles = runfiles)]
 
@@ -57,23 +72,23 @@ Rule for creating a script to run the fuzzing test.
             executable = True,
             cfg = "host",
         ),
-        "_engine": attr.label(
-            default = ":engine",
-            doc = "The engine type.",
-            providers = [BuildSettingInfo],
+        "engine": attr.label(
+            doc = "The specification of the fuzzing engine to execute.",
+            providers = [CcFuzzingEngineInfo],
+            mandatory = True,
         ),
-        "target": attr.label(
+        "binary": attr.label(
             executable = True,
-            doc = "The fuzzing test to run.",
+            doc = "The executable of the fuzz test to run.",
             cfg = "target",
             mandatory = True,
         ),
         "corpus": attr.label(
-            doc = "The target to create a directory containing corpus files.",
+            doc = "A directory of corpus files to use as input seeds.",
             allow_single_file = True,
         ),
-        "dict": attr.label(
-            doc = "The target to validate and merge the dictionaries.",
+        "dictionary": attr.label(
+            doc = "A dictionary file to use in fuzzing runs.",
             allow_single_file = True,
         ),
     },
