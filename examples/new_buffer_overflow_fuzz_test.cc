@@ -1,4 +1,3 @@
-//
 // Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// A fuzz target that causes an ASAN buffer overflow for a particular input.
-
 #include <cstdio>
 #include <cstdint>
 #include <cstddef>
+#include <cstring>
 
 void TriggerBufferOverflow(const uint8_t *data, size_t size) {
   if (size >= 3 &&
@@ -30,6 +28,9 @@ void TriggerBufferOverflow(const uint8_t *data, size_t size) {
 }
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
-  TriggerBufferOverflow(data, size);
+  uint8_t* data_copy = new uint8_t[size];
+  memcpy(data_copy, data, size);
+  TriggerBufferOverflow(data_copy, size);
+  delete []data_copy;
   return 0;
 }
