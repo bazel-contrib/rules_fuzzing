@@ -14,6 +14,7 @@ The most convenient way to set up your toolchain is by editing the [`.bazelrc` f
 
 - `--config=asan-libfuzzer` builds the fuzz target in [libFuzzer](https://llvm.org/docs/LibFuzzer.html) mode, with [Address Sanitizer (ASAN)](https://clang.llvm.org/docs/AddressSanitizer.html) instrumentation.
 - `--config=msan-libfuzzer` builds the fuzz target in libFuzzer mode, with [Memory Sanitizer (MSAN)](https://clang.llvm.org/docs/MemorySanitizer.html) instrumentation.
+- `--config=asan-honggfuzz` builds the fuzz target using [Honggfuzz](https://github.com/google/honggfuzz), with ASAN instrumentation.
 
 The rest of the documentation assumes the build configuration options are accessible through these names.
 
@@ -68,23 +69,20 @@ cc_fuzz_test(
 To run the fuzz target, use the following command:
 
 ```sh
-$ bazel run fuzz_test_run --config=libfuzzer
+$ bazel run fuzz_test_run --config=asan-libfuzzer
 ```
 
 You can also control the fuzzing test running time by passing `--timeout_secs` like
 
 ```sh
-$ bazel run fuzz_test_run --config=libfuzzer -- --timeout_secs=20
+$ bazel run fuzz_test_run --config=asan-libfuzzer -- --timeout_secs=20
 ```
 
 If you only want to run the regression test on the corpus, set `--regression`:
 
 ```sh
-$ bazel run fuzz_test_run --config=libfuzzer -- --regression=True
+$ bazel run fuzz_test_run --config=asan-libfuzzer -- --regression=True
 ```
-
-Feel free to copy the config setting in [.bazelrc](https://github.com/googleinterns/bazel-rules-fuzzing/blob/master/.bazelrc) to yours.
-
 
 See the [examples](https://github.com/googleinterns/bazel-rules-fuzzing/tree/master/examples)
 directory for more examples.
