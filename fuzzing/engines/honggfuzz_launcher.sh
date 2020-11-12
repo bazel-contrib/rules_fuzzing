@@ -24,6 +24,10 @@ fi
 
 command_line+=("--crashdir=${FUZZER_ARTIFACTS_DIR}")
 
+if [[ "${FUZZER_TIMEOUT_SECS}" -gt 0 ]]; then
+    command_line+=("--run_time=${FUZZER_TIMEOUT_SECS}")
+fi
+
 if [[ -n "${FUZZER_DICTIONARY_PATH}" ]]; then
     command_line+=("--dict=${FUZZER_DICTIONARY_PATH}")
 fi
