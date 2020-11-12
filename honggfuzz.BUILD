@@ -12,12 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Extra OS packages needed: libunwind-dev, libblocksruntime-dev
+# Bazel rules for building the Honggfuzz binary and the library linked with the
+# fuzz test executables.
+#
+# To use Honggfuzz, the following OS packages need to be installed:
+#   * libunwind-dev
+#   * libblocksruntime-dev
+#
+# NOTE: Currently, Honggfuzz is unable to detect buffer overflows in the input
+# string passed to the fuzz test entry point. This limitation is *not* caused
+# by the build options below limiting the use of sanitizers in the Honggfuzz
+# libraries.
 
 load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
-
-# TODO(sbucur): Review these flags to see what only makes sense
-# for the --config=asan-honggfuzz flags only.
 
 COMMON_COPTS = [
     "-D_GNU_SOURCE",
@@ -34,10 +41,75 @@ COMMON_COPTS = [
     "-mllvm",
     "-inline-threshold=2000",
     "-fblocks",
+
+    # Do not instrument Honggfuzz itself, in order to avoid recursive
+    # instrumentation calls that would crash the fuzz test binary.
+    "-fsanitize-coverage=0",
+    "-fno-sanitize=address,thread,undefined",
 ]
 
 LIBRARY_COPTS = [
     "-fno-stack-protector",
+    "-U_FORTIFY_SOURCE",
+    "-D_FORTIFY_SOURCE=0",
+]
+
+# Linker options for intercepting common memory operations. Should stay in sync
+# with https://github.com/google/honggfuzz/blob/master/hfuzz_cc/hfuzz-cc.c
+SYMBOL_WRAP_LINKOPTS = [
+    # Intercept common *cmp functions.
+    "-Wl,--wrap=strcmp",
+    "-Wl,--wrap=strcasecmp",
+    "-Wl,--wrap=stricmp",
+    "-Wl,--wrap=strncmp",
+    "-Wl,--wrap=strncasecmp",
+    "-Wl,--wrap=strnicmp",
+    "-Wl,--wrap=strstr",
+    "-Wl,--wrap=strcasestr",
+    "-Wl,--wrap=memcmp",
+    "-Wl,--wrap=bcmp",
+    "-Wl,--wrap=memmem",
+    "-Wl,--wrap=strcpy",
+    # Apache httpd
+    "-Wl,--wrap=ap_cstr_casecmp",
+    "-Wl,--wrap=ap_cstr_casecmpn",
+    "-Wl,--wrap=ap_strcasestr",
+    "-Wl,--wrap=apr_cstr_casecmp",
+    "-Wl,--wrap=apr_cstr_casecmpn",
+    # *SSL
+    "-Wl,--wrap=CRYPTO_memcmp",
+    "-Wl,--wrap=OPENSSL_memcmp",
+    "-Wl,--wrap=OPENSSL_strcasecmp",
+    "-Wl,--wrap=OPENSSL_strncasecmp",
+    "-Wl,--wrap=memcmpct",
+    # libXML2
+    "-Wl,--wrap=xmlStrncmp",
+    "-Wl,--wrap=xmlStrcmp",
+    "-Wl,--wrap=xmlStrEqual",
+    "-Wl,--wrap=xmlStrcasecmp",
+    "-Wl,--wrap=xmlStrncasecmp",
+    "-Wl,--wrap=xmlStrstr",
+    "-Wl,--wrap=xmlStrcasestr",
+    # Samba
+    "-Wl,--wrap=memcmp_const_time",
+    "-Wl,--wrap=strcsequal",
+    # LittleCMS
+    "-Wl,--wrap=cmsstrcasecmp",
+    # GLib
+    "-Wl,--wrap=g_strcmp0",
+    "-Wl,--wrap=g_strcasecmp",
+    "-Wl,--wrap=g_strncasecmp",
+    "-Wl,--wrap=g_strstr_len",
+    "-Wl,--wrap=g_ascii_strcasecmp",
+    "-Wl,--wrap=g_ascii_strncasecmp",
+    "-Wl,--wrap=g_str_has_prefix",
+    "-Wl,--wrap=g_str_has_suffix",
+    # CUrl
+    "-Wl,--wrap=Curl_strcasecompare",
+    "-Wl,--wrap=curl_strequal",
+    "-Wl,--wrap=Curl_safe_strcasecompare",
+    "-Wl,--wrap=Curl_strncasecompare",
+    "-Wl,--wrap=curl_strnequal",
 ]
 
 cc_library(
@@ -55,61 +127,7 @@ cc_library(
         "*.h",
     ]),
     copts = COMMON_COPTS + LIBRARY_COPTS,
-    linkopts = [
-        # Intercept common *cmp functions.
-        "-Wl,--wrap=strcmp",
-        "-Wl,--wrap=strcasecmp",
-        "-Wl,--wrap=stricmp",
-        "-Wl,--wrap=strncmp",
-        "-Wl,--wrap=strncasecmp",
-        "-Wl,--wrap=strnicmp",
-        "-Wl,--wrap=strstr",
-        "-Wl,--wrap=strcasestr",
-        "-Wl,--wrap=memcmp",
-        "-Wl,--wrap=bcmp",
-        "-Wl,--wrap=memmem",
-        "-Wl,--wrap=strcpy",
-        # Apache httpd
-        "-Wl,--wrap=ap_cstr_casecmp",
-        "-Wl,--wrap=ap_cstr_casecmpn",
-        "-Wl,--wrap=ap_strcasestr",
-        "-Wl,--wrap=apr_cstr_casecmp",
-        "-Wl,--wrap=apr_cstr_casecmpn",
-        # *SSL
-        "-Wl,--wrap=CRYPTO_memcmp",
-        "-Wl,--wrap=OPENSSL_memcmp",
-        "-Wl,--wrap=OPENSSL_strcasecmp",
-        "-Wl,--wrap=OPENSSL_strncasecmp",
-        "-Wl,--wrap=memcmpct",
-        # libXML2
-        "-Wl,--wrap=xmlStrncmp",
-        "-Wl,--wrap=xmlStrcmp",
-        "-Wl,--wrap=xmlStrEqual",
-        "-Wl,--wrap=xmlStrcasecmp",
-        "-Wl,--wrap=xmlStrncasecmp",
-        "-Wl,--wrap=xmlStrstr",
-        "-Wl,--wrap=xmlStrcasestr",
-        # Samba
-        "-Wl,--wrap=memcmp_const_time",
-        "-Wl,--wrap=strcsequal",
-        # LittleCMS
-        "-Wl,--wrap=cmsstrcasecmp",
-        # GLib
-        "-Wl,--wrap=g_strcmp0",
-        "-Wl,--wrap=g_strcasecmp",
-        "-Wl,--wrap=g_strncasecmp",
-        "-Wl,--wrap=g_strstr_len",
-        "-Wl,--wrap=g_ascii_strcasecmp",
-        "-Wl,--wrap=g_ascii_strncasecmp",
-        "-Wl,--wrap=g_str_has_prefix",
-        "-Wl,--wrap=g_str_has_suffix",
-        # CUrl
-        "-Wl,--wrap=Curl_strcasecompare",
-        "-Wl,--wrap=curl_strequal",
-        "-Wl,--wrap=Curl_safe_strcasecompare",
-        "-Wl,--wrap=Curl_strncasecompare",
-        "-Wl,--wrap=curl_strnequal",
-        # Linking a few other standard libraries.
+    linkopts = SYMBOL_WRAP_LINKOPTS + [
         "-ldl",
         "-lpthread",
         "-lrt",

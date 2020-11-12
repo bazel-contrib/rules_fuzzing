@@ -34,9 +34,13 @@ build:asan-libfuzzer --//fuzzing:cc_engine=//fuzzing/engines:libfuzzer
 # https://github.com/google/honggfuzz/blob/master/hfuzz_cc/hfuzz-cc.c
 build:asan-honggfuzz --config=_fuzzer_common
 build:asan-honggfuzz --dynamic_mode=off
-build:asan-honggfuzz --copt=-fsanitize=address
-build:asan-honggfuzz --copt=-fsanitize-coverage=trace-pc-guard,trace-cmp,indirect-calls
+build:asan-honggfuzz --copt=-mllvm
+build:asan-honggfuzz --copt=-inline-threshold=2000
 build:asan-honggfuzz --copt=-fno-builtin
+build:asan-honggfuzz --copt=-fno-omit-frame-pointer
+build:asan-honggfuzz --copt=-D__NO_STRING_INLINES
+build:asan-honggfuzz --copt=-fsanitize=address
+build:asan-honggfuzz --copt=-fsanitize-coverage=trace-pc-guard,trace-cmp,trace-div,indirect-calls
 build:asan-honggfuzz --linkopt=-fsanitize=address
 build:asan-honggfuzz --//fuzzing:cc_engine=//fuzzing/engines:honggfuzz
 
