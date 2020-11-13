@@ -18,11 +18,6 @@
 load("//fuzzing:cc_deps.bzl", "cc_fuzz_test")
 
 cc_fuzz_test(
-    name = "buffer_overflow_fuzz_test",
-    srcs = ["buffer_overflow_fuzz_test.cc"],
-)
-
-cc_fuzz_test(
     name = "empty_fuzz_test",
     srcs = ["empty_fuzz_test.cc"],
 )
@@ -71,11 +66,21 @@ cc_fuzz_test(
     srcs = ["hang_fuzz_test.cc"],
 )
 
+cc_fuzz_test(
+    name = "input_buffer_overflow_fuzz_test",
+    srcs = ["input_buffer_overflow_fuzz_test.cc"],
+)
+
 # This test is designed to trigger an uninitialized memory issue.
 cc_fuzz_test(
     name = "msan_fuzz_test",
     srcs = ["msan_fuzz_test.cc"],
     copts = ["-Wno-uninitialized"],
+)
+
+cc_fuzz_test(
+    name = "new_buffer_overflow_fuzz_test",
+    srcs = ["new_buffer_overflow_fuzz_test.cc"],
 )
 
 cc_fuzz_test(

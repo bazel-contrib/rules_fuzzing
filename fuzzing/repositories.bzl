@@ -42,3 +42,15 @@ def rules_fuzzing_dependencies():
         ],
         sha256 = "1c531376ac7e5a180e0237938a2536de0c54d93f5c278634818e0efc952dd56c",
     )
+
+    # TODO(sbucur): Since Honggfuzz has its own set of dependencies, look into
+    # making them optional, so developers only import them if they decide to
+    # use Honggfuzz.
+    maybe(
+        http_archive,
+        name = "honggfuzz",
+        build_file = "@//:honggfuzz.BUILD",
+        sha256 = "ec2a6c006da4d699252fafcc38c42c6759a045aa303a22dabaaa6c35330131aa",
+        url = "https://github.com/google/honggfuzz/archive/e2acee785aa87a86261c96070cf51b85533257ca.zip",
+        strip_prefix = "honggfuzz-e2acee785aa87a86261c96070cf51b85533257ca",
+    )

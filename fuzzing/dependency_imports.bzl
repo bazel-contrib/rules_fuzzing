@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Loads the dependencies of the external repositories
+"""Provides fuzzing dependencies."""
 
 load("@rules_python//python:pip.bzl", "pip3_import", "pip_repositories")
 load("@rules_python//python:repositories.bzl", "py_repositories")
