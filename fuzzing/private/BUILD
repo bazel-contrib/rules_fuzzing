@@ -17,3 +17,9 @@ load(":engine_test.bzl", "engine_test_suite")
 engine_test_suite(
     name = "engine_test",
 )
+
+exports_files([
+    "common.bzl",
+    "engine.bzl",
+    "fuzz_test.bzl",
+])

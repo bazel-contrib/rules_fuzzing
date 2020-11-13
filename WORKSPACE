@@ -14,6 +14,8 @@
 
 workspace(name = "rules_fuzzing")
 
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+
 # Downloads dependencies.
 load("@rules_fuzzing//fuzzing:repositories.bzl", "rules_fuzzing_dependencies")
 
@@ -28,3 +30,14 @@ fuzzing_dependency_imports()
 load("@fuzzing_py_deps//:requirements.bzl", fuzzing_py_install = "pip_install")
 
 fuzzing_py_install()
+
+git_repository(
+    name = "io_bazel_stardoc",
+    commit = "4378e9b6bb2831de7143580594782f538f461180",
+    remote = "https://github.com/bazelbuild/stardoc.git",
+    shallow_since = "1570829166 -0400",
+)
+
+load("@io_bazel_stardoc//:setup.bzl", "stardoc_repositories")
+
+stardoc_repositories()

@@ -12,10 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""This file contains basic functions for cc fuzz test."""
+"""Public definitions for fuzzing rules.
 
-load("//fuzzing/private:fuzz_test.bzl", _cc_fuzz_test = "cc_fuzz_test")
-load("//fuzzing/private:engine.bzl", _cc_fuzzing_engine = "cc_fuzzing_engine")
+Definitions outside this file are private unless otherwise noted, and may
+change without notice.
+"""
+
+load(
+    "//fuzzing/private:fuzz_test.bzl",
+    _cc_fuzz_test = "cc_fuzz_test",
+)
+load(
+    "//fuzzing/private:engine.bzl",
+    _cc_fuzzing_engine = "cc_fuzzing_engine",
+)
 
 cc_fuzz_test = _cc_fuzz_test
 cc_fuzzing_engine = _cc_fuzzing_engine
