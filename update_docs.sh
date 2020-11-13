@@ -1,10 +1,11 @@
+#!/bin/bash
 # Copyright 2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#    https://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,12 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-label_flag(
-    name = "cc_engine",
-    build_setting_default = "//fuzzing/engines:libfuzzer",
-    visibility = ["//visibility:public"],
-)
+set -euo pipefail
 
-exports_files([
-    "cc_deps.bzl",
-])
+bazel build //docs:cc_fuzzing_docs
+cp bazel-bin/docs/cc-fuzzing-rules.md docs/
