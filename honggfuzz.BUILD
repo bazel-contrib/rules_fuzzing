@@ -45,7 +45,7 @@ COMMON_COPTS = [
     # Do not instrument Honggfuzz itself, in order to avoid recursive
     # instrumentation calls that would crash the fuzz test binary.
     "-fsanitize-coverage=0",
-    "-fno-sanitize=address,thread,undefined",
+    "-fno-sanitize=all",
 ]
 
 LIBRARY_COPTS = [

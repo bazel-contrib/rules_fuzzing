@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-command_line=("${HONGGFUZZ_PATH}")
+command_line="${HONGGFUZZ_PATH}"
 command_line+=("--workspace=${FUZZER_OUTPUT_ROOT}")
 
 if [[ -n "${FUZZER_SEED_CORPUS_DIR}" ]]; then
