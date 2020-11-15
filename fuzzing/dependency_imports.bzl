@@ -14,7 +14,7 @@
 
 """Provides fuzzing dependencies."""
 
-load("@rules_python//python:pip.bzl", "pip3_import", "pip_repositories")
+load("@rules_python//python:pip.bzl", "pip_install")
 load("@rules_python//python:repositories.bzl", "py_repositories")
 load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
 load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
@@ -24,9 +24,8 @@ def fuzzing_dependency_imports():
     py_repositories()
     rules_pkg_dependencies()
     bazel_skylib_workspace()
-    pip_repositories()
 
-    pip3_import(
+    pip_install(
         name = "fuzzing_py_deps",
         requirements = "@rules_fuzzing//fuzzing:requirements.txt",
     )
