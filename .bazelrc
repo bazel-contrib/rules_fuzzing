@@ -40,6 +40,7 @@ build:asan-honggfuzz --copt=-fno-builtin
 build:asan-honggfuzz --copt=-fno-omit-frame-pointer
 build:asan-honggfuzz --copt=-D__NO_STRING_INLINES
 build:asan-honggfuzz --copt=-fsanitize=address
+build:asan-honggfuzz --copt=-fno-sanitize=fuzzer
 build:asan-honggfuzz --copt=-fsanitize-coverage=trace-pc-guard,trace-cmp,trace-div,indirect-calls
 build:asan-honggfuzz --linkopt=-fsanitize=address
 build:asan-honggfuzz --//fuzzing:cc_engine=//fuzzing/engines:honggfuzz
