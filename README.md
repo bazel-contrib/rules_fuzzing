@@ -35,8 +35,8 @@ cc_fuzz_test(
     name = "re2_fuzz_test",
     srcs = ["re2_fuzz_test.cc"],
     deps = [
-        "@re2//:re2"
-    ]
+        "@re2",
+    ],
 )
 ```
 
