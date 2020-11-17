@@ -14,7 +14,7 @@ The rule library currently provides support for C++ fuzz tests. Support for addi
 
 ## Prerequisites
 
-C++ fuzz tests require a Clang compiler. The libFuzzer engine requires at least Clang 5.0.
+C++ fuzz tests require a Clang compiler. The libFuzzer engine requires at least Clang 6.0.
 
 In addition, the Honggfuzz engine requires the `libunwind-dev` and `libblocksruntime-dev` packages.
 
@@ -84,7 +84,8 @@ $ bazel run -c opt --config=asan-honggfuzz //examples:re2_fuzz_test_run
 The `<name>_run` target accepts a number of engine-agnostic flags. For example, the following command runs the fuzz test with an execution timeout and on a clean slate (removing any previously generated tests). Note the extra `--` separator between Bazel's own flags and the launcher flags:
 
 ```sh
-$ bazel run -c opt --config=asan-libfuzzer //examples:re2_fuzz_test_run -- --clean --timeout_secs=30
+$ bazel run -c opt --config=asan-libfuzzer //examples:re2_fuzz_test_run \
+      -- --clean --timeout_secs=30
 ```
 
 ### Additional examples
@@ -125,8 +126,8 @@ Currently, the following configurations are available, based on the fuzzing engi
 | Configuration             | Fuzzing engine | Instrumentation          |
 |---------------------------|----------------|--------------------------|
 | `--config=asan-fuzzer`    | libFuzzer      | Address Sanitizer (ASAN) |
-| `--config=msan-fuzzer`    | libFuzzer      | Address Sanitizer (ASAN) |
-| `--config=asan-honggfuzz` | Honggfuzz      | Memory Sanitizer (MSAN)  |
+| `--config=msan-fuzzer`    | libFuzzer      | Memory Sanitizer (MSAN)  |
+| `--config=asan-honggfuzz` | Honggfuzz      | Address Sanitizer (ASAN) |
 
 You should similarly create additional `--config` entries for any [fuzzing engines defined](#defining-fuzzing-engines) in your own repository.
 

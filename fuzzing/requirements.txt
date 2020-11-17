@@ -1,4 +1,4 @@
 # Python requirements for the tools supporting the fuzzing rules. These are
 # installed automatically through the WORKSPACE configuration.
 
-absl-py>=0.11.0
+absl-py==0.11.0
