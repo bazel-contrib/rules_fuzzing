@@ -152,7 +152,3 @@ A fuzzing engine launcher script receives configuration through the following en
 
 * [`cc_fuzz_test`](/docs/cc-fuzzing-rules.md#cc_fuzz_test)
 * [`cc_fuzzing_engine`](/docs/cc-fuzzing-rules.md#cc_fuzzing_engine)
-
-## Disclaimer
-
-This is not an officially supported Google product.
