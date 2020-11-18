@@ -87,3 +87,11 @@ cc_fuzz_test(
     name = "oom_fuzz_test",
     srcs = ["oom_fuzz_test.cc"],
 )
+
+cc_fuzz_test(
+    name = "re2_fuzz_test",
+    srcs = ["re2_fuzz_test.cc"],
+    deps = [
+        "@re2",
+    ],
+)

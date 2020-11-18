@@ -1,26 +1,104 @@
 # Bazel Rules for Fuzz Tests
 
-This repository contains [Bazel](https://bazel.build/)
-[Starlark extensions](https://docs.bazel.build/versions/master/skylark/concepts.html)
-for defining fuzz tests in Bazel projects. 
+## Overview
 
-**This is not an officially supported Google product.**
+This repository contains [Bazel](https://bazel.build/) [Starlark extensions](https://docs.bazel.build/versions/master/skylark/concepts.html) for defining fuzz tests in Bazel projects.
 
-## Requirements
+Fuzzing is an effective technique for uncovering security and stability bugs in software. Fuzzing works by invoking the code under test (e.g., a library API) with automatically generated data, and observing its execution to discover incorrect behavior, such as memory corruption or failed invariants. Covering fuzzing in detail is outside the scope of this document. Read more [here](https://github.com/google/fuzzing) about fuzzing best practices, additional examples, and other resources.
 
-To use the Bazel rules for fuzzing, your C++ toolchain should be Clang-based and configured to build the fuzz tests under several compiler instrumentation modes.
+This rule library provides support for writing *in-process* fuzz tests, which consist of a driver function that receives a generated input string and feeds it to the API under test. To make a complete fuzz test executable, the driver is linked with a fuzzing engine, which implements the test generation logic. The rule library provides out-of-the-box support for the most popular fuzzing engines (e.g., [libFuzzer](https://llvm.org/docs/LibFuzzer.html) and [Honggfuzz](https://github.com/google/honggfuzz)), and an extension mechanism to define new fuzzing engines.
 
-The most convenient way to set up your toolchain is by editing the [`.bazelrc` file](https://docs.bazel.build/versions/master/guide.html#bazelrc-the-bazel-configuration-file) of your project and grouping the build configuration options into `--config` groups. We recommend using [this setup](/.bazelrc), which you can copy and paste in your own `.bazelrc` file. The setup defines the following build modes:
+The goal of the fuzzing rules is to provide an easy-to-use interface for developers to specify, build, and run fuzz tests, without worrying about the details of each fuzzing engine. A fuzzing rule wraps a raw fuzz test executable and provides additional tools, such as the specification of a corpus and dictionary and a launcher that knows how to invoke the fuzzing engine with the appropriate set of flags.
 
-- `--config=asan-libfuzzer` builds the fuzz target in [libFuzzer](https://llvm.org/docs/LibFuzzer.html) mode, with [Address Sanitizer (ASAN)](https://clang.llvm.org/docs/AddressSanitizer.html) instrumentation.
-- `--config=msan-libfuzzer` builds the fuzz target in libFuzzer mode, with [Memory Sanitizer (MSAN)](https://clang.llvm.org/docs/MemorySanitizer.html) instrumentation.
-- `--config=asan-honggfuzz` builds the fuzz target using [Honggfuzz](https://github.com/google/honggfuzz), with ASAN instrumentation.
+The rule library currently provides support for C++ fuzz tests. Support for additional languages may be added in the future.
 
-The rest of the documentation assumes the build configuration options are accessible through these names.
+## Prerequisites
+
+C++ fuzz tests require a Clang compiler. The libFuzzer engine requires at least Clang 6.0.
+
+In addition, the Honggfuzz engine requires the `libunwind-dev` and `libblocksruntime-dev` packages.
 
 ## Getting started
 
-To import the fuzzing rules in your project, you first need to add the snippet below to your `WORKSPACE` file:
+The fastest way to get a sense of the fuzzing rules is through the examples provided in this repository. Assuming the current directory points to a local clone of this repository, let's explore some of the features provided by the Bazel rules.
+
+### Defining fuzz tests
+
+A fuzz test is specified using a [`cc_fuzz_test` rule](/docs/cc-fuzzing-rules.md#cc_fuzz_test). In the most basic form, a fuzz test requires a source file that implements the fuzz driver entry point. Let's consider a simple example that fuzzes the [RE2](https://github.com/google/re2) regular expression library:
+
+```python
+# BUILD file.
+
+load("//fuzzing:cc_deps.bzl", "cc_fuzz_test")
+
+cc_fuzz_test(
+    name = "re2_fuzz_test",
+    srcs = ["re2_fuzz_test.cc"],
+    deps = [
+        "@re2",
+    ],
+)
+```
+
+The fuzz driver implements the special `LLVMFuzzerTestOneInput` function that receives the fuzzer-generated string and uses it to drive the API under test:
+
+```cpp
+// Implementation file.
+
+#include <cstdint>
+#include <cstddef>
+#include <string>
+
+#include "re2/re2.h"
+
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+    RE2 re(std::string(reinterpret_cast<const char*>(data), size), RE2::Quiet);
+    return 0;
+}
+```
+
+### Building and running
+
+To build a fuzz test, you need to specify which fuzzing engine and what instrumentation to use for tracking errors during the execution of the fuzzer. Let's build the RE2 fuzz test using [libFuzzer](https://llvm.org/docs/LibFuzzer.html) and the [Address Sanitizer (ASAN)](https://clang.llvm.org/docs/AddressSanitizer.html) instrumentation, which catches memory errors such as buffer overflows and use-after-frees:
+
+```sh
+$ bazel build -c opt --config=asan-libfuzzer //examples:re2_fuzz_test
+```
+
+You can directly invoke this fuzz test executable if you know libFuzzer's command line interface. But in practice, you don't have to. For each fuzz test `<name>`, the rules library generates a number of additional targets that provide higher-level functionality to simplify the interaction with the fuzz test.
+
+One such target is `<name>_run`, which provides a simple engine-agnostic interface for invoking fuzz tests. Let's run our libFuzzer example:
+
+```sh
+$ bazel run -c opt --config=asan-libfuzzer //examples:re2_fuzz_test_run
+```
+
+The fuzz test will start running locally, and write the generated tests under a temporary path under `/tmp/fuzzing`. By default, the generated tests persist across runs, in order to make it easy to stop and resume runs (possibly under different engines and configurations).
+
+Let's interrupt the fuzz test execution (Ctrl-C), and resume it using the Honggfuzz engine:
+
+```sh
+$ bazel run -c opt --config=asan-honggfuzz //examples:re2_fuzz_test_run
+```
+
+The `<name>_run` target accepts a number of engine-agnostic flags. For example, the following command runs the fuzz test with an execution timeout and on a clean slate (removing any previously generated tests). Note the extra `--` separator between Bazel's own flags and the launcher flags:
+
+```sh
+$ bazel run -c opt --config=asan-libfuzzer //examples:re2_fuzz_test_run \
+      -- --clean --timeout_secs=30
+```
+
+### Additional examples
+
+Check out the [`examples/`](examples/) directory, which showcases additional features of the `cc_fuzz_test` rule.
+
+## Using the rules in your project
+
+To use the fuzzing rules in your project, you will need to load and set them up in your workspace, along with creating the necessary `--config` commands in your `.bazelrc` file.
+
+### Configuring the WORKSPACE
+
+Add the following to your `WORKSPACE` file:
 
 ```python
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
@@ -35,57 +113,23 @@ rules_fuzzing_dependencies()
 
 load("@rules_fuzzing//fuzzing:dependency_imports.bzl", "fuzzing_dependency_imports")
 fuzzing_dependency_imports()
-
-load("@fuzzing_py_deps//:requirements.bzl", fuzzing_py_install = "pip_install")
-fuzzing_py_install()
 ```
 
-Our project is under active development, to use the latest feature, 
-change the `urls` and `sha256` value above to the latest commit.
+The project is still under active development, so you many need to change the `urls` and `sha256` attributes to get the latest features implemented at `HEAD`.
 
-## Rule reference
+### Configuring the .bazelrc file
 
-* [cc fuzzing rules](fuzzing/cc_deps.bzl)
-* [common rules](fuzzing/common.bzl)
+To make sure the fuzz tests are built with the correct instrumentation flags for each engine / instrumentation supported, we recommend using the configurations defined in this repository's [`.bazelrc` file](/.bazelrc), which you can copy and paste in your own `.bazelrc` file.
 
-## Examples
+Currently, the following configurations are available, based on the fuzzing engines defined in this repository:
 
-Tiny example:
+| Configuration             | Fuzzing engine | Instrumentation          |
+|---------------------------|----------------|--------------------------|
+| `--config=asan-fuzzer`    | libFuzzer      | Address Sanitizer (ASAN) |
+| `--config=msan-fuzzer`    | libFuzzer      | Memory Sanitizer (MSAN)  |
+| `--config=asan-honggfuzz` | Honggfuzz      | Address Sanitizer (ASAN) |
 
-Assume that you have a `fuzz_test.cc` file to do the fuzzing test and corpus files `corpus_1.txt` and `corpus_dir/*`.
-
-You can create a fuzz test target in the `BUILD` like below:
-
-```python
-load("@rules_fuzzing//fuzzing:cc_deps.bzl", "cc_fuzz_test")
-
-cc_fuzz_test(
-    name = "fuzz_test",
-    srcs = ["fuzz_test.cc"],
-    corpus = ["corpus_1.txt"] + glob(["corpus_dir/**"],
-)
-```
-
-To run the fuzz target, use the following command:
-
-```sh
-$ bazel run fuzz_test_run --config=asan-libfuzzer
-```
-
-You can also control the fuzzing test running time by passing `--timeout_secs` like
-
-```sh
-$ bazel run fuzz_test_run --config=asan-libfuzzer -- --timeout_secs=20
-```
-
-If you only want to run the regression test on the corpus, set `--regression`:
-
-```sh
-$ bazel run fuzz_test_run --config=asan-libfuzzer -- --regression=True
-```
-
-See the [examples](https://github.com/googleinterns/bazel-rules-fuzzing/tree/master/examples)
-directory for more examples.
+You should similarly create additional `--config` entries for any [fuzzing engines defined](#defining-fuzzing-engines) in your own repository.
 
 ## Defining fuzzing engines
 
@@ -103,3 +147,8 @@ A fuzzing engine launcher script receives configuration through the following en
 | `FUZZER_OUTPUT_ROOT`       | A writable path that can be used by the fuzzer during its execution (e.g., as a workspace or for generated artifacts). See the variables below for specific categories of output. |
 | `FUZZER_OUTPUT_CORPUS_DIR` | A path under `FUZZER_OUTPUT_ROOT` where the new generated tests should be stored. |
 | `FUZZER_ARTIFACTS_DIR`     | A path under `FUZZER_OUTPUT_ROOT` where generated crashes and other relevant artifacts should be stored. |
+
+## Rule reference
+
+* [`cc_fuzz_test`](/docs/cc-fuzzing-rules.md#cc_fuzz_test)
+* [`cc_fuzzing_engine`](/docs/cc-fuzzing-rules.md#cc_fuzzing_engine)
