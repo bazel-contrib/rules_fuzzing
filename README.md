@@ -29,7 +29,7 @@ A fuzz test is specified using a [`cc_fuzz_test` rule](/docs/cc-fuzzing-rules.md
 ```python
 # BUILD file.
 
-load("//fuzzing:cc_deps.bzl", "cc_fuzz_test")
+load("@rules_fuzzing//fuzzing:cc_deps.bzl", "cc_fuzz_test")
 
 cc_fuzz_test(
     name = "re2_fuzz_test",

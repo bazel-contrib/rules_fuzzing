@@ -39,7 +39,7 @@ def cc_fuzz_test(
     """
 
     binary_kwargs.setdefault("tags", []).append("fuzz-test")
-    binary_kwargs.setdefault("deps", []).append("//fuzzing:cc_engine")
+    binary_kwargs.setdefault("deps", []).append("@rules_fuzzing//fuzzing:cc_engine")
     cc_test(
         name = name,
         **binary_kwargs
@@ -63,7 +63,7 @@ def cc_fuzz_test(
 
     fuzzing_launcher(
         name = name + "_run",
-        engine = "//fuzzing:cc_engine",
+        engine = "@rules_fuzzing//fuzzing:cc_engine",
         binary = name,
         corpus = name + "_corpus" if corpus else None,
         dictionary = name + "_dict" if dicts else None,
