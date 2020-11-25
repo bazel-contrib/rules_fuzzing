@@ -18,11 +18,6 @@
 # To use Honggfuzz, the following OS packages need to be installed:
 #   * libunwind-dev
 #   * libblocksruntime-dev
-#
-# NOTE: Currently, Honggfuzz is unable to detect buffer overflows in the input
-# string passed to the fuzz test entry point. This limitation is *not* caused
-# by the build options below limiting the use of sanitizers in the Honggfuzz
-# libraries.
 
 load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
 
