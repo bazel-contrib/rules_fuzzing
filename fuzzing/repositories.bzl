@@ -49,7 +49,7 @@ def rules_fuzzing_dependencies():
         http_archive,
         name = "honggfuzz",
         build_file = "@//:honggfuzz.BUILD",
-        sha256 = "ec2a6c006da4d699252fafcc38c42c6759a045aa303a22dabaaa6c35330131aa",
-        url = "https://github.com/google/honggfuzz/archive/e2acee785aa87a86261c96070cf51b85533257ca.zip",
-        strip_prefix = "honggfuzz-e2acee785aa87a86261c96070cf51b85533257ca",
+        sha256 = "a6f8040ea62e0f630737f66dce46fb1b86140f118957cb5e3754a764de7a770a",
+        url = "https://github.com/google/honggfuzz/archive/e0670137531242d66c9cf8a6dee677c055a8aacb.zip",
+        strip_prefix = "honggfuzz-e0670137531242d66c9cf8a6dee677c055a8aacb",
     )
