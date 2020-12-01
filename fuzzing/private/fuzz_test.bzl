@@ -24,6 +24,7 @@ def cc_fuzz_test(
         corpus = None,
         dicts = None,
         engine = "@rules_fuzzing//fuzzing:cc_engine",
+        tags = None,
         **binary_kwargs):
     """Defines a fuzz test and a few associated tools and metadata.
 
@@ -52,11 +53,11 @@ def cc_fuzz_test(
         corpus: A list containing corpus files.
         dicts: A list containing dictionaries.
         engine: A label pointing to the fuzzing engine to use.
+        tags: Tags set on the fuzz test executable.
         **binary_kwargs: Keyword arguments directly forwarded to the fuzz test
           binary rule.
     """
 
-    binary_kwargs.setdefault("tags", []).append("fuzz-test")
     binary_kwargs.setdefault("deps", []).append(engine)
     cc_test(
         name = name + "_raw",
@@ -66,6 +67,9 @@ def cc_fuzz_test(
     instrumented_fuzzing_binary(
         name = name,
         binary = name + "_raw",
+        tags = (tags or []) + [
+            "fuzz-test",
+        ],
         testonly = True,
     )
 
