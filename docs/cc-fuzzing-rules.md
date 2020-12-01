@@ -47,6 +47,9 @@ For each fuzz test `<name>`, this macro expands into a number of targets:
 * `<name>_corpus_zip`: Generates a zip archive of the corpus directory.
 * `<name>_dict`: Validates the set of dictionary files provided and emits
   the result to a `<name>.dict` file.
+* `<name>_raw`: The raw, uninstrumented fuzz test executable. This should be
+  rarely needed and may be useful when debugging instrumentation-related
+  build failures or misbehavior.
 
 > TODO: Document here the command line interface of the `<name>_run`
 targets.
