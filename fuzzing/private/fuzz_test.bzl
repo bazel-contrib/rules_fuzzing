@@ -22,24 +22,38 @@ def cc_fuzz_test(
         name,
         corpus = None,
         dicts = None,
+        engine = "@rules_fuzzing//fuzzing:cc_engine",
         **binary_kwargs):
-    """Macro for c++ fuzzing test
+    """Defines a fuzz test and a few associated tools and metadata.
 
-    This macro provides below targets:
-    <name>: the executable file built by cc_test.
-    <name>_run: an executable to launch the fuzz test.
-    <name>_corpus: a target to generate a directory containing all corpus files if the argument corpus is passed.
-    <name>_corpus_zip: an target to generate a zip file containing corpus files if the argument corpus is passed.
+    For each fuzz test `<name>`, this macro expands into a number of targets:
+
+    * `<name>`: The instrumented fuzz test executable. Use this target for
+      debugging or for accessing the complete command line interface of the
+      fuzzing engine. Most developers should only need to use this target
+      rarely.
+    * `<name>_run`: An executable target used to launch the fuzz test using a
+      simpler, engine-agnostic command line interface.
+    * `<name>_corpus`: Generates a corpus directory containing all the corpus
+      files specified in the `corpus` attribute.
+    * `<name>_corpus_zip`: Generates a zip archive of the corpus directory.
+    * `<name>_dict`: Validates the set of dictionary files provided and emits
+      the result to a `<name>.dict` file.
+
+    > TODO: Document here the command line interface of the `<name>_run`
+    targets.
 
     Args:
         name: A unique name for this target. Required.
         corpus: A list containing corpus files.
         dicts: A list containing dictionaries.
-        **binary_kwargs: Keyword arguments directly forwarded to the fuzz test binary rule.
+        engine: A label pointing to the fuzzing engine to use.
+        **binary_kwargs: Keyword arguments directly forwarded to the fuzz test
+          binary rule.
     """
 
     binary_kwargs.setdefault("tags", []).append("fuzz-test")
-    binary_kwargs.setdefault("deps", []).append("@rules_fuzzing//fuzzing:cc_engine")
+    binary_kwargs.setdefault("deps", []).append(engine)
     cc_test(
         name = name,
         **binary_kwargs
@@ -63,7 +77,7 @@ def cc_fuzz_test(
 
     fuzzing_launcher(
         name = name + "_run",
-        engine = "@rules_fuzzing//fuzzing:cc_engine",
+        engine = engine,
         binary = name,
         corpus = name + "_corpus" if corpus else None,
         dictionary = name + "_dict" if dicts else None,
