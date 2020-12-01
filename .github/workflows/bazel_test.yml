@@ -27,9 +27,12 @@ jobs:
         # The "<fuzzer/FDP...>" is only supported since clang-10 while the clang version in github runner is 9
         run: |
           bazel build --verbose_failures --build_tag_filters=fuzz-test,-FDP --config=asan-libfuzzer //examples/...
-      - name: Run common tests
+      - name: Run unit tests
         run: |
-          bazel test --config=clang //... --test_tag_filters=-fuzz-test --build_tests_only
-      - name: Run dedicated tests
+          bazel test //... --test_tag_filters=-fuzz-test --build_tests_only
+      - name: Run simple smoke test
         run: |
           bazel run //examples:empty_fuzz_test_run --config=asan-libfuzzer -- --timeout_secs=5
+      - name: Run advanced smoke test
+        run: |
+          bazel run //examples:re2_fuzz_test_run --config=asan-libfuzzer -- --timeout_secs=5

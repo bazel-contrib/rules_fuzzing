@@ -61,6 +61,9 @@ def cc_fuzz_test(
     binary_kwargs.setdefault("deps", []).append(engine)
     cc_test(
         name = name + "_raw",
+        tags = [
+            "manual",
+        ],
         **binary_kwargs
     )
 
