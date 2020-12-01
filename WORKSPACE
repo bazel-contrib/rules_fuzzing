@@ -14,7 +14,6 @@
 
 workspace(name = "rules_fuzzing")
 
-load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 # Downloads dependencies.
@@ -27,11 +26,11 @@ load("@rules_fuzzing//fuzzing:dependency_imports.bzl", "fuzzing_dependency_impor
 
 fuzzing_dependency_imports()
 
-git_repository(
+http_archive(
     name = "io_bazel_stardoc",
-    commit = "4378e9b6bb2831de7143580594782f538f461180",
-    remote = "https://github.com/bazelbuild/stardoc.git",
-    shallow_since = "1570829166 -0400",
+    sha256 = "9b09b3ee6181aa4b56c8bc863b1f1c922725298047d243cf19bc69e455ffa7c3",
+    strip_prefix = "stardoc-5986d24c478e81242627c6d688fdc547567bc93c",
+    url = "https://github.com/bazelbuild/stardoc/archive/5986d24c478e81242627c6d688fdc547567bc93c.zip",
 )
 
 load("@io_bazel_stardoc//:setup.bzl", "stardoc_repositories")
@@ -41,6 +40,6 @@ stardoc_repositories()
 http_archive(
     name = "re2",
     sha256 = "8903cc66c9d34c72e2bc91722288ebc7e3ec37787ecfef44d204b2d6281954d7",
-    url = "https://github.com/google/re2/archive/2020-11-01.tar.gz",
     strip_prefix = "re2-2020-11-01",
+    url = "https://github.com/google/re2/archive/2020-11-01.tar.gz",
 )
