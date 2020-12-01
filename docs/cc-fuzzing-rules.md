@@ -1,6 +1,6 @@
 <!-- Generated with Stardoc: http://skydoc.bazel.build -->
 
-<a name="#cc_fuzzing_engine"></a>
+<a id="#cc_fuzzing_engine"></a>
 
 ## cc_fuzzing_engine
 
@@ -16,15 +16,15 @@ Specifies a fuzzing engine that can be used to run C++ fuzz targets.
 
 
 | Name  | Description | Type | Mandatory | Default |
-| :-------------: | :-------------: | :-------------: | :-------------: | :-------------: |
-| name |  A unique name for this target.   | <a href="https://bazel.build/docs/build-ref.html#name">Name</a> | required |  |
-| data |  A dict mapping additional runtime dependencies needed by the fuzzing engine to environment variables that will be available inside the launcher, holding the runtime path to the dependency.   | <a href="https://bazel.build/docs/skylark/lib/dict.html">Dictionary: Label -> String</a> | optional | {} |
-| display_name |  The name of the fuzzing engine, as it should be rendered in human-readable output.   | String | required |  |
-| launcher |  A shell script that knows how to launch the fuzzing executable based on configuration specified in the environment.   | <a href="https://bazel.build/docs/build-ref.html#labels">Label</a> | required |  |
-| library |  A cc_library target that implements the fuzzing engine entry point.   | <a href="https://bazel.build/docs/build-ref.html#labels">Label</a> | required |  |
+| :------------- | :------------- | :------------- | :------------- | :------------- |
+| <a id="cc_fuzzing_engine-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/docs/build-ref.html#name">Name</a> | required |  |
+| <a id="cc_fuzzing_engine-data"></a>data |  A dict mapping additional runtime dependencies needed by the fuzzing engine to environment variables that will be available inside the launcher, holding the runtime path to the dependency.   | <a href="https://bazel.build/docs/skylark/lib/dict.html">Dictionary: Label -> String</a> | optional | {} |
+| <a id="cc_fuzzing_engine-display_name"></a>display_name |  The name of the fuzzing engine, as it should be rendered in human-readable output.   | String | required |  |
+| <a id="cc_fuzzing_engine-launcher"></a>launcher |  A shell script that knows how to launch the fuzzing executable based on configuration specified in the environment.   | <a href="https://bazel.build/docs/build-ref.html#labels">Label</a> | required |  |
+| <a id="cc_fuzzing_engine-library"></a>library |  A cc_library target that implements the fuzzing engine entry point.   | <a href="https://bazel.build/docs/build-ref.html#labels">Label</a> | required |  |
 
 
-<a name="#cc_fuzz_test"></a>
+<a id="#cc_fuzz_test"></a>
 
 ## cc_fuzz_test
 
@@ -45,10 +45,10 @@ This macro provides below targets:
 
 
 | Name  | Description | Default Value |
-| :-------------: | :-------------: | :-------------: |
-| name |  A unique name for this target. Required.   |  none |
-| corpus |  A list containing corpus files.   |  <code>None</code> |
-| dicts |  A list containing dictionaries.   |  <code>None</code> |
-| binary_kwargs |  Keyword arguments directly forwarded to the fuzz test binary rule.   |  none |
+| :------------- | :------------- | :------------- |
+| <a id="cc_fuzz_test-name"></a>name |  A unique name for this target. Required.   |  none |
+| <a id="cc_fuzz_test-corpus"></a>corpus |  A list containing corpus files.   |  <code>None</code> |
+| <a id="cc_fuzz_test-dicts"></a>dicts |  A list containing dictionaries.   |  <code>None</code> |
+| <a id="cc_fuzz_test-binary_kwargs"></a>binary_kwargs |  Keyword arguments directly forwarded to the fuzz test binary rule.   |  none |
 
 
