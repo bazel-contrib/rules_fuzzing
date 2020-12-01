@@ -22,4 +22,5 @@ exports_files([
     "common.bzl",
     "engine.bzl",
     "fuzz_test.bzl",
+    "instrument.bzl",
 ])

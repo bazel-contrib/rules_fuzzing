@@ -12,12 +12,38 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
+
 label_flag(
     name = "cc_engine",
     build_setting_default = "//fuzzing/engines:libfuzzer",
     visibility = ["//visibility:public"],
 )
 
+string_flag(
+    name = "cc_engine_instrumentation",
+    build_setting_default = "none",
+    values = [
+        "none",
+        "libfuzzer",
+        "honggfuzz",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+string_flag(
+    name = "cc_engine_sanitizer",
+    build_setting_default = "none",
+    values = [
+        "none",
+        "asan",
+        "msan",
+        "msan-repro",
+    ],
+    visibility = ["//visibility:public"],
+)
+
 exports_files([
     "cc_deps.bzl",
+    "instrum_opts.bzl",
 ])
