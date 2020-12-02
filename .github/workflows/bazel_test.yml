@@ -40,6 +40,10 @@ jobs:
       matrix:
         config: ["asan-libfuzzer", "msan-libfuzzer", "asan-honggfuzz"]
         target: ["//examples:empty_fuzz_test_run", "//examples:re2_fuzz_test_run"]
+        exclude:
+          # MSAN currently fails on the RE2 target.
+          - config: "msan-libfuzzer"
+            target: "//examples:re2_fuzz_test_run"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
