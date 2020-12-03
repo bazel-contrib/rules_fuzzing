@@ -19,17 +19,17 @@ Each fuzzing engine or sanitizer instrumentation recognized by the
 configuration flag should be defined here.
 """
 
-def _check_is_string_list(name, value):
-    string_type = type("string")
-    list_type = type(["list"])
-
-    if type(value) != list_type:
-        fail("%s should be a list, but was %s" % (name, type(value)))
-    if any([type(element) != string_type for element in value]):
-        fail("%s should be a list of strings" % name)
+def _is_string_list(value):
+    if type(value) != type([]):
+        return False
+    if any([type(element) != type("") for element in value]):
+        return False
+    return True
 
 def instrumentation_opts(copts = [], linkopts = []):
-    """Creates a set of instrumentation options.
+    """Returns a struct with the given instrumentation options.
+
+    The struct fields mirror the argument names of this function.
 
     Args:
       copts: A list of compilation options to pass as `--copt`
@@ -37,8 +37,10 @@ def instrumentation_opts(copts = [], linkopts = []):
       linkopts: A list of linker options to pass as `--linkopt`
         configuration flags.
     """
-    _check_is_string_list("copts", copts)
-    _check_is_string_list("linkopts", linkopts)
+    if not _is_string_list(copts):
+        fail("copts should be a list of strings")
+    if not _is_string_list(linkopts):
+        fail("linkopts should be a list of strings")
     return struct(
         copts = copts,
         linkopts = linkopts,

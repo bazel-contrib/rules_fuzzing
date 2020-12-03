@@ -94,8 +94,10 @@ Compiles a fuzzing executable according to the specified instrumentation.
 
 The instrumentation is configured through the
 `@rules_fuzzing//fuzzing:cc_engine_instrumentation` and
-`@rules_fuzzing//fuzzing:cc_engine_sanitizer` flags. Additional options can
-be specified using the `extra_copts` and `extra_linkopts` attributes.
+`@rules_fuzzing//fuzzing:cc_engine_sanitizer` flags.
+
+Additional options can be specified using the `extra_copts` and `extra_linkopts`
+attributes and are appended to the option lists.
 """,
     attrs = {
         "binary": attr.label(
@@ -105,10 +107,10 @@ be specified using the `extra_copts` and `extra_linkopts` attributes.
             mandatory = True,
         ),
         "extra_copts": attr.string_list(
-            doc = "Extra C++ compilation options.",
+            doc = "Extra C++ compilation options appended to the instrumentation.",
         ),
         "extra_linkopts": attr.string_list(
-            doc = "Extra C++ linker options.",
+            doc = "Extra C++ linker options appended to the instrumentation.",
         ),
         "_allowlist_function_transition": attr.label(
             default = "@bazel_tools//tools/allowlists/function_transition_allowlist",
