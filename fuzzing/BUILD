@@ -35,9 +35,16 @@ string_flag(
     name = "cc_engine_sanitizer",
     build_setting_default = "none",
     values = [
+        # No sanitizer instrumentation.
         "none",
+        # Address sanitizer (ASAN).
+        # See https://clang.llvm.org/docs/AddressSanitizer.html
         "asan",
+        # Memory sanitizer (MSAN).
+        # See https://clang.llvm.org/docs/MemorySanitizer.html
         "msan",
+        # MSAN + origin tracking enabled.
+        # Useful for debugging crash reproducers, 1.5-2x slower.
         "msan-repro",
     ],
     visibility = ["//visibility:public"],
