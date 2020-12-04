@@ -90,7 +90,7 @@ sanitizer_opts = {
         copts = ["-fsanitize=memory"],
         linkopts = ["-fsanitize=memory"],
     ),
-    "msan-repro": instrumentation_opts(
+    "msan-origin-tracking": instrumentation_opts(
         copts = [
             "-fsanitize=memory",
             "-fsanitize-memory-track-origins=2",

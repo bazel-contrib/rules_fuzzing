@@ -45,7 +45,7 @@ string_flag(
         "msan",
         # MSAN + origin tracking enabled.
         # Useful for debugging crash reproducers, 1.5-2x slower.
-        "msan-repro",
+        "msan-origin-tracking",
     ],
     visibility = ["//visibility:public"],
 )

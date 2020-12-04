@@ -29,7 +29,7 @@ build:msan-libfuzzer --//fuzzing:cc_engine_sanitizer=msan
 # LibFuzzer + MSAN (reproduction mode)
 build:msan-libfuzzer-repro --//fuzzing:cc_engine=//fuzzing/engines:libfuzzer
 build:msan-libfuzzer-repro --//fuzzing:cc_engine_instrumentation=libfuzzer
-build:msan-libfuzzer-repro --//fuzzing:cc_engine_sanitizer=msan-repro
+build:msan-libfuzzer-repro --//fuzzing:cc_engine_sanitizer=msan-origin-tracking
 
 # Honggfuzz + ASAN
 build:asan-honggfuzz --//fuzzing:cc_engine=//fuzzing/engines:honggfuzz
