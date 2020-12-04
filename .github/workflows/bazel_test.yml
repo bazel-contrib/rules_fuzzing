@@ -17,19 +17,38 @@ name: Bazel Test
 on: [push, pull_request]
 
 jobs:
-  bazel_test:
+  unit_tests:
+    name: All project tests
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Run unit tests
+        run: |
+          bazel test //... --test_tag_filters=-fuzz-test --build_tests_only
       - name: Build fuzz test examples
         # The -FDP is for filtering out the files which contains "#include <fuzzer/FuzzedDataProvider.h>",
         # The "<fuzzer/FDP...>" is only supported since clang-10 while the clang version in github runner is 9
         run: |
           bazel build --verbose_failures --build_tag_filters=fuzz-test,-FDP --config=asan-libfuzzer //examples/...
-      - name: Run common tests
+  smoke_tests:
+    name: Smoke tests on fuzz targets
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      matrix:
+        config: ["asan-libfuzzer", "msan-libfuzzer", "asan-honggfuzz"]
+        target: ["//examples:empty_fuzz_test_run", "//examples:re2_fuzz_test_run"]
+        exclude:
+          # MSAN currently fails on the RE2 target.
+          - config: "msan-libfuzzer"
+            target: "//examples:re2_fuzz_test_run"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -yq libunwind-dev libblocksruntime-dev
+      - name: Run smoke test
         run: |
-          bazel test --config=clang //... --test_tag_filters=-fuzz-test --build_tests_only
-      - name: Run dedicated tests
-        run: |
-          bazel run //examples:empty_fuzz_test_run --config=asan-libfuzzer -- --timeout_secs=5
+          bazel run ${{ matrix.target }} --config=${{ matrix.config }} -- --clean --timeout_secs=5

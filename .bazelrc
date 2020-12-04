@@ -12,45 +12,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# TODO(sbucur): Verify whether this can be specified directly in Starlark,
-# perhaps using a C++ toolchain customization.
+# Force the use of Clang for all builds.
+build --action_env=CC=clang
+build --action_env=CXX=clang++
 
-# Common flags for Clang.
-build:clang --action_env=CC=clang
-build:clang --action_env=CXX=clang++
-
-# Common fuzzing flags. To be only used by other configs.
-build:_fuzzer_common --config=clang
-build:_fuzzer_common --copt=-DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
-
-# Flags for Clang with ASAN and libfuzzer.
-build:asan-libfuzzer --config=_fuzzer_common
-build:asan-libfuzzer --linkopt=-fsanitize=fuzzer,address
-build:asan-libfuzzer --copt=-fsanitize=fuzzer,address
+# LibFuzzer + ASAN
 build:asan-libfuzzer --//fuzzing:cc_engine=//fuzzing/engines:libfuzzer
+build:asan-libfuzzer --//fuzzing:cc_engine_instrumentation=libfuzzer
+build:asan-libfuzzer --//fuzzing:cc_engine_sanitizer=asan
 
-# Flags for Clang with ASAN and Honggfuzz.
-# Reflects the set of options at
-# https://github.com/google/honggfuzz/blob/master/hfuzz_cc/hfuzz-cc.c
-build:asan-honggfuzz --config=_fuzzer_common
-build:asan-honggfuzz --dynamic_mode=off
-build:asan-honggfuzz --copt=-mllvm
-build:asan-honggfuzz --copt=-inline-threshold=2000
-build:asan-honggfuzz --copt=-fno-builtin
-build:asan-honggfuzz --copt=-fno-omit-frame-pointer
-build:asan-honggfuzz --copt=-D__NO_STRING_INLINES
-build:asan-honggfuzz --copt=-fsanitize=address
-build:asan-honggfuzz --copt=-fno-sanitize=fuzzer
-build:asan-honggfuzz --copt=-fsanitize-coverage=trace-pc-guard,trace-cmp,trace-div,indirect-calls
-build:asan-honggfuzz --linkopt=-fsanitize=address
-build:asan-honggfuzz --//fuzzing:cc_engine=//fuzzing/engines:honggfuzz
-
-# Flags for Clang with MSAN and libfuzzer.
-build:msan-libfuzzer --config=_fuzzer_common
-build:msan-libfuzzer --linkopt=-fsanitize=memory,fuzzer
-build:msan-libfuzzer --copt=-fsanitize=memory,fuzzer
+# LibFuzzer + MSAN
 build:msan-libfuzzer --//fuzzing:cc_engine=//fuzzing/engines:libfuzzer
+build:msan-libfuzzer --//fuzzing:cc_engine_instrumentation=libfuzzer
+build:msan-libfuzzer --//fuzzing:cc_engine_sanitizer=msan
 
-# Flags for Clang with MSAN and libfuzzer, outputting detailed report.
-build:msan-libfuzzer-repro --config=msan-libfuzzer
-build:msan-libfuzzer-repro --copt=-fsanitize-memory-track-origins=2
+# LibFuzzer + MSAN (reproduction mode)
+build:msan-libfuzzer-repro --//fuzzing:cc_engine=//fuzzing/engines:libfuzzer
+build:msan-libfuzzer-repro --//fuzzing:cc_engine_instrumentation=libfuzzer
+build:msan-libfuzzer-repro --//fuzzing:cc_engine_sanitizer=msan-origin-tracking
+
+# Honggfuzz + ASAN
+build:asan-honggfuzz --//fuzzing:cc_engine=//fuzzing/engines:honggfuzz
+build:asan-honggfuzz --//fuzzing:cc_engine_instrumentation=honggfuzz
+build:asan-honggfuzz --//fuzzing:cc_engine_sanitizer=asan
+
+# Honggfuzz + MSAN
+build:msan-honggfuzz --//fuzzing:cc_engine=//fuzzing/engines:honggfuzz
+build:msan-honggfuzz --//fuzzing:cc_engine_instrumentation=honggfuzz
+build:msan-honggfuzz --//fuzzing:cc_engine_sanitizer=msan

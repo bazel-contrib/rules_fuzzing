@@ -12,12 +12,45 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
+
 label_flag(
     name = "cc_engine",
     build_setting_default = "//fuzzing/engines:libfuzzer",
     visibility = ["//visibility:public"],
 )
 
+string_flag(
+    name = "cc_engine_instrumentation",
+    build_setting_default = "none",
+    values = [
+        "none",
+        "libfuzzer",
+        "honggfuzz",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+string_flag(
+    name = "cc_engine_sanitizer",
+    build_setting_default = "none",
+    values = [
+        # No sanitizer instrumentation.
+        "none",
+        # Address sanitizer (ASAN).
+        # See https://clang.llvm.org/docs/AddressSanitizer.html
+        "asan",
+        # Memory sanitizer (MSAN).
+        # See https://clang.llvm.org/docs/MemorySanitizer.html
+        "msan",
+        # MSAN + origin tracking enabled.
+        # Useful for debugging crash reproducers, 1.5-2x slower.
+        "msan-origin-tracking",
+    ],
+    visibility = ["//visibility:public"],
+)
+
 exports_files([
     "cc_deps.bzl",
+    "instrum_opts.bzl",
 ])

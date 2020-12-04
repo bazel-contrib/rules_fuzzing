@@ -29,7 +29,7 @@ Specifies a fuzzing engine that can be used to run C++ fuzz targets.
 ## cc_fuzz_test
 
 <pre>
-cc_fuzz_test(<a href="#cc_fuzz_test-name">name</a>, <a href="#cc_fuzz_test-corpus">corpus</a>, <a href="#cc_fuzz_test-dicts">dicts</a>, <a href="#cc_fuzz_test-engine">engine</a>, <a href="#cc_fuzz_test-binary_kwargs">binary_kwargs</a>)
+cc_fuzz_test(<a href="#cc_fuzz_test-name">name</a>, <a href="#cc_fuzz_test-corpus">corpus</a>, <a href="#cc_fuzz_test-dicts">dicts</a>, <a href="#cc_fuzz_test-engine">engine</a>, <a href="#cc_fuzz_test-tags">tags</a>, <a href="#cc_fuzz_test-binary_kwargs">binary_kwargs</a>)
 </pre>
 
 Defines a fuzz test and a few associated tools and metadata.
@@ -47,6 +47,9 @@ For each fuzz test `<name>`, this macro expands into a number of targets:
 * `<name>_corpus_zip`: Generates a zip archive of the corpus directory.
 * `<name>_dict`: Validates the set of dictionary files provided and emits
   the result to a `<name>.dict` file.
+* `<name>_raw`: The raw, uninstrumented fuzz test executable. This should be
+  rarely needed and may be useful when debugging instrumentation-related
+  build failures or misbehavior.
 
 > TODO: Document here the command line interface of the `<name>_run`
 targets.
@@ -61,6 +64,7 @@ targets.
 | <a id="cc_fuzz_test-corpus"></a>corpus |  A list containing corpus files.   |  <code>None</code> |
 | <a id="cc_fuzz_test-dicts"></a>dicts |  A list containing dictionaries.   |  <code>None</code> |
 | <a id="cc_fuzz_test-engine"></a>engine |  A label pointing to the fuzzing engine to use.   |  <code>"@rules_fuzzing//fuzzing:cc_engine"</code> |
+| <a id="cc_fuzz_test-tags"></a>tags |  Tags set on the fuzz test executable.   |  <code>None</code> |
 | <a id="cc_fuzz_test-binary_kwargs"></a>binary_kwargs |  Keyword arguments directly forwarded to the fuzz test   binary rule.   |  none |
 
 

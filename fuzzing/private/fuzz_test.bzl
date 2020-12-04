@@ -17,12 +17,14 @@
 load("@rules_cc//cc:defs.bzl", "cc_test")
 load("@rules_pkg//:pkg.bzl", "pkg_zip")
 load("//fuzzing/private:common.bzl", "fuzzing_corpus", "fuzzing_dictionary", "fuzzing_launcher")
+load("//fuzzing/private:instrument.bzl", "instrumented_fuzzing_binary")
 
 def cc_fuzz_test(
         name,
         corpus = None,
         dicts = None,
         engine = "@rules_fuzzing//fuzzing:cc_engine",
+        tags = None,
         **binary_kwargs):
     """Defines a fuzz test and a few associated tools and metadata.
 
@@ -39,6 +41,9 @@ def cc_fuzz_test(
     * `<name>_corpus_zip`: Generates a zip archive of the corpus directory.
     * `<name>_dict`: Validates the set of dictionary files provided and emits
       the result to a `<name>.dict` file.
+    * `<name>_raw`: The raw, uninstrumented fuzz test executable. This should be
+      rarely needed and may be useful when debugging instrumentation-related
+      build failures or misbehavior.
 
     > TODO: Document here the command line interface of the `<name>_run`
     targets.
@@ -48,15 +53,27 @@ def cc_fuzz_test(
         corpus: A list containing corpus files.
         dicts: A list containing dictionaries.
         engine: A label pointing to the fuzzing engine to use.
+        tags: Tags set on the fuzz test executable.
         **binary_kwargs: Keyword arguments directly forwarded to the fuzz test
           binary rule.
     """
 
-    binary_kwargs.setdefault("tags", []).append("fuzz-test")
     binary_kwargs.setdefault("deps", []).append(engine)
     cc_test(
-        name = name,
+        name = name + "_raw",
+        tags = [
+            "manual",
+        ],
         **binary_kwargs
+    )
+
+    instrumented_fuzzing_binary(
+        name = name,
+        binary = name + "_raw",
+        tags = (tags or []) + [
+            "fuzz-test",
+        ],
+        testonly = True,
     )
 
     if corpus:

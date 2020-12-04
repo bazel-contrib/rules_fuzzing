@@ -94,7 +94,7 @@ Check out the [`examples/`](examples/) directory, which showcases additional fea
 
 ## Using the rules in your project
 
-To use the fuzzing rules in your project, you will need to load and set them up in your workspace, along with creating the necessary `--config` commands in your `.bazelrc` file.
+To use the fuzzing rules in your project, you will need to load and set them up in your workspace. We also recommend creating `--config` commands in your `.bazelrc` file for the fuzzing engine + sanitizer configurations you wish to use in your project.
 
 ### Configuring the WORKSPACE
 
@@ -123,11 +123,15 @@ The project is still under active development, so you many need to change the `u
 
 ### Configuring the .bazelrc file
 
-To make sure the fuzz tests are built with the correct instrumentation flags for each engine / instrumentation supported, we recommend using the configurations defined in this repository's [`.bazelrc` file](/.bazelrc), which you can copy and paste in your own `.bazelrc` file.
+Each fuzz test is built with a fuzzing engine and instrumentation specified in three build settings, available as flags on the Bazel command line:
 
-Currently, the following configurations are available, based on the fuzzing engines defined in this repository:
+* `--@rules_fuzzing//fuzzing:cc_engine` points to the `cc_fuzzing_engine` target of the fuzzing engine to use.
+* `--@rules_fuzzing//fuzzing:cc_engine_instrumentation` specifies the compiler instrumentation to use (for example, libFuzzer or Honggfuzz).
+* `--@rules_fuzzing//fuzzing:cc_engine_sanitizer` specifies the sanitizer configuration used to detect bugs (for example, ASAN or MSAN).
 
-| Configuration             | Fuzzing engine | Instrumentation          |
+To simplify specifying these settings on the command line, we recommend combining them as `--config` settings in your project's [`.bazelrc` file](https://docs.bazel.build/versions/master/guide.html#bazelrc-the-bazel-configuration-file). You can copy and paste the [`.bazelrc` file of this repository](/.bazelrc) as a starting point, which defines the following configurations:
+
+| Configuration             | Fuzzing engine | Sanitizer                |
 |---------------------------|----------------|--------------------------|
 | `--config=asan-fuzzer`    | libFuzzer      | Address Sanitizer (ASAN) |
 | `--config=msan-fuzzer`    | libFuzzer      | Memory Sanitizer (MSAN)  |
