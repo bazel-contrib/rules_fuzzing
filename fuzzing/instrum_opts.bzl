@@ -27,7 +27,7 @@ def _is_string_list(value):
     return True
 
 def instrumentation_opts(copts = [], linkopts = []):
-    """Returns a struct with the given instrumentation options.
+    """Creates new instrumentation options.
 
     The struct fields mirror the argument names of this function.
 
@@ -36,6 +36,8 @@ def instrumentation_opts(copts = [], linkopts = []):
         configuration flags.
       linkopts: A list of linker options to pass as `--linkopt`
         configuration flags.
+    Returns:
+      A struct with the given instrumentation options.
     """
     if not _is_string_list(copts):
         fail("copts should be a list of strings")
