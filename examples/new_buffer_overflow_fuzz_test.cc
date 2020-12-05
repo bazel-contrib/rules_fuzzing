@@ -12,25 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <cstdio>
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
+#include <cstdio>
 #include <cstring>
 
 void TriggerBufferOverflow(const uint8_t *data, size_t size) {
-  if (size >= 3 &&
-      data[0] == 'F' &&
-      data[1] == 'U' &&
-      data[2] == 'Z' &&
+  if (size >= 3 && data[0] == 'F' && data[1] == 'U' && data[2] == 'Z' &&
       data[3] == 'Z') {
     fprintf(stderr, "BUFFER OVERFLOW!\n");
   }
 }
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
-  uint8_t* data_copy = new uint8_t[size];
+  uint8_t *data_copy = new uint8_t[size];
   memcpy(data_copy, data, size);
   TriggerBufferOverflow(data_copy, size);
-  delete []data_copy;
+  delete[] data_copy;
   return 0;
 }

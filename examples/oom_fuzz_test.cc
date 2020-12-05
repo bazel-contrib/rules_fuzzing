@@ -14,21 +14,21 @@
 
 // A fuzz target that creates a memory leak and causes OOM errors.
 
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 void LeakMemory() {
-    int* zombie_ptr = new int(100);
-    zombie_ptr[0] = 0;
+  int* zombie_ptr = new int(100);
+  zombie_ptr[0] = 0;
 }
 
 void TriggerOomError() {
-    for (size_t i = 0; i < (1 << 30); ++i) {
-        LeakMemory();
-    }
+  for (size_t i = 0; i < (1 << 30); ++i) {
+    LeakMemory();
+  }
 }
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
-    TriggerOomError();
-    return 0;
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  TriggerOomError();
+  return 0;
 }

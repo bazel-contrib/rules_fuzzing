@@ -16,13 +16,13 @@
 // See RE2's own fuzz tests for real-world examples that follow best practices,
 // e.g.: https://github.com/google/re2/blob/master/re2/fuzzing/re2_fuzzer.cc
 
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 #include <string>
 
 #include "re2/re2.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-    RE2 re(std::string(reinterpret_cast<const char*>(data), size), RE2::Quiet);
-    return 0;
+  RE2 re(std::string(reinterpret_cast<const char*>(data), size), RE2::Quiet);
+  return 0;
 }

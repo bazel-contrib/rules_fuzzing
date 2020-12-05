@@ -14,12 +14,12 @@
 
 // A fuzz target that hangs.
 
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
   while (true) {
-      continue;
+    continue;
   }
 
   return 0;

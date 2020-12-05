@@ -15,17 +15,18 @@
 // A fuzz target that demonstrates the use of FuzzeddataProvider.
 
 #include <fuzzer/FuzzedDataProvider.h>
-#include <cstdint>
+
 #include <cstddef>
+#include <cstdint>
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
-    FuzzedDataProvider fuzzed_data(data, size);
+  FuzzedDataProvider fuzzed_data(data, size);
 
-    const auto first_part_size = fuzzed_data.ConsumeIntegral<uint16_t>();
-    std::vector<uint8_t> first_part =
-        fuzzed_data.ConsumeBytes<uint8_t>(first_part_size);
-    std::vector<uint8_t> second_part =
+  const auto first_part_size = fuzzed_data.ConsumeIntegral<uint16_t>();
+  std::vector<uint8_t> first_part =
+      fuzzed_data.ConsumeBytes<uint8_t>(first_part_size);
+  std::vector<uint8_t> second_part =
       fuzzed_data.ConsumeRemainingBytes<uint8_t>();
 
-    return 0;
+  return 0;
 }
