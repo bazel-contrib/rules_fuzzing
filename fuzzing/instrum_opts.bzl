@@ -51,7 +51,6 @@ def instrumentation_opts(copts = [], linkopts = []):
 # Base instrumentation applied to all fuzz test executables.
 base_opts = instrumentation_opts(
     copts = ["-DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION"],
-    linkopts = [],
 )
 
 # Engine-specific instrumentation.
@@ -59,7 +58,6 @@ fuzzing_engine_opts = {
     "none": instrumentation_opts(),
     "libfuzzer": instrumentation_opts(
         copts = ["-fsanitize=fuzzer"],
-        linkopts = ["-fsanitize=fuzzer"],
     ),
     # Reflects the set of options at
     # https://github.com/google/honggfuzz/blob/master/hfuzz_cc/hfuzz-cc.c
