@@ -57,7 +57,7 @@ base_opts = instrumentation_opts(
 fuzzing_engine_opts = {
     "none": instrumentation_opts(),
     "libfuzzer": instrumentation_opts(
-        copts = ["-fsanitize=fuzzer"],
+        copts = ["-fsanitize=fuzzer-no-link"],
     ),
     # Reflects the set of options at
     # https://github.com/google/honggfuzz/blob/master/hfuzz_cc/hfuzz-cc.c
