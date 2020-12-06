@@ -14,11 +14,11 @@
 
 // A fuzz target that causes an MSAN error (e.g., uninitialized variables).
 
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
-    int a;
-    if (a) ++a;
-    return 0;
+  int a;
+  if (a) ++a;
+  return 0;
 }

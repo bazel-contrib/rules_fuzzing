@@ -12,15 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <cstdio>
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
+#include <cstdio>
 
 void TriggerBufferOverflow(const uint8_t *data, size_t size) {
-  if (size >= 3 &&
-      data[0] == 'F' &&
-      data[1] == 'U' &&
-      data[2] == 'Z' &&
+  if (size >= 3 && data[0] == 'F' && data[1] == 'U' && data[2] == 'Z' &&
       data[3] == 'Z') {
     fprintf(stderr, "BUFFER OVERFLOW!\n");
   }
