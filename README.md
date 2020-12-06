@@ -123,7 +123,7 @@ The project is still under active development, so you many need to change the `u
 
 ### Configuring the .bazelrc file
 
-Each fuzz test is built with a fuzzing engine and instrumentation specified in three build settings, available as flags on the Bazel command line:
+Each fuzz test is built with a fuzzing engine and instrumentation specified in a number of build settings, available as flags on the Bazel command line. The most common are:
 
 * `--@rules_fuzzing//fuzzing:cc_engine` points to the `cc_fuzzing_engine` target of the fuzzing engine to use.
 * `--@rules_fuzzing//fuzzing:cc_engine_instrumentation` specifies the compiler instrumentation to use (for example, libFuzzer or Honggfuzz).

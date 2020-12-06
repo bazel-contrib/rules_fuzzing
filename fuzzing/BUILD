@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag", "string_flag")
 
 label_flag(
     name = "cc_engine",
@@ -47,6 +47,16 @@ string_flag(
         # Useful for debugging crash reproducers, 1.5-2x slower.
         "msan-origin-tracking",
     ],
+    visibility = ["//visibility:public"],
+)
+
+# If set, define the FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION macro
+# during compilation.
+#
+# See https://llvm.org/docs/LibFuzzer.html#fuzzer-friendly-build-mode
+bool_flag(
+    name = "cc_fuzzing_build_mode",
+    build_setting_default = True,
     visibility = ["//visibility:public"],
 )
 

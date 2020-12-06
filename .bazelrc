@@ -18,25 +18,25 @@ build --action_env=CXX=clang++
 
 # LibFuzzer + ASAN
 build:asan-libfuzzer --//fuzzing:cc_engine=//fuzzing/engines:libfuzzer
-build:asan-libfuzzer --//fuzzing:cc_engine_instrumentation=libfuzzer
-build:asan-libfuzzer --//fuzzing:cc_engine_sanitizer=asan
+build:asan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=libfuzzer
+build:asan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
 
 # LibFuzzer + MSAN
 build:msan-libfuzzer --//fuzzing:cc_engine=//fuzzing/engines:libfuzzer
-build:msan-libfuzzer --//fuzzing:cc_engine_instrumentation=libfuzzer
-build:msan-libfuzzer --//fuzzing:cc_engine_sanitizer=msan
+build:msan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=libfuzzer
+build:msan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=msan
 
 # LibFuzzer + MSAN (reproduction mode)
 build:msan-libfuzzer-repro --//fuzzing:cc_engine=//fuzzing/engines:libfuzzer
-build:msan-libfuzzer-repro --//fuzzing:cc_engine_instrumentation=libfuzzer
-build:msan-libfuzzer-repro --//fuzzing:cc_engine_sanitizer=msan-origin-tracking
+build:msan-libfuzzer-repro --@rules_fuzzing//fuzzing:cc_engine_instrumentation=libfuzzer
+build:msan-libfuzzer-repro --@rules_fuzzing//fuzzing:cc_engine_sanitizer=msan-origin-tracking
 
 # Honggfuzz + ASAN
 build:asan-honggfuzz --//fuzzing:cc_engine=//fuzzing/engines:honggfuzz
-build:asan-honggfuzz --//fuzzing:cc_engine_instrumentation=honggfuzz
-build:asan-honggfuzz --//fuzzing:cc_engine_sanitizer=asan
+build:asan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine_instrumentation=honggfuzz
+build:asan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
 
 # Honggfuzz + MSAN
 build:msan-honggfuzz --//fuzzing:cc_engine=//fuzzing/engines:honggfuzz
-build:msan-honggfuzz --//fuzzing:cc_engine_instrumentation=honggfuzz
-build:msan-honggfuzz --//fuzzing:cc_engine_sanitizer=msan
+build:msan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine_instrumentation=honggfuzz
+build:msan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine_sanitizer=msan
