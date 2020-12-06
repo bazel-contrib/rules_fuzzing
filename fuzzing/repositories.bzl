@@ -48,7 +48,7 @@ def rules_fuzzing_dependencies():
     maybe(
         http_archive,
         name = "honggfuzz",
-        build_file = "@//:honggfuzz.BUILD",
+        build_file = "@rules_fuzzing//:honggfuzz.BUILD",
         sha256 = "a6f8040ea62e0f630737f66dce46fb1b86140f118957cb5e3754a764de7a770a",
         url = "https://github.com/google/honggfuzz/archive/e0670137531242d66c9cf8a6dee677c055a8aacb.zip",
         strip_prefix = "honggfuzz-e0670137531242d66c9cf8a6dee677c055a8aacb",
