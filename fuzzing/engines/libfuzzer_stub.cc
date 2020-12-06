@@ -22,6 +22,6 @@ int main(int argc, char** argv) {
   fprintf(stderr,
           " * You have attempted to build a libFuzzer fuzz test, but did not "
           "link in the fuzzing engine.\n");
-  fprintf(stderr, " * Use the '-fsanitizer=fuzzer' linker option instead.\n");
+  fprintf(stderr, " * Use the '-fsanitize=fuzzer' linker option instead.\n");
   abort();
 }
