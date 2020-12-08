@@ -16,7 +16,7 @@
 
 load(
     "//fuzzing:instrum_opts.bzl",
-    "base_opts",
+    "fuzzing_build_opts",
     "fuzzing_engine_opts",
     "instrumentation_opts",
     "sanitizer_opts",
@@ -33,15 +33,18 @@ def _fuzzing_binary_transition_impl(settings, attr):
         copts = settings["//command_line_option:copt"],
         linkopts = settings["//command_line_option:linkopt"],
     )
-    opts = _merge_opts(opts, base_opts)
 
-    engine = settings["//fuzzing:cc_engine_instrumentation"]
+    is_fuzzing_build_mode = settings["@rules_fuzzing//fuzzing:cc_fuzzing_build_mode"]
+    if is_fuzzing_build_mode:
+        opts = _merge_opts(opts, fuzzing_build_opts)
+
+    engine = settings["@rules_fuzzing//fuzzing:cc_engine_instrumentation"]
     if engine in fuzzing_engine_opts:
         opts = _merge_opts(opts, fuzzing_engine_opts[engine])
     else:
         fail("unsupported engine instrumentation '%s'" % engine)
 
-    sanitizer = settings["//fuzzing:cc_engine_sanitizer"]
+    sanitizer = settings["@rules_fuzzing//fuzzing:cc_engine_sanitizer"]
     if sanitizer in sanitizer_opts:
         opts = _merge_opts(opts, sanitizer_opts[sanitizer])
     else:
@@ -63,8 +66,9 @@ def _fuzzing_binary_transition_impl(settings, attr):
 fuzzing_binary_transition = transition(
     implementation = _fuzzing_binary_transition_impl,
     inputs = [
-        "//fuzzing:cc_engine_instrumentation",
-        "//fuzzing:cc_engine_sanitizer",
+        "@rules_fuzzing//fuzzing:cc_engine_instrumentation",
+        "@rules_fuzzing//fuzzing:cc_engine_sanitizer",
+        "@rules_fuzzing//fuzzing:cc_fuzzing_build_mode",
         "//command_line_option:copt",
         "//command_line_option:linkopt",
     ],

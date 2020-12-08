@@ -48,8 +48,10 @@ def instrumentation_opts(copts = [], linkopts = []):
         linkopts = linkopts,
     )
 
-# Base instrumentation applied to all fuzz test executables.
-base_opts = instrumentation_opts(
+# Instrumentation applied to all fuzz test executables when built in fuzzing
+# mode. This mode is controlled by the `//fuzzing:cc_fuzzing_build_mode` config
+# flag.
+fuzzing_build_opts = instrumentation_opts(
     copts = ["-DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION"],
 )
 
