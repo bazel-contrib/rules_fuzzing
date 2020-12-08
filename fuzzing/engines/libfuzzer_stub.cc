@@ -12,5 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// TODO(sbucur): Implement here weak main() function that prints an error
-// signaling that the real libFuzzer engine was not linked correctly.
+#include <cstdio>
+#include <cstdlib>
+
+extern "C" int main(int argc, char** argv) __attribute__((weak));
+
+int main(int argc, char** argv) {
+  fprintf(stderr, "*** ERROR *** This is a stub *** ERROR ***\n");
+  fprintf(stderr,
+          " * You have attempted to build a libFuzzer fuzz test, but did not "
+          "link in the fuzzing engine.\n");
+  fprintf(stderr, " * Use the '-fsanitize=fuzzer' linker option instead.\n");
+  abort();
+}
