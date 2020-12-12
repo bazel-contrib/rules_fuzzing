@@ -26,13 +26,21 @@ def _is_string_list(value):
         return False
     return True
 
-def instrumentation_opts(copts = [], linkopts = []):
+def instrumentation_opts(
+        copts = [],
+        conlyopts = [],
+        cxxopts = [],
+        linkopts = []):
     """Creates new instrumentation options.
 
     The struct fields mirror the argument names of this function.
 
     Args:
-      copts: A list of compilation options to pass as `--copt`
+      copts: A list of C/C++ compilation options passed as `--copt`
+        configuration flags.
+      conlyopts: A list of C-only compilation options passed as `--conlyopt`
+        configuration flags.
+      cxxopts: A list of C++-only compilation options passed as `--cxxopts`
         configuration flags.
       linkopts: A list of linker options to pass as `--linkopt`
         configuration flags.
@@ -41,10 +49,16 @@ def instrumentation_opts(copts = [], linkopts = []):
     """
     if not _is_string_list(copts):
         fail("copts should be a list of strings")
+    if not _is_string_list(conlyopts):
+        fail("conlyopts should be a list of strings")
+    if not _is_string_list(cxxopts):
+        fail("cxxopts should be a list of strings")
     if not _is_string_list(linkopts):
         fail("linkopts should be a list of strings")
     return struct(
         copts = copts,
+        conlyopts = conlyopts,
+        cxxopts = cxxopts,
         linkopts = linkopts,
     )
 

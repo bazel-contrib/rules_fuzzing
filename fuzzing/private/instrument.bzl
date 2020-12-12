@@ -25,12 +25,16 @@ load(
 def _merge_opts(left_opts, right_opts):
     return instrumentation_opts(
         copts = left_opts.copts + right_opts.copts,
+        conlyopts = left_opts.conlyopts + right_opts.conlyopts,
+        cxxopts = left_opts.cxxopts + right_opts.cxxopts,
         linkopts = left_opts.linkopts + right_opts.linkopts,
     )
 
 def _fuzzing_binary_transition_impl(settings, attr):
     opts = instrumentation_opts(
         copts = settings["//command_line_option:copt"],
+        conlyopts = settings["//command_line_option:conlyopt"],
+        cxxopts = settings["//command_line_option:cxxopt"],
         linkopts = settings["//command_line_option:linkopt"],
     )
 
@@ -58,6 +62,8 @@ def _fuzzing_binary_transition_impl(settings, attr):
     return {
         "//command_line_option:copt": opts.copts,
         "//command_line_option:linkopt": opts.linkopts,
+        "//command_line_option:conlyopt": opts.conlyopts,
+        "//command_line_option:cxxopt": opts.cxxopts,
         # Make sure binaries are built statically, to maximize the scope of the
         # instrumentation.
         "//command_line_option:dynamic_mode": "off",
@@ -70,10 +76,14 @@ fuzzing_binary_transition = transition(
         "@rules_fuzzing//fuzzing:cc_engine_sanitizer",
         "@rules_fuzzing//fuzzing:cc_fuzzing_build_mode",
         "//command_line_option:copt",
+        "//command_line_option:conlyopt",
+        "//command_line_option:cxxopt",
         "//command_line_option:linkopt",
     ],
     outputs = [
         "//command_line_option:copt",
+        "//command_line_option:conlyopt",
+        "//command_line_option:cxxopt",
         "//command_line_option:linkopt",
         "//command_line_option:dynamic_mode",
     ],
