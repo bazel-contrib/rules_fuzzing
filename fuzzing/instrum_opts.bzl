@@ -23,7 +23,7 @@ load(
     "@rules_fuzzing//fuzzing/private:instrum_opts.bzl",
     "instrum_defaults",
     "instrum_opts",
-    )
+)
 
 instrum_configs = {
     "none": instrum_opts.make(),
