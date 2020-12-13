@@ -14,10 +14,10 @@
 
 """Common building blocks for fuzz test definitions."""
 
-load("//fuzzing/private:engine.bzl", "CcFuzzingEngineInfo")
+load("//fuzzing/private:binary.bzl", "CcFuzzingBinaryInfo")
 
 def _fuzzing_launcher_script(ctx):
-    engine_info = ctx.attr.engine[CcFuzzingEngineInfo]
+    binary_info = ctx.attr.binary[CcFuzzingBinaryInfo]
     script = ctx.actions.declare_file(ctx.label.name)
 
     script_template = """
@@ -33,14 +33,14 @@ exec "{launcher}" \
     script_content = script_template.format(
         environment = "\n".join([
             "export %s='%s'" % (var, file.short_path)
-            for var, file in engine_info.environment.items()
+            for var, file in binary_info.engine_info.environment.items()
         ]),
         launcher = ctx.executable._launcher.short_path,
         binary_path = ctx.executable.binary.short_path,
-        engine_launcher = engine_info.launcher.short_path,
-        engine_name = engine_info.display_name,
-        corpus_dir = ctx.file.corpus.short_path if ctx.attr.corpus else "",
-        dictionary_path = ctx.file.dictionary.short_path if ctx.attr.dictionary else "",
+        engine_launcher = binary_info.engine_info.launcher.short_path,
+        engine_name = binary_info.engine_info.display_name,
+        corpus_dir = binary_info.corpus_dir.short_path if binary_info.corpus_dir else "",
+        dictionary_path = binary_info.dictionary_file.short_path if binary_info.dictionary_file else "",
     )
     ctx.actions.write(script, script_content, is_executable = True)
     return script
@@ -48,16 +48,11 @@ exec "{launcher}" \
 def _fuzzing_launcher_impl(ctx):
     script = _fuzzing_launcher_script(ctx)
 
-    engine_info = ctx.attr.engine[CcFuzzingEngineInfo]
-    runfiles = ctx.runfiles(files = [engine_info.launcher])
-    runfiles = runfiles.merge(engine_info.runfiles)
+    binary_info = ctx.attr.binary[CcFuzzingBinaryInfo]
+    runfiles = ctx.runfiles(files = [binary_info.engine_info.launcher])
+    runfiles = runfiles.merge(binary_info.engine_info.runfiles)
     runfiles = runfiles.merge(ctx.attr._launcher[DefaultInfo].default_runfiles)
     runfiles = runfiles.merge(ctx.attr.binary[DefaultInfo].default_runfiles)
-    if ctx.attr.corpus:
-        runfiles = runfiles.merge(ctx.attr.corpus[DefaultInfo].default_runfiles)
-    if ctx.attr.dictionary:
-        runfiles = runfiles.merge(ctx.attr.dictionary[DefaultInfo].default_runfiles)
-
     return [DefaultInfo(executable = script, runfiles = runfiles)]
 
 fuzzing_launcher = rule(
@@ -72,24 +67,12 @@ Rule for creating a script to run the fuzzing test.
             executable = True,
             cfg = "host",
         ),
-        "engine": attr.label(
-            doc = "The specification of the fuzzing engine to execute.",
-            providers = [CcFuzzingEngineInfo],
-            mandatory = True,
-        ),
         "binary": attr.label(
             executable = True,
             doc = "The executable of the fuzz test to run.",
+            providers = [CcFuzzingBinaryInfo],
             cfg = "target",
             mandatory = True,
-        ),
-        "corpus": attr.label(
-            doc = "A directory of corpus files to use as input seeds.",
-            allow_single_file = True,
-        ),
-        "dictionary": attr.label(
-            doc = "A dictionary file to use in fuzzing runs.",
-            allow_single_file = True,
         ),
     },
     executable = True,
