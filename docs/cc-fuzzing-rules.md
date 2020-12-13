@@ -44,7 +44,6 @@ For each fuzz test `<name>`, this macro expands into a number of targets:
   simpler, engine-agnostic command line interface.
 * `<name>_corpus`: Generates a corpus directory containing all the corpus
   files specified in the `corpus` attribute.
-* `<name>_corpus_zip`: Generates a zip archive of the corpus directory.
 * `<name>_dict`: Validates the set of dictionary files provided and emits
   the result to a `<name>.dict` file.
 * `<name>_raw`: The raw, uninstrumented fuzz test executable. This should be

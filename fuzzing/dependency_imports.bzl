@@ -16,13 +16,11 @@
 
 load("@rules_python//python:pip.bzl", "pip_install")
 load("@rules_python//python:repositories.bzl", "py_repositories")
-load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
 load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
 
 def fuzzing_dependency_imports():
     """Imports the dependencies of the external repositories."""
     py_repositories()
-    rules_pkg_dependencies()
     bazel_skylib_workspace()
 
     pip_install(

@@ -18,18 +18,13 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 
 def rules_fuzzing_dependencies():
+    """Instantiates the dependencies of the fuzzing rules."""
+
     maybe(
         http_archive,
         name = "rules_python",
         url = "https://github.com/bazelbuild/rules_python/releases/download/0.1.0/rules_python-0.1.0.tar.gz",
         sha256 = "b6d46438523a3ec0f3cead544190ee13223a52f6a6765a29eae7b7cc24cc83a0",
-    )
-
-    maybe(
-        http_archive,
-        name = "rules_pkg",
-        url = "https://github.com/bazelbuild/rules_pkg/releases/download/0.2.5/rules_pkg-0.2.5.tar.gz",
-        sha256 = "352c090cc3d3f9a6b4e676cf42a6047c16824959b438895a76c2989c6d7c246a",
     )
 
     maybe(
