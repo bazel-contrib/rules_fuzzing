@@ -25,12 +25,14 @@ load(
     "instrum_opts",
 )
 
+# Fuzz test binary instrumentation configurations.
 instrum_configs = {
     "none": instrum_opts.make(),
     "libfuzzer": instrum_defaults.libfuzzer,
     "honggfuzz": instrum_defaults.honggfuzz,
 }
 
+# Sanitizer configurations.
 sanitizer_configs = {
     "none": instrum_opts.make(),
     "asan": instrum_defaults.asan,
