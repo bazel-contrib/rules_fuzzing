@@ -27,6 +27,7 @@ string_flag(
         "none",
         "libfuzzer",
         "honggfuzz",
+        "oss-fuzz",
     ],
     visibility = ["//visibility:public"],
 )

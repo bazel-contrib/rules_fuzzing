@@ -16,6 +16,7 @@
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
+load("//fuzzing/private/oss_fuzz:repository.bzl", "oss_fuzz_repository")
 
 def rules_fuzzing_dependencies():
     """Instantiates the dependencies of the fuzzing rules."""
@@ -55,4 +56,8 @@ def rules_fuzzing_dependencies():
         sha256 = "a6f8040ea62e0f630737f66dce46fb1b86140f118957cb5e3754a764de7a770a",
         url = "https://github.com/google/honggfuzz/archive/e0670137531242d66c9cf8a6dee677c055a8aacb.zip",
         strip_prefix = "honggfuzz-e0670137531242d66c9cf8a6dee677c055a8aacb",
+    )
+
+    oss_fuzz_repository(
+        name = "rules_fuzzing_oss_fuzz",
     )

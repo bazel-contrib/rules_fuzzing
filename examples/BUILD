@@ -42,6 +42,11 @@ cc_fuzz_test(
 cc_fuzz_test(
     name = "empty_fuzz_test_with_dict",
     srcs = ["empty_fuzz_test.cc"],
+    corpus = [
+        "corpus_0.txt",
+        ":corpus_filegroup",
+        "test_corpus_dir",
+    ],
     dicts = ["dict_dir/valid.dict"],
 )
 

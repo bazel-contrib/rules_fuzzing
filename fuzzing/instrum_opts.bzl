@@ -24,12 +24,17 @@ load(
     "instrum_defaults",
     "instrum_opts",
 )
+load(
+    "@rules_fuzzing_oss_fuzz//:instrum.bzl",
+    "oss_fuzz_opts",
+)
 
 # Fuzz test binary instrumentation configurations.
 instrum_configs = {
     "none": instrum_opts.make(),
     "libfuzzer": instrum_defaults.libfuzzer,
     "honggfuzz": instrum_defaults.honggfuzz,
+    "oss-fuzz": oss_fuzz_opts,
 }
 
 # Sanitizer configurations.

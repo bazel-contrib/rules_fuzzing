@@ -17,6 +17,7 @@
 load("@rules_cc//cc:defs.bzl", "cc_test")
 load("//fuzzing/private:common.bzl", "fuzzing_corpus", "fuzzing_dictionary", "fuzzing_launcher")
 load("//fuzzing/private:binary.bzl", "fuzzing_binary")
+load("//fuzzing/private/oss_fuzz:package.bzl", "oss_fuzz_package")
 
 def cc_fuzz_test(
         name,
@@ -94,5 +95,11 @@ def cc_fuzz_test(
         binary = name,
         # Since the script depends on the _fuzz_test above, which is a cc_test,
         # this attribute must be set.
+        testonly = True,
+    )
+
+    oss_fuzz_package(
+        name = name + "_oss_fuzz",
+        binary = name,
         testonly = True,
     )
