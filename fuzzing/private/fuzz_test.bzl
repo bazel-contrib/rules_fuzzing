@@ -16,7 +16,7 @@
 
 load("@rules_cc//cc:defs.bzl", "cc_test")
 load("//fuzzing/private:common.bzl", "fuzzing_corpus", "fuzzing_dictionary", "fuzzing_launcher")
-load("//fuzzing/private:instrument.bzl", "instrumented_fuzzing_binary")
+load("//fuzzing/private:binary.bzl", "fuzzing_binary")
 
 def cc_fuzz_test(
         name,
@@ -65,9 +65,12 @@ def cc_fuzz_test(
         **binary_kwargs
     )
 
-    instrumented_fuzzing_binary(
+    fuzzing_binary(
         name = name,
         binary = name + "_raw",
+        engine = engine,
+        corpus = name + "_corpus" if corpus else None,
+        dictionary = name + "_dict" if dicts else None,
         tags = (tags or []) + [
             "fuzz-test",
         ],
@@ -88,10 +91,7 @@ def cc_fuzz_test(
 
     fuzzing_launcher(
         name = name + "_run",
-        engine = engine,
         binary = name,
-        corpus = name + "_corpus" if corpus else None,
-        dictionary = name + "_dict" if dicts else None,
         # Since the script depends on the _fuzz_test above, which is a cc_test,
         # this attribute must be set.
         testonly = True,

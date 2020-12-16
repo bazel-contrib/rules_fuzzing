@@ -82,7 +82,7 @@ Specifies a fuzzing engine that can be used to run C++ fuzz targets.
                   "available inside the launcher, holding the runtime path " +
                   "to the dependency.",
             allow_files = True,
-            cfg = "host",
         ),
     },
+    provides = [CcFuzzingEngineInfo],
 )

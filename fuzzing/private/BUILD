@@ -19,8 +19,9 @@ engine_test_suite(
 )
 
 exports_files([
+    "binary.bzl",
     "common.bzl",
     "engine.bzl",
     "fuzz_test.bzl",
-    "instrument.bzl",
+    "instrum_opts.bzl",
 ])

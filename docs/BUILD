@@ -38,10 +38,11 @@ bzl_library(
     srcs = [
         "//fuzzing:cc_deps.bzl",
         "//fuzzing:instrum_opts.bzl",
+        "//fuzzing/private:binary.bzl",
         "//fuzzing/private:common.bzl",
         "//fuzzing/private:engine.bzl",
         "//fuzzing/private:fuzz_test.bzl",
-        "//fuzzing/private:instrument.bzl",
+        "//fuzzing/private:instrum_opts.bzl",
     ],
     deps = [
         ":rules_cc",
