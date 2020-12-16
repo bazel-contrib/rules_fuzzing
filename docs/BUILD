@@ -34,14 +34,6 @@ bzl_library(
 )
 
 bzl_library(
-    name = "rules_pkg",
-    srcs = [
-        "@rules_pkg//:path.bzl",
-        "@rules_pkg//:pkg.bzl",
-    ],
-)
-
-bzl_library(
     name = "cc_fuzzing_rules",
     srcs = [
         "//fuzzing:cc_deps.bzl",
@@ -53,7 +45,6 @@ bzl_library(
     ],
     deps = [
         ":rules_cc",
-        ":rules_pkg",
     ],
 )
 

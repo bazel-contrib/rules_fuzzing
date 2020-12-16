@@ -15,7 +15,6 @@
 """The implementation of the cc_fuzz_test rule."""
 
 load("@rules_cc//cc:defs.bzl", "cc_test")
-load("@rules_pkg//:pkg.bzl", "pkg_zip")
 load("//fuzzing/private:common.bzl", "fuzzing_corpus", "fuzzing_dictionary", "fuzzing_launcher")
 load("//fuzzing/private:instrument.bzl", "instrumented_fuzzing_binary")
 
@@ -38,7 +37,6 @@ def cc_fuzz_test(
       simpler, engine-agnostic command line interface.
     * `<name>_corpus`: Generates a corpus directory containing all the corpus
       files specified in the `corpus` attribute.
-    * `<name>_corpus_zip`: Generates a zip archive of the corpus directory.
     * `<name>_dict`: Validates the set of dictionary files provided and emits
       the result to a `<name>.dict` file.
     * `<name>_raw`: The raw, uninstrumented fuzz test executable. This should be
@@ -80,10 +78,6 @@ def cc_fuzz_test(
         fuzzing_corpus(
             name = name + "_corpus",
             srcs = corpus,
-        )
-        pkg_zip(
-            name = name + "_corpus_zip",
-            srcs = [name + "_corpus"],
         )
     if dicts:
         fuzzing_dictionary(
