@@ -14,6 +14,9 @@
 
 // Utilities for working with absl::Status values.
 
+#ifndef FUZZING_REPLAY_STATUS_UTIL_H_
+#define FUZZING_REPLAY_STATUS_UTIL_H_
+
 #include "absl/status/status.h"
 #include "absl/strings/string_view.h"
 
@@ -24,3 +27,5 @@ namespace fuzzing {
 absl::Status ErrnoStatus(absl::string_view message, int errno_value);
 
 }  // namespace fuzzing
+
+#endif  // FUZZING_REPLAY_STATUS_UTIL_H_
