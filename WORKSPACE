@@ -43,3 +43,10 @@ http_archive(
     strip_prefix = "re2-2020-11-01",
     url = "https://github.com/google/re2/archive/2020-11-01.tar.gz",
 )
+
+http_archive(
+    name = "com_google_googletest",
+    sha256 = "763e20249e76417bed7ebc44aa85fedf5fbac6f9fb6d30bddb628ab07ebf04f5",
+    strip_prefix = "googletest-389cb68b87193358358ae87cc56d257fd0d80189",
+    urls = ["https://github.com/google/googletest/archive/389cb68b87193358358ae87cc56d257fd0d80189.zip"],
+)

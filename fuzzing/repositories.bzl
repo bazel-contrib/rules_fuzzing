@@ -37,6 +37,14 @@ def rules_fuzzing_dependencies():
         sha256 = "1c531376ac7e5a180e0237938a2536de0c54d93f5c278634818e0efc952dd56c",
     )
 
+    maybe(
+        http_archive,
+        name = "com_google_absl",
+        urls = ["https://github.com/abseil/abseil-cpp/archive/4611a601a7ce8d5aad169417092e3d5027aa8403.zip"],
+        strip_prefix = "abseil-cpp-4611a601a7ce8d5aad169417092e3d5027aa8403",
+        sha256 = "f4f2d3d01c3cc99eebc9f370ea626c43a54b386913aef393bf8201b2c42a9e2f",
+    )
+
     # TODO(sbucur): Since Honggfuzz has its own set of dependencies, look into
     # making them optional, so developers only import them if they decide to
     # use Honggfuzz.
