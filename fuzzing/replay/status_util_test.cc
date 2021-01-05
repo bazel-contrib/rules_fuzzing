@@ -40,8 +40,7 @@ TEST(StatusUtilTest, NonemptyMessage) {
 
 TEST(StatusUtilTest, SuccessfulErrno) {
   const absl::Status status = ErrnoStatus("no error", 0);
-  EXPECT_EQ(status.code(), absl::StatusCode::kUnknown);
-  EXPECT_THAT(status.message(), StrEq("no error (Success)"));
+  EXPECT_TRUE(status.ok());
 }
 
 TEST(StatusUtilTest, UnknownErrno) {

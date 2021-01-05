@@ -44,8 +44,12 @@ std::string StrError(int errno_value) {
 }  // namespace
 
 absl::Status ErrnoStatus(absl::string_view message, int errno_value) {
-  return absl::UnknownError(
-      absl::StrCat(message, " (", StrError(errno_value), ")"));
+  if (errno_value == 0) {
+    return absl::OkStatus();
+  } else {
+    return absl::UnknownError(
+        absl::StrCat(message, " (", StrError(errno_value), ")"));
+  }
 }
 
 }  // namespace fuzzing

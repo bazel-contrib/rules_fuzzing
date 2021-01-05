@@ -23,7 +23,7 @@
 namespace fuzzing {
 
 // Creates an error status value that includes the given `message` and a
-// representation of the `errno_value`.
+// description of the `errno_value`. Returns OK if `errno_value` is zero.
 absl::Status ErrnoStatus(absl::string_view message, int errno_value);
 
 }  // namespace fuzzing
