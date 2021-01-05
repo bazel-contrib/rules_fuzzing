@@ -40,6 +40,8 @@ def _extract_build_params(
         else:
             fail("Unsupported $LIB_FUZZING_ENGINE value '%s'" % fuzzing_engine_library)
     for cflag in cflags:
+        # Skip the fuzzing build more flag, since it is separately controlled
+        # by the --//fuzzing:cc_fuzzing_build_mode configuration flag.
         if cflag == "-DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION":
             continue
         instrum_conlyopts.append(cflag)
