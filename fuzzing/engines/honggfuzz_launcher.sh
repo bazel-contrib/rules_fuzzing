@@ -21,6 +21,12 @@ if [[ -n "${FUZZER_SEED_CORPUS_DIR}" ]]; then
 else
     command_line+=("--input=${FUZZER_OUTPUT_CORPUS_DIR}")
 fi
+if (( FUZZER_IS_REGRESSION )); then
+    # There is no regression mode in Honggfuzz, use minimization to a
+    # temporary output as the closest proxy.
+    command_line+=("--minimize")
+    command_line+=("--verbose")
+fi
 
 command_line+=("--crashdir=${FUZZER_ARTIFACTS_DIR}")
 

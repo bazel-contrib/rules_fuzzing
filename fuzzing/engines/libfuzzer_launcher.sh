@@ -27,6 +27,9 @@ command_line+=("-artifact_prefix=${FUZZER_ARTIFACTS_DIR}/")
 if [[ "${FUZZER_TIMEOUT_SECS}" -gt 0 ]]; then
     command_line+=("-max_total_time=${FUZZER_TIMEOUT_SECS}")
 fi
+if (( FUZZER_IS_REGRESSION )); then
+    command_line+=("-runs=0")
+fi
 
 # Corpus sources.
 
