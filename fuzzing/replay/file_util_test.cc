@@ -33,10 +33,10 @@ namespace fuzzing {
 namespace {
 
 std::function<void(absl::string_view, const struct stat&)> CollectPathsCallback(
-    std::vector<std::string>& collected_paths) {
-  return [&collected_paths](absl::string_view path, const struct stat&) {
+    std::vector<std::string>* collected_paths) {
+  return [collected_paths](absl::string_view path, const struct stat&) {
     absl::FPrintF(stderr, "Collected path: %s\n", path);
-    collected_paths.push_back(std::string(path));
+    collected_paths->push_back(std::string(path));
   };
 }
 
@@ -47,7 +47,7 @@ TEST(YieldFilesTest, ReturnsEmptyResultsOnEmptyDir) {
 
   std::vector<std::string> collected_paths;
   const absl::Status status =
-      YieldFiles(root_dir, CollectPathsCallback(collected_paths));
+      YieldFiles(root_dir, CollectPathsCallback(&collected_paths));
   EXPECT_TRUE(status.ok());
   EXPECT_THAT(collected_paths, testing::IsEmpty());
 }
@@ -57,7 +57,7 @@ TEST(YieldFilesTest, ReturnsErrorOnMissingDir) {
       absl::StrCat(getenv("TEST_TMPDIR"), "/missing");
   std::vector<std::string> collected_paths;
   const absl::Status status =
-      YieldFiles(missing_dir, CollectPathsCallback(collected_paths));
+      YieldFiles(missing_dir, CollectPathsCallback(&collected_paths));
   EXPECT_FALSE(status.ok());
   EXPECT_THAT(status.message(), testing::HasSubstr("could not stat"));
 }
@@ -72,7 +72,7 @@ TEST(YieldFilesTest, YieldsTopLevelFiles) {
 
   std::vector<std::string> collected_paths;
   const absl::Status status =
-      YieldFiles(root_dir, CollectPathsCallback(collected_paths));
+      YieldFiles(root_dir, CollectPathsCallback(&collected_paths));
   EXPECT_TRUE(status.ok());
   EXPECT_THAT(collected_paths, testing::SizeIs(3));
 }
@@ -92,7 +92,7 @@ TEST(YieldFilesTest, YieldsDeepFiles) {
 
   std::vector<std::string> collected_paths;
   const absl::Status status =
-      YieldFiles(root_dir, CollectPathsCallback(collected_paths));
+      YieldFiles(root_dir, CollectPathsCallback(&collected_paths));
   EXPECT_TRUE(status.ok());
   EXPECT_THAT(collected_paths, testing::SizeIs(4));
 }
