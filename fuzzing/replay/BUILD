@@ -22,6 +22,17 @@ package(default_visibility = ["//fuzzing:__subpackages__"])
 ############
 
 cc_library(
+    name = "file_util",
+    srcs = ["file_util.cc"],
+    hdrs = ["file_util.h"],
+    deps = [
+        ":status_util",
+        "@com_google_absl//absl/functional:function_ref",
+        "@com_google_absl//absl/status",
+    ],
+)
+
+cc_library(
     name = "status_util",
     srcs = ["status_util.cc"],
     hdrs = ["status_util.h"],
@@ -33,6 +44,17 @@ cc_library(
 
 # Tests.
 ########
+
+cc_test(
+    name = "file_util_test",
+    size = "small",
+    srcs = ["file_util_test.cc"],
+    deps = [
+        ":file_util",
+        "@com_google_absl//absl/strings",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
 
 cc_test(
     name = "status_util_test",
