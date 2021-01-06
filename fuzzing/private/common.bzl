@@ -33,7 +33,7 @@ exec "{launcher}" \
     script_content = script_template.format(
         environment = "\n".join([
             "export %s='%s'" % (var, file.short_path)
-            for var, file in binary_info.engine_info.environment.items()
+            for var, file in binary_info.engine_info.launcher_environment.items()
         ]),
         launcher = ctx.executable._launcher.short_path,
         binary_path = ctx.executable.binary.short_path,
@@ -49,8 +49,8 @@ def _fuzzing_launcher_impl(ctx):
     script = _fuzzing_launcher_script(ctx)
 
     binary_info = ctx.attr.binary[CcFuzzingBinaryInfo]
-    runfiles = ctx.runfiles(files = [binary_info.engine_info.launcher])
-    runfiles = runfiles.merge(binary_info.engine_info.runfiles)
+    runfiles = ctx.runfiles()
+    runfiles = runfiles.merge(binary_info.engine_info.launcher_runfiles)
     runfiles = runfiles.merge(ctx.attr._launcher[DefaultInfo].default_runfiles)
     runfiles = runfiles.merge(ctx.attr.binary[DefaultInfo].default_runfiles)
     return [DefaultInfo(executable = script, runfiles = runfiles)]

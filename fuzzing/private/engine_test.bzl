@@ -72,15 +72,24 @@ def _provider_contents_test_impl(ctx):
     )
     asserts.set_equals(
         env,
-        sets.make([]),
-        sets.make(target_under_test[CcFuzzingEngineInfo].runfiles.files.to_list()),
+        sets.make([
+            "fuzzing/private/launcher_stub.sh",
+            "fuzzing/private/data.txt",
+            "fuzzing/private/anon_data.txt",
+        ]),
+        sets.make([
+            file.short_path
+            for file in target_under_test[CcFuzzingEngineInfo].launcher_runfiles.files.to_list()
+        ]),
     )
     asserts.set_equals(
         env,
-        sets.make([("DATA_STUB_FILE", "fuzzing/private/data.txt")]),
+        sets.make([
+            ("DATA_STUB_FILE", "fuzzing/private/data.txt"),
+        ]),
         sets.make([
             (env_var, file.short_path)
-            for env_var, file in target_under_test[CcFuzzingEngineInfo].environment.items()
+            for env_var, file in target_under_test[CcFuzzingEngineInfo].launcher_environment.items()
         ]),
     )
     return analysistest.end(env)
@@ -94,7 +103,7 @@ def _test_provider_contents():
         display_name = "Provider Contents",
         library = ":library_stub",
         launcher = ":launcher_stub",
-        data = {
+        launcher_data = {
             ":data_stub": "DATA_STUB_FILE",
             ":anon_data_stub": "",
         },
