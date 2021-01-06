@@ -49,14 +49,17 @@ def main(argv):
         else:
             expanded_file_list.append(corpus)
     
-    for corpus in expanded_file_list:
-        dest = os.path.join(FLAGS.output_dir, corpus.replace("/", "-"))
-        # Whatever the separator we choose, there is an chance that
-        # the dest name conflicts with another file
-        if os.path.exists(dest):
-            print("ERROR: file " + dest + " existed.", file=stderr)
-            return -1
-        shutil.copy(corpus, dest)
+    if expanded_file_list:
+        for corpus in expanded_file_list:
+            dest = os.path.join(FLAGS.output_dir, corpus.replace("/", "-"))
+            # Whatever the separator we choose, there is an chance that
+            # the dest name conflicts with another file
+            if os.path.exists(dest):
+                print("ERROR: file " + dest + " existed.", file=stderr)
+                return -1
+            shutil.copy(corpus, dest)
+    else:
+        open(os.path.join(FLAGS.output_dir, "empty_test"), "a").close()
     return 0
 
 
