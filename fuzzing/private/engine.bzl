@@ -34,13 +34,14 @@ def _cc_fuzzing_engine_impl(ctx):
     launcher_runfiles = ctx.runfiles(files = [ctx.file.launcher])
     env_vars = {}
     for data_label, data_env_var in ctx.attr.launcher_data.items():
+        data_files = data_label.files.to_list()
         if data_env_var:
             if data_env_var in env_vars:
                 fail("Multiple data dependencies map to variable '%s'." % data_env_var)
-            data_files = data_label.files.to_list()
             if len(data_files) != 1:
                 fail("Data dependency for variable '%s' doesn't map to exactly one file." % data_env_var)
             env_vars[data_env_var] = data_files[0]
+        launcher_runfiles = launcher_runfiles.merge(ctx.runfiles(files = data_files))
         launcher_runfiles = launcher_runfiles.merge(data_label[DefaultInfo].default_runfiles)
 
     cc_library_info = ctx.attr.library[CcInfo]
