@@ -53,12 +53,17 @@ cc_fuzz_test(
 cc_fuzz_test(
     name = "fuzzed_data_provider_fuzz_test",
     srcs = ["fuzzed_data_provider_fuzz_test.cc"],
-    tags = ["FDP"],
+    tags = [
+        "manual",
+    ],
 )
 
 cc_fuzz_test(
     name = "hang_fuzz_test",
     srcs = ["hang_fuzz_test.cc"],
+    tags = [
+        "manual",
+    ],
 )
 
 cc_fuzz_test(

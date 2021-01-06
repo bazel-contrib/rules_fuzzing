@@ -14,9 +14,10 @@
 
 """The implementation of the cc_fuzz_test rule."""
 
-load("@rules_cc//cc:defs.bzl", "cc_test")
+load("@rules_cc//cc:defs.bzl", "cc_binary")
 load("//fuzzing/private:common.bzl", "fuzzing_corpus", "fuzzing_dictionary", "fuzzing_launcher")
 load("//fuzzing/private:binary.bzl", "fuzzing_binary")
+load("//fuzzing/private:regression.bzl", "fuzzing_regression_test")
 load("//fuzzing/private/oss_fuzz:package.bzl", "oss_fuzz_package")
 
 def cc_fuzz_test(
@@ -57,26 +58,23 @@ def cc_fuzz_test(
           binary rule.
     """
 
+    raw_binary_name = name + "_raw_"
+    instrum_binary_name = name + "_instrum"
+    launcher_name = name + "_run"
     corpus_name = name + "_corpus"
+
     binary_kwargs.setdefault("deps", []).append(engine)
-    cc_test(
-        name = name + "_raw",
-        tags = [
-            "manual",
-        ],
+    cc_binary(
+        name = raw_binary_name,
         **binary_kwargs
     )
 
     fuzzing_binary(
-        name = name,
-        binary = name + "_raw",
+        name = instrum_binary_name,
+        binary = raw_binary_name,
         engine = engine,
         corpus = corpus_name,
         dictionary = name + "_dict" if dicts else None,
-        tags = (tags or []) + [
-            "fuzz-test",
-        ],
-        testonly = True,
     )
 
     fuzzing_corpus(
@@ -91,15 +89,20 @@ def cc_fuzz_test(
         )
 
     fuzzing_launcher(
-        name = name + "_run",
-        binary = name,
-        # Since the script depends on the _fuzz_test above, which is a cc_test,
-        # this attribute must be set.
-        testonly = True,
+        name = launcher_name,
+        binary = instrum_binary_name,
+    )
+
+    fuzzing_regression_test(
+        name = name,
+        binary = instrum_binary_name,
+        tags = (tags or []) + [
+            "fuzz-test",
+        ],
     )
 
     oss_fuzz_package(
         name = name + "_oss_fuzz",
-        binary = name,
+        binary = instrum_binary_name,
         testonly = True,
     )
