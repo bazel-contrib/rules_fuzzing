@@ -41,11 +41,11 @@ cc_library(
 
 cc_fuzzing_engine(
     name = "honggfuzz",
-    data = {
-        "@honggfuzz//:honggfuzz": "HONGGFUZZ_PATH",
-    },
     display_name = "Honggfuzz",
     launcher = "honggfuzz_launcher.sh",
+    launcher_data = {
+        "@honggfuzz//:honggfuzz": "HONGGFUZZ_PATH",
+    },
     library = "@honggfuzz//:honggfuzz_engine",
     visibility = ["//visibility:public"],
 )
