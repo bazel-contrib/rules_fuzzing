@@ -29,21 +29,17 @@ def cc_fuzz_test(
         **binary_kwargs):
     """Defines a fuzz test and a few associated tools and metadata.
 
-    For each fuzz test `<name>`, this macro expands into a number of targets:
+    For each fuzz test `<name>`, this macro defines a number of targets. The
+    most relevant ones are:
 
-    * `<name>`: The instrumented fuzz test executable. Use this target for
-      debugging or for accessing the complete command line interface of the
+    * `<name>`: A test that executes the fuzzer binary against the seed corpus
+      (or on an empty input if no corpus is specified).
+    * `<name>_instrum`: The instrumented fuzz test executable. Use this target
+      for debugging or for accessing the complete command line interface of the
       fuzzing engine. Most developers should only need to use this target
       rarely.
     * `<name>_run`: An executable target used to launch the fuzz test using a
       simpler, engine-agnostic command line interface.
-    * `<name>_corpus`: Generates a corpus directory containing all the corpus
-      files specified in the `corpus` attribute.
-    * `<name>_dict`: Validates the set of dictionary files provided and emits
-      the result to a `<name>.dict` file.
-    * `<name>_raw`: The raw, uninstrumented fuzz test executable. This should be
-      rarely needed and may be useful when debugging instrumentation-related
-      build failures or misbehavior.
 
     > TODO: Document here the command line interface of the `<name>_run`
     targets.
