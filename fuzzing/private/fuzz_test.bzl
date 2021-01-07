@@ -57,6 +57,7 @@ def cc_fuzz_test(
           binary rule.
     """
 
+    corpus_name = name + "_corpus"
     binary_kwargs.setdefault("deps", []).append(engine)
     cc_test(
         name = name + "_raw",
@@ -70,7 +71,7 @@ def cc_fuzz_test(
         name = name,
         binary = name + "_raw",
         engine = engine,
-        corpus = name + "_corpus" if corpus else None,
+        corpus = corpus_name,
         dictionary = name + "_dict" if dicts else None,
         tags = (tags or []) + [
             "fuzz-test",
@@ -78,11 +79,10 @@ def cc_fuzz_test(
         testonly = True,
     )
 
-    if corpus:
-        fuzzing_corpus(
-            name = name + "_corpus",
-            srcs = corpus,
-        )
+    fuzzing_corpus(
+        name = corpus_name,
+        srcs = corpus,
+    )
     if dicts:
         fuzzing_dictionary(
             name = name + "_dict",
