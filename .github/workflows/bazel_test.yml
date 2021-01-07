@@ -30,11 +30,9 @@ jobs:
       - name: Run Address Sanitizer tests
         run: |
           bazel test //... --test_tag_filters=-fuzz-test --build_tests_only --config=asan
-      - name: Build fuzz test examples
-        # The -FDP is for filtering out the files which contains "#include <fuzzer/FuzzedDataProvider.h>",
-        # The "<fuzzer/FDP...>" is only supported since clang-10 while the clang version in github runner is 9
+      - name: Run fuzz test regressions
         run: |
-          bazel build --verbose_failures --build_tag_filters=fuzz-test,-FDP --config=asan-libfuzzer //examples/...
+          bazel test --verbose_failures --build_tag_filters=fuzz-test --config=asan-libfuzzer //examples/...
   smoke_tests:
     name: Smoke tests on fuzz targets
     runs-on: ubuntu-latest

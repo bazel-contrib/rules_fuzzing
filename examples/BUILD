@@ -54,6 +54,8 @@ cc_fuzz_test(
     name = "fuzzed_data_provider_fuzz_test",
     srcs = ["fuzzed_data_provider_fuzz_test.cc"],
     tags = [
+        # Disable this test for now, since FDP is not available on all
+        # supported Clang versions.
         "manual",
     ],
 )
@@ -86,6 +88,9 @@ cc_fuzz_test(
 cc_fuzz_test(
     name = "oom_fuzz_test",
     srcs = ["oom_fuzz_test.cc"],
+    tags = [
+        "manual",
+    ],
 )
 
 cc_fuzz_test(
