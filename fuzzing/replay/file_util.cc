@@ -74,10 +74,9 @@ absl::Status YieldFiles(
   }
   if (S_ISDIR(path_stat.st_mode)) {
     return TraverseDirectory(path, callback);
-  } else {
-    callback(path, path_stat);
-    return absl::OkStatus();
   }
+  callback(path, path_stat);
+  return absl::OkStatus();
 }
 
 absl::Status SetFileContents(const std::string& path,
@@ -90,9 +89,8 @@ absl::Status SetFileContents(const std::string& path,
   fclose(f);
   if (result < contents.size()) {
     return absl::UnknownError("could not write file contents");
-  } else {
-    return absl::OkStatus();
   }
+  return absl::OkStatus();
 }
 
 }  // namespace fuzzing
