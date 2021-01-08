@@ -15,7 +15,6 @@
 #ifndef FUZZING_REPLAY_TEST_FILE_BUFFER_H_
 #define FUZZING_REPLAY_TEST_FILE_BUFFER_H_
 
-#include <cassert>
 #include <cstddef>
 #include <memory>
 #include <string>
@@ -33,10 +32,7 @@ namespace fuzzing {
 class TestFileBuffer {
  public:
   // Creates a new buffer holding up to `max_size` bytes.
-  explicit TestFileBuffer(size_t max_size)
-      : max_size_(max_size), last_size_(0), buffer_(new char[max_size]) {
-    assert(max_size > 0 && "max_size must be positive");
-  }
+  explicit TestFileBuffer(size_t max_size);
 
   TestFileBuffer(const TestFileBuffer&) = delete;
   TestFileBuffer& operator=(const TestFileBuffer&) = delete;

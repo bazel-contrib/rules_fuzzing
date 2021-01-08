@@ -14,6 +14,7 @@
 
 #include "fuzzing/replay/test_file_buffer.h"
 
+#include <cassert>
 #include <cstdio>
 
 #include "absl/status/status.h"
@@ -21,6 +22,12 @@
 #include "fuzzing/replay/status_util.h"
 
 namespace fuzzing {
+
+TestFileBuffer::TestFileBuffer(size_t max_size)
+    : max_size_(max_size), last_size_(0) {
+  assert(max_size > 0 && "max_size must be positive");
+  buffer_.reset(new char[max_size]);
+}
 
 absl::Status TestFileBuffer::ReadFile(const std::string& path) {
   FILE* f = fopen(path.c_str(), "r");
