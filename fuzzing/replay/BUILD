@@ -42,6 +42,17 @@ cc_library(
     ],
 )
 
+cc_library(
+    name = "test_file_buffer",
+    srcs = ["test_file_buffer.cc"],
+    hdrs = ["test_file_buffer.h"],
+    deps = [
+        ":status_util",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/strings",
+    ],
+)
+
 # Tests.
 ########
 
@@ -62,6 +73,18 @@ cc_test(
     srcs = ["status_util_test.cc"],
     deps = [
         ":status_util",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "test_file_buffer_test",
+    size = "small",
+    srcs = ["test_file_buffer_test.cc"],
+    deps = [
+        ":file_util",
+        ":test_file_buffer",
+        "@com_google_absl//absl/strings",
         "@com_google_googletest//:gtest_main",
     ],
 )
