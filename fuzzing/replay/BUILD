@@ -33,6 +33,17 @@ cc_library(
 )
 
 cc_library(
+    name = "replay_main",
+    srcs = ["replay_main.cc"],
+    deps = [
+        ":test_replayer",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/strings",
+    ],
+    alwayslink = True,
+)
+
+cc_library(
     name = "status_util",
     srcs = ["status_util.cc"],
     hdrs = ["status_util.h"],
@@ -48,6 +59,18 @@ cc_library(
     hdrs = ["test_file_buffer.h"],
     deps = [
         ":status_util",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/strings",
+    ],
+)
+
+cc_library(
+    name = "test_replayer",
+    srcs = ["test_replayer.cc"],
+    hdrs = ["test_replayer.h"],
+    deps = [
+        ":file_util",
+        ":test_file_buffer",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings",
     ],
@@ -84,6 +107,18 @@ cc_test(
     deps = [
         ":file_util",
         ":test_file_buffer",
+        "@com_google_absl//absl/strings",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "test_replayer_test",
+    size = "small",
+    srcs = ["test_replayer_test.cc"],
+    deps = [
+        ":file_util",
+        ":test_replayer",
         "@com_google_absl//absl/strings",
         "@com_google_googletest//:gtest_main",
     ],
