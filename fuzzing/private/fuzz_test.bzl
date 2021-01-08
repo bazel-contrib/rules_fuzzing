@@ -54,6 +54,9 @@ def cc_fuzz_test(
           binary rule.
     """
 
+    # Append the '_' suffix to the raw target to dissuade users from referencing
+    # this target directly. Instead, the binary should be built through the
+    # instrumented configuration.
     raw_binary_name = name + "_raw_"
     instrum_binary_name = name + "_instrum"
     launcher_name = name + "_run"
