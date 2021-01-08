@@ -33,7 +33,7 @@ namespace fuzzing {
 class TestFileBuffer {
  public:
   // Creates a new buffer holding up to `max_size` bytes.
-  TestFileBuffer(size_t max_size)
+  explicit TestFileBuffer(size_t max_size)
       : max_size_(max_size), last_size_(0), buffer_(new char[max_size]) {
     assert(max_size > 0 && "max_size must be positive");
   }
