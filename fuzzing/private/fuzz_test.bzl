@@ -40,6 +40,11 @@ def cc_fuzz_test(
       rarely.
     * `<name>_run`: An executable target used to launch the fuzz test using a
       simpler, engine-agnostic command line interface.
+    * `<name>_oss_fuzz`: Generates a `<name>_oss_fuzz.tar` archive containing
+      the fuzz target executable and its associated resources (corpus,
+      dictionary, etc.) in a format suitable for unpacking in the $OUT/
+      directory of an OSS-Fuzz build. This target can be used inside the
+      `build.sh` script of an OSS-Fuzz project.
 
     > TODO: Document here the command line interface of the `<name>_run`
     targets.
