@@ -76,9 +76,7 @@ def fuzzing_decoration(
     fuzzing_regression_test(
         name = base_name,
         binary = instrum_binary_name,
-        tags = (tags or []) + [
-            "fuzz-test",
-        ],
+        tags = tags,
     )
 
     oss_fuzz_package(
@@ -142,5 +140,7 @@ def cc_fuzz_test(
         engine = engine,
         corpus = corpus,
         dicts = dicts,
-        tags = tags,
+        tags = (tags or []) + [
+            "fuzz-test",
+        ],
     )
