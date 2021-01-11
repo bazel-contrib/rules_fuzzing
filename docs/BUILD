@@ -43,6 +43,7 @@ bzl_library(
         "//fuzzing/private:engine.bzl",
         "//fuzzing/private:fuzz_test.bzl",
         "//fuzzing/private:instrum_opts.bzl",
+        "//fuzzing/private:regression.bzl",
         "//fuzzing/private/oss_fuzz:package.bzl",
         "@rules_fuzzing_oss_fuzz//:instrum.bzl",
     ],

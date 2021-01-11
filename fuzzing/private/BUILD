@@ -24,4 +24,5 @@ exports_files([
     "engine.bzl",
     "fuzz_test.bzl",
     "instrum_opts.bzl",
+    "regression.bzl",
 ])

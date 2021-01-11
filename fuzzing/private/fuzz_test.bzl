@@ -14,9 +14,10 @@
 
 """The implementation of the cc_fuzz_test rule."""
 
-load("@rules_cc//cc:defs.bzl", "cc_test")
+load("@rules_cc//cc:defs.bzl", "cc_binary")
 load("//fuzzing/private:common.bzl", "fuzzing_corpus", "fuzzing_dictionary", "fuzzing_launcher")
 load("//fuzzing/private:binary.bzl", "fuzzing_binary")
+load("//fuzzing/private:regression.bzl", "fuzzing_regression_test")
 load("//fuzzing/private/oss_fuzz:package.bzl", "oss_fuzz_package")
 
 def cc_fuzz_test(
@@ -28,21 +29,22 @@ def cc_fuzz_test(
         **binary_kwargs):
     """Defines a fuzz test and a few associated tools and metadata.
 
-    For each fuzz test `<name>`, this macro expands into a number of targets:
+    For each fuzz test `<name>`, this macro defines a number of targets. The
+    most relevant ones are:
 
-    * `<name>`: The instrumented fuzz test executable. Use this target for
-      debugging or for accessing the complete command line interface of the
+    * `<name>`: A test that executes the fuzzer binary against the seed corpus
+      (or on an empty input if no corpus is specified).
+    * `<name>_instrum`: The instrumented fuzz test executable. Use this target
+      for debugging or for accessing the complete command line interface of the
       fuzzing engine. Most developers should only need to use this target
       rarely.
     * `<name>_run`: An executable target used to launch the fuzz test using a
       simpler, engine-agnostic command line interface.
-    * `<name>_corpus`: Generates a corpus directory containing all the corpus
-      files specified in the `corpus` attribute.
-    * `<name>_dict`: Validates the set of dictionary files provided and emits
-      the result to a `<name>.dict` file.
-    * `<name>_raw`: The raw, uninstrumented fuzz test executable. This should be
-      rarely needed and may be useful when debugging instrumentation-related
-      build failures or misbehavior.
+    * `<name>_oss_fuzz`: Generates a `<name>_oss_fuzz.tar` archive containing
+      the fuzz target executable and its associated resources (corpus,
+      dictionary, etc.) in a format suitable for unpacking in the $OUT/
+      directory of an OSS-Fuzz build. This target can be used inside the
+      `build.sh` script of an OSS-Fuzz project.
 
     > TODO: Document here the command line interface of the `<name>_run`
     targets.
@@ -57,26 +59,26 @@ def cc_fuzz_test(
           binary rule.
     """
 
+    # Append the '_' suffix to the raw target to dissuade users from referencing
+    # this target directly. Instead, the binary should be built through the
+    # instrumented configuration.
+    raw_binary_name = name + "_raw_"
+    instrum_binary_name = name + "_instrum"
+    launcher_name = name + "_run"
     corpus_name = name + "_corpus"
+
     binary_kwargs.setdefault("deps", []).append(engine)
-    cc_test(
-        name = name + "_raw",
-        tags = [
-            "manual",
-        ],
+    cc_binary(
+        name = raw_binary_name,
         **binary_kwargs
     )
 
     fuzzing_binary(
-        name = name,
-        binary = name + "_raw",
+        name = instrum_binary_name,
+        binary = raw_binary_name,
         engine = engine,
         corpus = corpus_name,
         dictionary = name + "_dict" if dicts else None,
-        tags = (tags or []) + [
-            "fuzz-test",
-        ],
-        testonly = True,
     )
 
     fuzzing_corpus(
@@ -91,15 +93,20 @@ def cc_fuzz_test(
         )
 
     fuzzing_launcher(
-        name = name + "_run",
-        binary = name,
-        # Since the script depends on the _fuzz_test above, which is a cc_test,
-        # this attribute must be set.
-        testonly = True,
+        name = launcher_name,
+        binary = instrum_binary_name,
+    )
+
+    fuzzing_regression_test(
+        name = name,
+        binary = instrum_binary_name,
+        tags = (tags or []) + [
+            "fuzz-test",
+        ],
     )
 
     oss_fuzz_package(
         name = name + "_oss_fuzz",
-        binary = name,
+        binary = instrum_binary_name,
         testonly = True,
     )
