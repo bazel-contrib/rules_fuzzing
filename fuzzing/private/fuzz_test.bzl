@@ -61,12 +61,14 @@ def fuzzing_decoration(
     fuzzing_corpus(
         name = corpus_name,
         srcs = corpus,
+        testonly = True,
     )
     if dicts:
         fuzzing_dictionary(
             name = dict_name,
             dicts = dicts,
             output = base_name + ".dict",
+            testonly = True,
         )
 
     fuzzing_launcher(
