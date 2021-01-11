@@ -55,6 +55,7 @@ def fuzzing_decoration(
         engine = engine,
         corpus = corpus_name,
         dictionary = dict_name if dicts else None,
+        testonly = True,
     )
 
     fuzzing_corpus(
@@ -71,6 +72,7 @@ def fuzzing_decoration(
     fuzzing_launcher(
         name = launcher_name,
         binary = instrum_binary_name,
+        testonly = True,
     )
 
     fuzzing_regression_test(
