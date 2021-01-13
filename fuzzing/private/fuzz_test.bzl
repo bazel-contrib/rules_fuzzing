@@ -29,7 +29,7 @@ def fuzzing_decoration(
         tags = None):
     """Generates the standard targets associated to a fuzz test.
 
-    This target can be used to define custom fuzz test rules in case the default
+    This macro can be used to define custom fuzz test rules in case the default
     `cc_fuzz_test` macro is not adequate. Refer to the `cc_fuzz_test` macro
     documentation for the set of targets generated.
 
