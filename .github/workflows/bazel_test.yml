@@ -24,6 +24,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -yq \
+            clang-10 \
+            libunwind-dev \
+            libblocksruntime-dev
       - name: Run unit tests
         run: |
           bazel test --test_tag_filters=-fuzz-test --build_tests_only //...
@@ -46,7 +52,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -yq libunwind-dev libblocksruntime-dev
+        run: |
+          sudo apt-get update && sudo apt-get install -yq \
+            clang-10 \
+            libunwind-dev \
+            libblocksruntime-dev
       - name: Run smoke test
         run: |
           bazel run ${{ matrix.target }} --config=${{ matrix.config }} -- --clean --timeout_secs=5
@@ -61,7 +71,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -yq libunwind-dev libblocksruntime-dev
+        run: |
+          sudo apt-get update && sudo apt-get install -yq \
+            clang-10 \
+            libunwind-dev \
+            libblocksruntime-dev
       - name: Run regression tests
         run: |
           bazel test --verbose_failures --test_output=all \
