@@ -49,3 +49,14 @@ cc_fuzzing_engine(
     library = "@honggfuzz//:honggfuzz_engine",
     visibility = ["//visibility:public"],
 )
+
+# The replay engine specification.
+##################################
+
+cc_fuzzing_engine(
+    name = "replay",
+    display_name = "Replay",
+    launcher = "replay_launcher.sh",
+    library = "//fuzzing/replay:replay_main",
+    visibility = ["//visibility:public"],
+)

@@ -45,6 +45,11 @@ build:msan-honggfuzz --//fuzzing:cc_engine=//fuzzing/engines:honggfuzz
 build:msan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine_instrumentation=honggfuzz
 build:msan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine_sanitizer=msan
 
+# Replay + ASAN
+build:asan-replay --//fuzzing:cc_engine=//fuzzing/engines:replay
+build:asan-replay --@rules_fuzzing//fuzzing:cc_engine_instrumentation=none
+build:asan-replay --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
+
 build:oss-fuzz --//fuzzing:cc_engine=@rules_fuzzing_oss_fuzz//:oss_fuzz_engine
 build:oss-fuzz --@rules_fuzzing//fuzzing:cc_engine_instrumentation=oss-fuzz
 build:oss-fuzz --@rules_fuzzing//fuzzing:cc_engine_sanitizer=none
