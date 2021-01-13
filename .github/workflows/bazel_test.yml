@@ -65,5 +65,5 @@ jobs:
       - name: Run regression tests
         run: |
           bazel test --verbose_failures --test_output=all \
-              --build_tag_filters=fuzz-test --config={{ matrix.config }} \
+              --build_tag_filters=fuzz-test --config=${{ matrix.config }} \
               //examples/...
