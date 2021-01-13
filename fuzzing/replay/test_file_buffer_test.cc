@@ -15,6 +15,7 @@
 #include "fuzzing/replay/test_file_buffer.h"
 
 #include <cstdlib>
+#include <string>
 
 #include "absl/strings/str_cat.h"
 #include "fuzzing/replay/file_util.h"
