@@ -16,6 +16,7 @@
 
 #include <cassert>
 #include <cstdio>
+#include <string>
 
 #include "absl/status/status.h"
 #include "absl/strings/str_cat.h"
@@ -29,8 +30,8 @@ TestFileBuffer::TestFileBuffer(size_t max_size)
   buffer_.reset(new char[max_size]);
 }
 
-absl::Status TestFileBuffer::ReadFile(const std::string& path) {
-  FILE* f = fopen(path.c_str(), "r");
+absl::Status TestFileBuffer::ReadFile(absl::string_view path) {
+  FILE* f = fopen(std::string(path).c_str(), "r");
   if (!f) {
     last_size_ = 0;
     return ErrnoStatus(absl::StrCat("could not open test file ", path), errno);
