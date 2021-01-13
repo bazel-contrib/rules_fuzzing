@@ -20,6 +20,75 @@ load("//fuzzing/private:binary.bzl", "fuzzing_binary")
 load("//fuzzing/private:regression.bzl", "fuzzing_regression_test")
 load("//fuzzing/private/oss_fuzz:package.bzl", "oss_fuzz_package")
 
+def fuzzing_decoration(
+        base_name,
+        raw_binary,
+        engine,
+        corpus = None,
+        dicts = None,
+        tags = None):
+    """Generates the standard targets associated to a fuzz test.
+
+    This macro can be used to define custom fuzz test rules in case the default
+    `cc_fuzz_test` macro is not adequate. Refer to the `cc_fuzz_test` macro
+    documentation for the set of targets generated.
+
+    Args:
+        base_name: The name prefix of the generated targets. It is normally the
+          fuzz test name in the BUILD file.
+        raw_binary: The label of the cc_binary or cc_test of fuzz test
+          executable.
+        engine: The label of the fuzzing engine used to build the binary.
+        corpus: A list of corpus files.
+        dicts: A list of fuzzing dictionary files.
+        tags: Tags set on the fuzzing regression test.
+    """
+
+    instrum_binary_name = base_name + "_instrum"
+    launcher_name = base_name + "_run"
+    corpus_name = base_name + "_corpus"
+    dict_name = base_name + "_dict"
+
+    fuzzing_binary(
+        name = instrum_binary_name,
+        binary = raw_binary,
+        engine = engine,
+        corpus = corpus_name,
+        dictionary = dict_name if dicts else None,
+        testonly = True,
+    )
+
+    fuzzing_corpus(
+        name = corpus_name,
+        srcs = corpus,
+        testonly = True,
+    )
+    if dicts:
+        fuzzing_dictionary(
+            name = dict_name,
+            dicts = dicts,
+            output = base_name + ".dict",
+            testonly = True,
+        )
+
+    fuzzing_launcher(
+        name = launcher_name,
+        binary = instrum_binary_name,
+        testonly = True,
+    )
+
+    fuzzing_regression_test(
+        name = base_name,
+        binary = instrum_binary_name,
+        tags = tags,
+    )
+
+    oss_fuzz_package(
+        name = base_name + "_oss_fuzz",
+        binary = instrum_binary_name,
+        testonly = True,
+    )
+
 def cc_fuzz_test(
         name,
         corpus = None,
@@ -54,7 +123,7 @@ def cc_fuzz_test(
         corpus: A list containing corpus files.
         dicts: A list containing dictionaries.
         engine: A label pointing to the fuzzing engine to use.
-        tags: Tags set on the fuzz test executable.
+        tags: Tags set on the fuzzing regression test.
         **binary_kwargs: Keyword arguments directly forwarded to the fuzz test
           binary rule.
     """
@@ -63,50 +132,19 @@ def cc_fuzz_test(
     # this target directly. Instead, the binary should be built through the
     # instrumented configuration.
     raw_binary_name = name + "_raw_"
-    instrum_binary_name = name + "_instrum"
-    launcher_name = name + "_run"
-    corpus_name = name + "_corpus"
-
     binary_kwargs.setdefault("deps", []).append(engine)
     cc_binary(
         name = raw_binary_name,
         **binary_kwargs
     )
 
-    fuzzing_binary(
-        name = instrum_binary_name,
-        binary = raw_binary_name,
+    fuzzing_decoration(
+        base_name = name,
+        raw_binary = raw_binary_name,
         engine = engine,
-        corpus = corpus_name,
-        dictionary = name + "_dict" if dicts else None,
-    )
-
-    fuzzing_corpus(
-        name = corpus_name,
-        srcs = corpus,
-    )
-    if dicts:
-        fuzzing_dictionary(
-            name = name + "_dict",
-            dicts = dicts,
-            output = name + ".dict",
-        )
-
-    fuzzing_launcher(
-        name = launcher_name,
-        binary = instrum_binary_name,
-    )
-
-    fuzzing_regression_test(
-        name = name,
-        binary = instrum_binary_name,
+        corpus = corpus,
+        dicts = dicts,
         tags = (tags or []) + [
             "fuzz-test",
         ],
-    )
-
-    oss_fuzz_package(
-        name = name + "_oss_fuzz",
-        binary = instrum_binary_name,
-        testonly = True,
     )

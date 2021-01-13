@@ -21,6 +21,7 @@ change without notice.
 load(
     "//fuzzing/private:fuzz_test.bzl",
     _cc_fuzz_test = "cc_fuzz_test",
+    _fuzzing_decoration = "fuzzing_decoration",
 )
 load(
     "//fuzzing/private:engine.bzl",
@@ -29,3 +30,5 @@ load(
 
 cc_fuzz_test = _cc_fuzz_test
 cc_fuzzing_engine = _cc_fuzzing_engine
+
+fuzzing_decoration = _fuzzing_decoration

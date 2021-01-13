@@ -45,6 +45,11 @@ most relevant ones are:
   rarely.
 * `<name>_run`: An executable target used to launch the fuzz test using a
   simpler, engine-agnostic command line interface.
+* `<name>_oss_fuzz`: Generates a `<name>_oss_fuzz.tar` archive containing
+  the fuzz target executable and its associated resources (corpus,
+  dictionary, etc.) in a format suitable for unpacking in the $OUT/
+  directory of an OSS-Fuzz build. This target can be used inside the
+  `build.sh` script of an OSS-Fuzz project.
 
 > TODO: Document here the command line interface of the `<name>_run`
 targets.
@@ -59,7 +64,35 @@ targets.
 | <a id="cc_fuzz_test-corpus"></a>corpus |  A list containing corpus files.   |  <code>None</code> |
 | <a id="cc_fuzz_test-dicts"></a>dicts |  A list containing dictionaries.   |  <code>None</code> |
 | <a id="cc_fuzz_test-engine"></a>engine |  A label pointing to the fuzzing engine to use.   |  <code>"@rules_fuzzing//fuzzing:cc_engine"</code> |
-| <a id="cc_fuzz_test-tags"></a>tags |  Tags set on the fuzz test executable.   |  <code>None</code> |
+| <a id="cc_fuzz_test-tags"></a>tags |  Tags set on the fuzzing regression test.   |  <code>None</code> |
 | <a id="cc_fuzz_test-binary_kwargs"></a>binary_kwargs |  Keyword arguments directly forwarded to the fuzz test   binary rule.   |  none |
+
+
+<a id="#fuzzing_decoration"></a>
+
+## fuzzing_decoration
+
+<pre>
+fuzzing_decoration(<a href="#fuzzing_decoration-base_name">base_name</a>, <a href="#fuzzing_decoration-raw_binary">raw_binary</a>, <a href="#fuzzing_decoration-engine">engine</a>, <a href="#fuzzing_decoration-corpus">corpus</a>, <a href="#fuzzing_decoration-dicts">dicts</a>, <a href="#fuzzing_decoration-tags">tags</a>)
+</pre>
+
+Generates the standard targets associated to a fuzz test.
+
+This macro can be used to define custom fuzz test rules in case the default
+`cc_fuzz_test` macro is not adequate. Refer to the `cc_fuzz_test` macro
+documentation for the set of targets generated.
+
+
+**PARAMETERS**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="fuzzing_decoration-base_name"></a>base_name |  The name prefix of the generated targets. It is normally the   fuzz test name in the BUILD file.   |  none |
+| <a id="fuzzing_decoration-raw_binary"></a>raw_binary |  The label of the cc_binary or cc_test of fuzz test   executable.   |  none |
+| <a id="fuzzing_decoration-engine"></a>engine |  The label of the fuzzing engine used to build the binary.   |  none |
+| <a id="fuzzing_decoration-corpus"></a>corpus |  A list of corpus files.   |  <code>None</code> |
+| <a id="fuzzing_decoration-dicts"></a>dicts |  A list of fuzzing dictionary files.   |  <code>None</code> |
+| <a id="fuzzing_decoration-tags"></a>tags |  Tags set on the fuzzing regression test.   |  <code>None</code> |
 
 
