@@ -17,7 +17,6 @@
 
 #include <cstddef>
 #include <memory>
-#include <string>
 
 #include "absl/status/status.h"
 #include "absl/strings/string_view.h"
@@ -48,7 +47,7 @@ class TestFileBuffer {
   // The (possibly partial or truncated) contents read from the file are
   // available through the `last_test()` accessor until the next invocation of
   // this method.
-  absl::Status ReadFile(const std::string& path);
+  absl::Status ReadFile(absl::string_view path);
 
   // Returns the file contents read from the last invocation of `ReadFile`, or
   // an empty string if the buffer has not been used.

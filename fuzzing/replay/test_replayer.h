@@ -52,12 +52,12 @@ class TestReplayer {
   // Returns OK if all files were traversed and replayed successfully, or an
   // error status if an error was encountered. The traversal is best-effort and
   // does not stop at the first error encountered.
-  absl::Status ReplayTests(const std::string& path);
+  absl::Status ReplayTests(absl::string_view path);
 
  private:
   absl::Status ReplayTestData(absl::string_view test);
-  absl::Status ReplayTestFile(const std::string& path);
-  absl::Status ReplayTestDirectory(const std::string& path);
+  absl::Status ReplayTestFile(absl::string_view path);
+  absl::Status ReplayTestDirectory(absl::string_view path);
 
   const std::function<int(const uint8_t*, size_t)> callback_;
   TestFileBuffer test_file_buffer_;

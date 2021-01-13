@@ -35,9 +35,9 @@ namespace fuzzing {
 namespace {
 
 absl::Status TraverseDirectory(
-    const std::string& path,
+    absl::string_view path,
     absl::FunctionRef<void(absl::string_view, const struct stat&)> callback) {
-  DIR* dir = opendir(path.c_str());
+  DIR* dir = opendir(std::string(path).c_str());
   if (!dir) {
     return ErrnoStatus(absl::StrCat("could not open directory ", path), errno);
   }
@@ -66,10 +66,10 @@ absl::Status TraverseDirectory(
 }  // namespace
 
 absl::Status YieldFiles(
-    const std::string& path,
+    absl::string_view path,
     absl::FunctionRef<void(absl::string_view, const struct stat&)> callback) {
   struct stat path_stat;
-  if (stat(path.c_str(), &path_stat) < 0) {
+  if (stat(std::string(path).c_str(), &path_stat) < 0) {
     return ErrnoStatus(absl::StrCat("could not stat ", path), errno);
   }
   if (S_ISDIR(path_stat.st_mode)) {
@@ -79,9 +79,9 @@ absl::Status YieldFiles(
   return absl::OkStatus();
 }
 
-absl::Status SetFileContents(const std::string& path,
+absl::Status SetFileContents(absl::string_view path,
                              absl::string_view contents) {
-  FILE* f = fopen(path.c_str(), "w");
+  FILE* f = fopen(std::string(path).c_str(), "w");
   if (!f) {
     return ErrnoStatus("could not open file", errno);
   }

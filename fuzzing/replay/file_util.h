@@ -19,8 +19,6 @@
 
 #include <sys/stat.h>
 
-#include <string>
-
 #include "absl/functional/function_ref.h"
 #include "absl/status/status.h"
 #include "absl/strings/string_view.h"
@@ -34,11 +32,11 @@ namespace fuzzing {
 // traversed. If `path` refers to a file, the callback will be called once and
 // the function returns OK.
 absl::Status YieldFiles(
-    const std::string& path,
+    absl::string_view path,
     absl::FunctionRef<void(absl::string_view, const struct stat&)> callback);
 
 // Opens the given `path` for writing and sets the file contents to `contents`.
-absl::Status SetFileContents(const std::string& path,
+absl::Status SetFileContents(absl::string_view path,
                              absl::string_view contents);
 
 }  // namespace fuzzing

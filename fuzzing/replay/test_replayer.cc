@@ -38,13 +38,13 @@ absl::Status TestReplayer::ReplayTestData(absl::string_view test) {
   }
 }
 
-absl::Status TestReplayer::ReplayTestFile(const std::string& path) {
+absl::Status TestReplayer::ReplayTestFile(absl::string_view path) {
   absl::Status status = test_file_buffer_.ReadFile(path);
   status.Update(ReplayTestData(test_file_buffer_.last_test()));
   return status;
 }
 
-absl::Status TestReplayer::ReplayTests(const std::string& path) {
+absl::Status TestReplayer::ReplayTests(absl::string_view path) {
   absl::Status replay_status;
   const absl::Status yield_status =
       YieldFiles(path, [this, &replay_status](absl::string_view file_path,
