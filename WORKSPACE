@@ -16,26 +16,28 @@ workspace(name = "rules_fuzzing")
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-# Downloads dependencies.
-load("@rules_fuzzing//fuzzing:repositories.bzl", "rules_fuzzing_dependencies")
+# Load all external library dependencies.
+
+load(
+    "@rules_fuzzing//fuzzing:repositories.bzl",
+    "honggfuzz_dependencies",
+    "oss_fuzz_dependencies",
+    "rules_fuzzing_dependencies",
+)
 
 rules_fuzzing_dependencies()
 
-# Imports the transitive dependencies.
-load("@rules_fuzzing//fuzzing:dependency_imports.bzl", "fuzzing_dependency_imports")
+honggfuzz_dependencies()
 
-fuzzing_dependency_imports()
+oss_fuzz_dependencies()
 
-http_archive(
-    name = "io_bazel_stardoc",
-    sha256 = "9b09b3ee6181aa4b56c8bc863b1f1c922725298047d243cf19bc69e455ffa7c3",
-    strip_prefix = "stardoc-5986d24c478e81242627c6d688fdc547567bc93c",
-    url = "https://github.com/bazelbuild/stardoc/archive/5986d24c478e81242627c6d688fdc547567bc93c.zip",
-)
+# Initialize Bazel Skylib.
 
-load("@io_bazel_stardoc//:setup.bzl", "stardoc_repositories")
+load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
 
-stardoc_repositories()
+bazel_skylib_workspace()
+
+# The support for running the examples and unit tests.
 
 http_archive(
     name = "re2",
@@ -50,3 +52,28 @@ http_archive(
     strip_prefix = "googletest-389cb68b87193358358ae87cc56d257fd0d80189",
     urls = ["https://github.com/google/googletest/archive/389cb68b87193358358ae87cc56d257fd0d80189.zip"],
 )
+
+# Python dependencies.
+
+load("@rules_python//python:pip.bzl", "pip_install")
+load("@rules_python//python:repositories.bzl", "py_repositories")
+
+py_repositories()
+
+pip_install(
+    name = "fuzzing_py_deps",
+    requirements = "@rules_fuzzing//fuzzing:requirements.txt",
+)
+
+# Stardoc dependencies.
+
+http_archive(
+    name = "io_bazel_stardoc",
+    sha256 = "9b09b3ee6181aa4b56c8bc863b1f1c922725298047d243cf19bc69e455ffa7c3",
+    strip_prefix = "stardoc-5986d24c478e81242627c6d688fdc547567bc93c",
+    url = "https://github.com/bazelbuild/stardoc/archive/5986d24c478e81242627c6d688fdc547567bc93c.zip",
+)
+
+load("@io_bazel_stardoc//:setup.bzl", "stardoc_repositories")
+
+stardoc_repositories()
