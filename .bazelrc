@@ -13,8 +13,8 @@
 # limitations under the License.
 
 # Force the use of Clang for all builds.
-build --action_env=CC=clang
-build --action_env=CXX=clang++
+build --action_env=CC=clang-10
+build --action_env=CXX=clang++-10
 
 # The ASAN configuration suitable for C++ unit tests.
 build:asan --copt=-fsanitize=address
