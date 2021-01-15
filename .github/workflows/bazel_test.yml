@@ -18,7 +18,7 @@ on: [push, pull_request]
 
 jobs:
   unit_tests:
-    name: All project tests
+    name: All unit tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -30,11 +30,8 @@ jobs:
       - name: Run Address Sanitizer tests
         run: |
           bazel test --test_tag_filters=-fuzz-test --build_tests_only --config=asan //...
-      - name: Run fuzz test regressions
-        run: |
-          bazel test --verbose_failures --build_tag_filters=fuzz-test --config=asan-libfuzzer //examples/...
-  smoke_tests:
-    name: Smoke tests on fuzz targets
+  fuzzer_run_tests:
+    name: Brief fuzz test runs
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
@@ -53,3 +50,20 @@ jobs:
       - name: Run smoke test
         run: |
           bazel run ${{ matrix.target }} --config=${{ matrix.config }} -- --clean --timeout_secs=5
+  regression_tests:
+    name: Regression tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      matrix:
+        config: ["asan-replay", "asan-libfuzzer", "asan-honggfuzz"]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -yq libunwind-dev libblocksruntime-dev
+      - name: Run regression tests
+        run: |
+          bazel test --verbose_failures --test_output=all \
+              --build_tag_filters=fuzz-test --config=${{ matrix.config }} \
+              //examples/...

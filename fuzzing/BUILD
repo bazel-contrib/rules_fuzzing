@@ -16,7 +16,7 @@ load("@bazel_skylib//rules:common_settings.bzl", "bool_flag", "string_flag")
 
 label_flag(
     name = "cc_engine",
-    build_setting_default = "//fuzzing/engines:libfuzzer",
+    build_setting_default = "//fuzzing/engines:replay",
     visibility = ["//visibility:public"],
 )
 
