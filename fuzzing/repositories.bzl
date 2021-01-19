@@ -27,7 +27,6 @@ def rules_fuzzing_dependencies():
         url = "https://github.com/bazelbuild/rules_python/releases/download/0.1.0/rules_python-0.1.0.tar.gz",
         sha256 = "b6d46438523a3ec0f3cead544190ee13223a52f6a6765a29eae7b7cc24cc83a0",
     )
-
     maybe(
         http_archive,
         name = "bazel_skylib",
@@ -37,7 +36,6 @@ def rules_fuzzing_dependencies():
         ],
         sha256 = "1c531376ac7e5a180e0237938a2536de0c54d93f5c278634818e0efc952dd56c",
     )
-
     maybe(
         http_archive,
         name = "com_google_absl",
@@ -46,9 +44,9 @@ def rules_fuzzing_dependencies():
         sha256 = "f4f2d3d01c3cc99eebc9f370ea626c43a54b386913aef393bf8201b2c42a9e2f",
     )
 
-    # TODO(sbucur): Since Honggfuzz has its own set of dependencies, look into
-    # making them optional, so developers only import them if they decide to
-    # use Honggfuzz.
+def honggfuzz_dependencies():
+    """The extra dependencies needed for Honggfuzz support."""
+
     maybe(
         http_archive,
         name = "honggfuzz",
@@ -58,6 +56,10 @@ def rules_fuzzing_dependencies():
         strip_prefix = "honggfuzz-e0670137531242d66c9cf8a6dee677c055a8aacb",
     )
 
-    oss_fuzz_repository(
+def oss_fuzz_dependencies():
+    """The extra dependencies needed for OSS-Fuzz support."""
+
+    maybe(
+        oss_fuzz_repository,
         name = "rules_fuzzing_oss_fuzz",
     )
