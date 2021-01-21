@@ -19,6 +19,9 @@
 #   * libunwind-dev
 #   * libblocksruntime-dev
 
+# Disable the layering check for including the external headers.
+package(features = ["-layering_check"])
+
 load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
 
 COMMON_COPTS = [

@@ -29,6 +29,7 @@ cc_library(
         ":status_util",
         "@com_google_absl//absl/functional:function_ref",
         "@com_google_absl//absl/status",
+        "@com_google_absl//absl/strings",
     ],
 )
 
@@ -39,6 +40,7 @@ cc_library(
         ":test_replayer",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/strings:str_format",
     ],
     alwayslink = True,
 )
@@ -73,6 +75,7 @@ cc_library(
         ":test_file_buffer",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/strings:str_format",
     ],
 )
 
@@ -86,6 +89,8 @@ cc_test(
     deps = [
         ":file_util",
         "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/strings:str_format",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -96,6 +101,7 @@ cc_test(
     srcs = ["status_util_test.cc"],
     deps = [
         ":status_util",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -108,6 +114,7 @@ cc_test(
         ":file_util",
         ":test_file_buffer",
         "@com_google_absl//absl/strings",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -120,6 +127,7 @@ cc_test(
         ":file_util",
         ":test_replayer",
         "@com_google_absl//absl/strings",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
