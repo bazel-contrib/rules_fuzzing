@@ -13,7 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Simple fuzz targets that demonstrate the Bazel extension functionality and serve as regression tests.
+# Simple fuzz targets that demonstrate the Bazel extension functionality and
+# serve as regression tests. Targets that are expected to crash or hang are
+# disabled in the OSS-Fuzz integration using the "no-oss-fuzz" tag.
 
 load("//fuzzing:cc_deps.bzl", "cc_fuzz_test")
 
@@ -53,11 +55,6 @@ cc_fuzz_test(
 cc_fuzz_test(
     name = "fuzzed_data_provider_fuzz_test",
     srcs = ["fuzzed_data_provider_fuzz_test.cc"],
-    tags = [
-        # Disable this test for now, since FDP is not available on all
-        # supported Clang versions.
-        "manual",
-    ],
 )
 
 cc_fuzz_test(
@@ -65,12 +62,16 @@ cc_fuzz_test(
     srcs = ["hang_fuzz_test.cc"],
     tags = [
         "manual",
+        "no-oss-fuzz",
     ],
 )
 
 cc_fuzz_test(
     name = "input_buffer_overflow_fuzz_test",
     srcs = ["input_buffer_overflow_fuzz_test.cc"],
+    tags = [
+        "no-oss-fuzz",
+    ],
 )
 
 # This test is designed to trigger an uninitialized memory issue.
@@ -78,11 +79,17 @@ cc_fuzz_test(
     name = "msan_fuzz_test",
     srcs = ["msan_fuzz_test.cc"],
     copts = ["-Wno-uninitialized"],
+    tags = [
+        "no-oss-fuzz",
+    ],
 )
 
 cc_fuzz_test(
     name = "new_buffer_overflow_fuzz_test",
     srcs = ["new_buffer_overflow_fuzz_test.cc"],
+    tags = [
+        "no-oss-fuzz",
+    ],
 )
 
 cc_fuzz_test(
@@ -90,6 +97,7 @@ cc_fuzz_test(
     srcs = ["oom_fuzz_test.cc"],
     tags = [
         "manual",
+        "on-oss-fuzz",
     ],
 )
 
