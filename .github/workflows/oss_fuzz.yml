@@ -35,7 +35,7 @@ jobs:
       uses: google/oss-fuzz/infra/cifuzz/actions/run_fuzzers@master
       with:
         oss-fuzz-project-name: 'bazel-rules-fuzzing-test'
-        fuzz-seconds: 30
+        fuzz-seconds: 60
         dry-run: false
     - name: Upload crashes
       uses: actions/upload-artifact@v1
