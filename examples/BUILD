@@ -97,7 +97,7 @@ cc_fuzz_test(
     srcs = ["oom_fuzz_test.cc"],
     tags = [
         "manual",
-        "on-oss-fuzz",
+        "no-oss-fuzz",
     ],
 )
 
