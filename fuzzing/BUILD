@@ -20,6 +20,18 @@ label_flag(
     visibility = ["//visibility:public"],
 )
 
+# If set, enable the fuzzing build mode of fuzz test binaries, including fuzzing
+# engine and sanitizer instrumentation.
+#
+# The fuzzing build mode defines the FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
+# macro during compilation (see
+# https://llvm.org/docs/LibFuzzer.html#fuzzer-friendly-build-mode).
+bool_flag(
+    name = "cc_fuzzing_build_mode",
+    build_setting_default = False,
+    visibility = ["//visibility:public"],
+)
+
 string_flag(
     name = "cc_engine_instrumentation",
     build_setting_default = "none",
@@ -48,16 +60,6 @@ string_flag(
         # Useful for debugging crash reproducers, 1.5-2x slower.
         "msan-origin-tracking",
     ],
-    visibility = ["//visibility:public"],
-)
-
-# If set, define the FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION macro
-# during compilation.
-#
-# See https://llvm.org/docs/LibFuzzer.html#fuzzer-friendly-build-mode
-bool_flag(
-    name = "cc_fuzzing_build_mode",
-    build_setting_default = True,
     visibility = ["//visibility:public"],
 )
 

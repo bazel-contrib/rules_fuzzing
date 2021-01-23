@@ -40,16 +40,22 @@ Provider for storing information about a fuzz test binary.
 )
 
 def _fuzzing_binary_transition_impl(settings, attr):
+    is_fuzzing_build_mode = settings["@rules_fuzzing//fuzzing:cc_fuzzing_build_mode"]
+    if not is_fuzzing_build_mode:
+        return {
+            "//command_line_option:copt": settings["//command_line_option:copt"],
+            "//command_line_option:linkopt": settings["//command_line_option:linkopt"],
+            "//command_line_option:conlyopt": settings["//command_line_option:conlyopt"],
+            "//command_line_option:cxxopt": settings["//command_line_option:cxxopt"],
+        }
+
     opts = instrum_opts.make(
         copts = settings["//command_line_option:copt"],
         conlyopts = settings["//command_line_option:conlyopt"],
         cxxopts = settings["//command_line_option:cxxopt"],
         linkopts = settings["//command_line_option:linkopt"],
     )
-
-    is_fuzzing_build_mode = settings["@rules_fuzzing//fuzzing:cc_fuzzing_build_mode"]
-    if is_fuzzing_build_mode:
-        opts = instrum_opts.merge(opts, instrum_defaults.fuzzing_build)
+    opts = instrum_opts.merge(opts, instrum_defaults.fuzzing_build)
 
     instrum_config = settings["@rules_fuzzing//fuzzing:cc_engine_instrumentation"]
     if instrum_config in instrum_configs:
@@ -68,9 +74,6 @@ def _fuzzing_binary_transition_impl(settings, attr):
         "//command_line_option:linkopt": opts.linkopts,
         "//command_line_option:conlyopt": opts.conlyopts,
         "//command_line_option:cxxopt": opts.cxxopts,
-        # Make sure binaries are built statically, to maximize the scope of the
-        # instrumentation.
-        "//command_line_option:dynamic_mode": "off",
     }
 
 fuzzing_binary_transition = transition(
@@ -89,7 +92,6 @@ fuzzing_binary_transition = transition(
         "//command_line_option:conlyopt",
         "//command_line_option:cxxopt",
         "//command_line_option:linkopt",
-        "//command_line_option:dynamic_mode",
     ],
 )
 
