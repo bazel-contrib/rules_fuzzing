@@ -71,7 +71,7 @@ def fuzzing_decoration(
             corpus = corpus_name,
             dictionary = dict_name if dicts else None,
             testonly = True,
-                tags = ["manual"],
+            tags = ["manual"],
         )
     else:
         fuzzing_binary_uninstrumented(
@@ -109,7 +109,7 @@ def fuzzing_decoration(
         fuzzing_regression_test(
             name = base_name,
             binary = instrum_binary_name,
-                tags = test_tags,
+            tags = test_tags,
         )
 
     oss_fuzz_package(
