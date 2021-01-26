@@ -43,11 +43,17 @@ def fuzzing_decoration(
         engine: The label of the fuzzing engine used to build the binary.
         corpus: A list of corpus files.
         dicts: A list of fuzzing dictionary files.
-        instrument_binary: If true, depend on the `raw_binary` through a Bazel
-          configuration transition that uses configuration flags from the
+        instrument_binary: **(Experimental, may be removed in the future.)**
+        
+          If true, depend on the `raw_binary` through a Bazel configuration
+          transition that uses configuration flags from the
           `@rules_fuzzing//fuzzing` package to determine fuzzing build mode,
           engine, and sanitizer instrumentation. If false, assumes that
           `raw_binary` is already built in the proper configuration.
+          
+          Most users should not need to change this argument. If you think the
+          default instrumentation mode does not work for your use case, please
+          file a Github issue to discuss.
         define_regression_test: If true, generate a regression test rule.
         test_tags: Tags set on the fuzzing regression test.
     """

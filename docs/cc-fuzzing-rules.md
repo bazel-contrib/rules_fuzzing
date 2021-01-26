@@ -94,7 +94,7 @@ documentation for the set of targets generated.
 | <a id="fuzzing_decoration-engine"></a>engine |  The label of the fuzzing engine used to build the binary.   |  none |
 | <a id="fuzzing_decoration-corpus"></a>corpus |  A list of corpus files.   |  <code>None</code> |
 | <a id="fuzzing_decoration-dicts"></a>dicts |  A list of fuzzing dictionary files.   |  <code>None</code> |
-| <a id="fuzzing_decoration-instrument_binary"></a>instrument_binary |  If true, depend on the <code>raw_binary</code> through a Bazel   configuration transition that uses configuration flags from the   <code>@rules_fuzzing//fuzzing</code> package to determine fuzzing build mode,   engine, and sanitizer instrumentation. If false, assumes that   <code>raw_binary</code> is already built in the proper configuration.   |  <code>True</code> |
+| <a id="fuzzing_decoration-instrument_binary"></a>instrument_binary |  **(Experimental, may be removed in the future.)**<br><br>  If true, depend on the <code>raw_binary</code> through a Bazel configuration   transition that uses configuration flags from the   <code>@rules_fuzzing//fuzzing</code> package to determine fuzzing build mode,   engine, and sanitizer instrumentation. If false, assumes that   <code>raw_binary</code> is already built in the proper configuration.<br><br>  Most users should not need to change this argument. If you think the   default instrumentation mode does not work for your use case, please   file a Github issue to discuss.   |  <code>True</code> |
 | <a id="fuzzing_decoration-define_regression_test"></a>define_regression_test |  If true, generate a regression test rule.   |  <code>True</code> |
 | <a id="fuzzing_decoration-test_tags"></a>test_tags |  Tags set on the fuzzing regression test.   |  <code>None</code> |
 
