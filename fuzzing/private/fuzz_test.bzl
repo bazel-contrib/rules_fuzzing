@@ -16,7 +16,7 @@
 
 load("@rules_cc//cc:defs.bzl", "cc_binary")
 load("//fuzzing/private:common.bzl", "fuzzing_corpus", "fuzzing_dictionary", "fuzzing_launcher")
-load("//fuzzing/private:binary.bzl", "fuzzing_binary")
+load("//fuzzing/private:binary.bzl", "fuzzing_binary", "fuzzing_binary_uninstrumented")
 load("//fuzzing/private:regression.bzl", "fuzzing_regression_test")
 load("//fuzzing/private/oss_fuzz:package.bzl", "oss_fuzz_package")
 
@@ -26,7 +26,9 @@ def fuzzing_decoration(
         engine,
         corpus = None,
         dicts = None,
-        tags = None):
+        instrument_binary = True,
+        define_regression_test = True,
+        test_tags = None):
     """Generates the standard targets associated to a fuzz test.
 
     This macro can be used to define custom fuzz test rules in case the default
@@ -41,28 +43,62 @@ def fuzzing_decoration(
         engine: The label of the fuzzing engine used to build the binary.
         corpus: A list of corpus files.
         dicts: A list of fuzzing dictionary files.
-        tags: Tags set on the fuzzing regression test.
+        instrument_binary: **(Experimental, may be removed in the future.)**
+
+          By default, the generated targets depend on `raw_binary` through
+          a Bazel configuration using flags from the `@rules_fuzzing//fuzzing`
+          package to determine the fuzzing build mode, engine, and sanitizer
+          instrumentation.
+
+          When this argument is false, the targets assume that `raw_binary` is
+          already built in the proper configuration and will not apply the
+          transition.
+
+          Most users should not need to change this argument. If you think the
+          default instrumentation mode does not work for your use case, please
+          file a Github issue to discuss.
+        define_regression_test: If true, generate a regression test rule.
+        test_tags: Tags set on the fuzzing regression test.
     """
 
-    instrum_binary_name = base_name + "_instrum"
+    # We tag all non-test targets as "manual" in order to optimize the build
+    # size output of test runs in RBE mode. Otherwise, "bazel test" commands
+    # build all the non-test targets by default and, in remote builds, all these
+    # targets and their runfiles would be transferred from the remote cache to
+    # the local machine, ballooning the size of the output.
+
+    instrum_binary_name = base_name + "_meta"
     launcher_name = base_name + "_run"
     corpus_name = base_name + "_corpus"
     dict_name = base_name + "_dict"
 
-    fuzzing_binary(
-        name = instrum_binary_name,
-        binary = raw_binary,
-        engine = engine,
-        corpus = corpus_name,
-        dictionary = dict_name if dicts else None,
-        testonly = True,
-    )
+    if instrument_binary:
+        fuzzing_binary(
+            name = instrum_binary_name,
+            binary = raw_binary,
+            engine = engine,
+            corpus = corpus_name,
+            dictionary = dict_name if dicts else None,
+            testonly = True,
+            tags = ["manual"],
+        )
+    else:
+        fuzzing_binary_uninstrumented(
+            name = instrum_binary_name,
+            binary = raw_binary,
+            engine = engine,
+            corpus = corpus_name,
+            dictionary = dict_name if dicts else None,
+            testonly = True,
+            tags = ["manual"],
+        )
 
     fuzzing_corpus(
         name = corpus_name,
         srcs = corpus,
         testonly = True,
     )
+
     if dicts:
         fuzzing_dictionary(
             name = dict_name,
@@ -75,19 +111,22 @@ def fuzzing_decoration(
         name = launcher_name,
         binary = instrum_binary_name,
         testonly = True,
+        tags = ["manual"],
     )
 
-    fuzzing_regression_test(
-        name = base_name,
-        binary = instrum_binary_name,
-        tags = tags,
-    )
+    if define_regression_test:
+        fuzzing_regression_test(
+            name = base_name,
+            binary = instrum_binary_name,
+            tags = test_tags,
+        )
 
     oss_fuzz_package(
         name = base_name + "_oss_fuzz",
         base_name = base_name,
         binary = instrum_binary_name,
         testonly = True,
+        tags = ["manual"],
     )
 
 def cc_fuzz_test(
@@ -145,7 +184,7 @@ def cc_fuzz_test(
         engine = engine,
         corpus = corpus,
         dicts = dicts,
-        tags = (tags or []) + [
+        test_tags = (tags or []) + [
             "fuzz-test",
         ],
     )

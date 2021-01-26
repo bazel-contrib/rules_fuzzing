@@ -73,7 +73,8 @@ targets.
 ## fuzzing_decoration
 
 <pre>
-fuzzing_decoration(<a href="#fuzzing_decoration-base_name">base_name</a>, <a href="#fuzzing_decoration-raw_binary">raw_binary</a>, <a href="#fuzzing_decoration-engine">engine</a>, <a href="#fuzzing_decoration-corpus">corpus</a>, <a href="#fuzzing_decoration-dicts">dicts</a>, <a href="#fuzzing_decoration-tags">tags</a>)
+fuzzing_decoration(<a href="#fuzzing_decoration-base_name">base_name</a>, <a href="#fuzzing_decoration-raw_binary">raw_binary</a>, <a href="#fuzzing_decoration-engine">engine</a>, <a href="#fuzzing_decoration-corpus">corpus</a>, <a href="#fuzzing_decoration-dicts">dicts</a>, <a href="#fuzzing_decoration-instrument_binary">instrument_binary</a>,
+                   <a href="#fuzzing_decoration-define_regression_test">define_regression_test</a>, <a href="#fuzzing_decoration-test_tags">test_tags</a>)
 </pre>
 
 Generates the standard targets associated to a fuzz test.
@@ -93,6 +94,8 @@ documentation for the set of targets generated.
 | <a id="fuzzing_decoration-engine"></a>engine |  The label of the fuzzing engine used to build the binary.   |  none |
 | <a id="fuzzing_decoration-corpus"></a>corpus |  A list of corpus files.   |  <code>None</code> |
 | <a id="fuzzing_decoration-dicts"></a>dicts |  A list of fuzzing dictionary files.   |  <code>None</code> |
-| <a id="fuzzing_decoration-tags"></a>tags |  Tags set on the fuzzing regression test.   |  <code>None</code> |
+| <a id="fuzzing_decoration-instrument_binary"></a>instrument_binary |  **(Experimental, may be removed in the future.)**<br><br>  By default, the generated targets depend on <code>raw_binary</code> through   a Bazel configuration using flags from the <code>@rules_fuzzing//fuzzing</code>   package to determine the fuzzing build mode, engine, and sanitizer   instrumentation.<br><br>  When this argument is false, the targets assume that <code>raw_binary</code> is   already built in the proper configuration and will not apply the   transition.<br><br>  Most users should not need to change this argument. If you think the   default instrumentation mode does not work for your use case, please   file a Github issue to discuss.   |  <code>True</code> |
+| <a id="fuzzing_decoration-define_regression_test"></a>define_regression_test |  If true, generate a regression test rule.   |  <code>True</code> |
+| <a id="fuzzing_decoration-test_tags"></a>test_tags |  Tags set on the fuzzing regression test.   |  <code>None</code> |
 
 

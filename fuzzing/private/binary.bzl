@@ -100,7 +100,11 @@ def _fuzzing_binary_impl(ctx):
         target_file = ctx.executable.binary,
         is_executable = True,
     )
-    binary_runfiles = ctx.attr.binary[0][DefaultInfo].default_runfiles
+    if ctx.attr._instrument_binary:
+        # The attribute is a list if a transition is attached.
+        binary_runfiles = ctx.attr.binary[0][DefaultInfo].default_runfiles
+    else:
+        binary_runfiles = ctx.attr.binary[DefaultInfo].default_runfiles
     other_runfiles = []
     if ctx.file.corpus:
         other_runfiles.append(ctx.file.corpus)
@@ -156,6 +160,46 @@ The instrumentation is controlled by the following flags:
         ),
         "_allowlist_function_transition": attr.label(
             default = "@bazel_tools//tools/allowlists/function_transition_allowlist",
+        ),
+        "_instrument_binary": attr.bool(
+            default = True,
+        ),
+    },
+    executable = True,
+    provides = [CcFuzzingBinaryInfo],
+)
+
+fuzzing_binary_uninstrumented = rule(
+    implementation = _fuzzing_binary_impl,
+    doc = """
+Creates an uninstrumented fuzzing executable.
+
+The fuzz test still requires instrumentation to function correctly, so it should
+be incorporated in the target configuration (e.g., on the command line or the
+.bazelrc configuration file).
+""",
+    attrs = {
+        "binary": attr.label(
+            executable = True,
+            doc = "The instrumented fuzz test executable.",
+            cfg = "target",
+            mandatory = True,
+        ),
+        "engine": attr.label(
+            doc = "The specification of the fuzzing engine used in the binary.",
+            providers = [CcFuzzingEngineInfo],
+            mandatory = True,
+        ),
+        "corpus": attr.label(
+            doc = "A directory of corpus files used as input seeds.",
+            allow_single_file = True,
+        ),
+        "dictionary": attr.label(
+            doc = "A dictionary file to use in fuzzing runs.",
+            allow_single_file = True,
+        ),
+        "_instrument_binary": attr.bool(
+            default = False,
         ),
     },
     executable = True,
