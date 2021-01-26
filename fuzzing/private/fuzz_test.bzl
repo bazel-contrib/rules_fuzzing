@@ -64,15 +64,15 @@ def fuzzing_decoration(
     dict_name = base_name + "_dict"
 
     if instrument_binary:
-    fuzzing_binary(
-        name = instrum_binary_name,
-        binary = raw_binary,
-        engine = engine,
-        corpus = corpus_name,
-        dictionary = dict_name if dicts else None,
-        testonly = True,
-            tags = ["manual"],
-    )
+        fuzzing_binary(
+            name = instrum_binary_name,
+            binary = raw_binary,
+            engine = engine,
+            corpus = corpus_name,
+            dictionary = dict_name if dicts else None,
+            testonly = True,
+                tags = ["manual"],
+        )
     else:
         fuzzing_binary_uninstrumented(
             name = instrum_binary_name,
@@ -106,11 +106,11 @@ def fuzzing_decoration(
     )
 
     if define_regression_test:
-    fuzzing_regression_test(
-        name = base_name,
-        binary = instrum_binary_name,
-            tags = test_tags,
-    )
+        fuzzing_regression_test(
+            name = base_name,
+            binary = instrum_binary_name,
+                tags = test_tags,
+        )
 
     oss_fuzz_package(
         name = base_name + "_oss_fuzz",
