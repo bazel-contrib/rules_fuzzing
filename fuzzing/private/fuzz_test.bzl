@@ -85,6 +85,7 @@ def fuzzing_decoration(
 
     oss_fuzz_package(
         name = base_name + "_oss_fuzz",
+        base_name = base_name,
         binary = instrum_binary_name,
         testonly = True,
     )
