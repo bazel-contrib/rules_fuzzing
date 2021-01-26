@@ -42,7 +42,7 @@ def _oss_fuzz_package_impl(ctx):
             fi
             tar -chf "{output}" -C "$STAGING_DIR" .
         """.format(
-            base_name = ctx.executable.binary.basename,
+            base_name = ctx.attr.base_name,
             binary_path = binary_info.binary_file.path,
             corpus_dir = binary_info.corpus_dir.path if binary_info.corpus_dir else "",
             dictionary_path = binary_info.dictionary_file.path if binary_info.dictionary_file else "",
@@ -66,6 +66,11 @@ Packages a fuzz test in a TAR archive compatible with the OSS-Fuzz format.
             providers = [CcFuzzingBinaryInfo],
             mandatory = True,
             cfg = "target",
+        ),
+        "base_name": attr.string(
+            doc = "The base name of the fuzz test used to form the file names " +
+                  "in the OSS-Fuzz output.",
+            mandatory = True,
         ),
     },
 )
