@@ -45,11 +45,14 @@ def fuzzing_decoration(
         dicts: A list of fuzzing dictionary files.
         instrument_binary: **(Experimental, may be removed in the future.)**
 
-          If true, depend on the `raw_binary` through a Bazel configuration
-          transition that uses configuration flags from the
-          `@rules_fuzzing//fuzzing` package to determine fuzzing build mode,
-          engine, and sanitizer instrumentation. If false, assumes that
-          `raw_binary` is already built in the proper configuration.
+          By default, the generated targets depend on `raw_binary` through
+          a Bazel configuration using flags from the `@rules_fuzzing//fuzzing`
+          package to determine the fuzzing build mode, engine, and sanitizer
+          instrumentation.
+          
+          When this argument is false, the targets assume that `raw_binary` is
+          already built in the proper configuration and will not apply the
+          transition.
 
           Most users should not need to change this argument. If you think the
           default instrumentation mode does not work for your use case, please
