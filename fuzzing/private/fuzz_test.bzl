@@ -49,7 +49,7 @@ def fuzzing_decoration(
           a Bazel configuration using flags from the `@rules_fuzzing//fuzzing`
           package to determine the fuzzing build mode, engine, and sanitizer
           instrumentation.
-          
+
           When this argument is false, the targets assume that `raw_binary` is
           already built in the proper configuration and will not apply the
           transition.
