@@ -64,14 +64,14 @@ def _extract_build_params(
 def _oss_fuzz_repository(repository_ctx):
     environ = repository_ctx.os.environ
     fuzzing_engine_library = environ.get("LIB_FUZZING_ENGINE")
-    cflags = environ.get("CFLAGS", "").split(" ")
-    cxxflags = environ.get("CXXFLAGS", "").split(" ")
+    cflags = environ.get("FUZZING_CFLAGS") or environ.get("CFLAGS", "")
+    cxxflags = environ.get("FUZZING_CXXFLAGS") or environ.get("CXXFLAGS", "")
 
     build_params = _extract_build_params(
         repository_ctx,
         fuzzing_engine_library,
-        cflags,
-        cxxflags,
+        cflags.split(" "),
+        cxxflags.split(" "),
     )
 
     repository_ctx.template(
@@ -99,6 +99,8 @@ oss_fuzz_repository = repository_rule(
     implementation = _oss_fuzz_repository,
     environ = [
         "LIB_FUZZING_ENGINE",
+        "FUZZING_CFLAGS",
+        "FUZZING_CXXFLAGS",
         "CFLAGS",
         "CXXFLAGS",
         "SANITIZER",
@@ -107,6 +109,11 @@ oss_fuzz_repository = repository_rule(
     doc = """
 Generates a repository containing an OSS-Fuzz fuzzing engine defintion.
 
-The fuzzing engine is defined in the //:oss_fuzz_engine target.
+The fuzzing engine library path is extracted from the `$LIB_FUZZING_ENGINE`
+environment variable. The instrumentation flags are taken from `$FUZZING_CFLAGS`
+and `$FUZZING_CXXFLAGS`, falling back to `$CFLAGS`/`$CXXFLAGS` if the former are
+not defined.
+
+The fuzzing engine is available as the `//:oss_fuzz_engine` target.
 """,
 )
