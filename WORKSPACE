@@ -62,6 +62,7 @@ py_repositories()
 
 pip_install(
     name = "fuzzing_py_deps",
+    extra_pip_args = ["--require-hashes"],
     requirements = "@rules_fuzzing//fuzzing:requirements.txt",
 )
 
