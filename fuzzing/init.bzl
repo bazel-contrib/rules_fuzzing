@@ -1,4 +1,4 @@
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,13 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-if (( ! FUZZER_IS_REGRESSION )); then
-    echo "NOTE: Non-regression mode is not supported by the replay engine."
-fi
+"""Dependency initialization utilities."""
 
-command_line=("$(readlink -f ${FUZZER_BINARY})")
-if [[ -n "${FUZZER_SEED_CORPUS_DIR}" ]]; then
-    command_line+=("${FUZZER_SEED_CORPUS_DIR}")
-fi
+load("@rules_python//python:pip.bzl", "pip_install")
+load("@rules_python//python:repositories.bzl", "py_repositories")
+load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
 
-exec "${command_line[@]}"
+def rules_fuzzing_init():
+    py_repositories()
+    pip_install(
+        name = "fuzzing_py_deps",
+        extra_pip_args = ["--require-hashes"],
+        requirements = "@rules_fuzzing//fuzzing:requirements.txt",
+    )
+    bazel_skylib_workspace()

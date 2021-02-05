@@ -18,24 +18,13 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 # Load all external library dependencies.
 
-load(
-    "@rules_fuzzing//fuzzing:repositories.bzl",
-    "honggfuzz_dependencies",
-    "oss_fuzz_dependencies",
-    "rules_fuzzing_dependencies",
-)
+load("@rules_fuzzing//fuzzing:repositories.bzl", "rules_fuzzing_dependencies")
 
 rules_fuzzing_dependencies()
 
-honggfuzz_dependencies()
+load("@rules_fuzzing//fuzzing:init.bzl", "rules_fuzzing_init")
 
-oss_fuzz_dependencies()
-
-# Initialize Bazel Skylib.
-
-load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
-
-bazel_skylib_workspace()
+rules_fuzzing_init()
 
 # The support for running the examples and unit tests.
 
@@ -51,19 +40,6 @@ http_archive(
     sha256 = "763e20249e76417bed7ebc44aa85fedf5fbac6f9fb6d30bddb628ab07ebf04f5",
     strip_prefix = "googletest-389cb68b87193358358ae87cc56d257fd0d80189",
     urls = ["https://github.com/google/googletest/archive/389cb68b87193358358ae87cc56d257fd0d80189.zip"],
-)
-
-# Python dependencies.
-
-load("@rules_python//python:pip.bzl", "pip_install")
-load("@rules_python//python:repositories.bzl", "py_repositories")
-
-py_repositories()
-
-pip_install(
-    name = "fuzzing_py_deps",
-    extra_pip_args = ["--require-hashes"],
-    requirements = "@rules_fuzzing//fuzzing:requirements.txt",
 )
 
 # Stardoc dependencies.

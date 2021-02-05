@@ -39,7 +39,7 @@ most relevant ones are:
 
 * `<name>`: A test that executes the fuzzer binary against the seed corpus
   (or on an empty input if no corpus is specified).
-* `<name>_instrum`: The instrumented fuzz test executable. Use this target
+* `<name>_bin`: The instrumented fuzz test executable. Use this target
   for debugging or for accessing the complete command line interface of the
   fuzzing engine. Most developers should only need to use this target
   rarely.
@@ -50,9 +50,6 @@ most relevant ones are:
   dictionary, etc.) in a format suitable for unpacking in the $OUT/
   directory of an OSS-Fuzz build. This target can be used inside the
   `build.sh` script of an OSS-Fuzz project.
-
-> TODO: Document here the command line interface of the `<name>_run`
-targets.
 
 
 **PARAMETERS**

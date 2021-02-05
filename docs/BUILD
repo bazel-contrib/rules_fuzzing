@@ -36,7 +36,7 @@ bzl_library(
 bzl_library(
     name = "cc_fuzzing_rules",
     srcs = [
-        "//fuzzing:cc_deps.bzl",
+        "//fuzzing:cc_defs.bzl",
         "//fuzzing:instrum_opts.bzl",
         "//fuzzing/private:binary.bzl",
         "//fuzzing/private:common.bzl",
@@ -55,7 +55,7 @@ bzl_library(
 stardoc(
     name = "cc_fuzzing_docs",
     out = "cc-fuzzing-rules.md",
-    input = "//fuzzing:cc_deps.bzl",
+    input = "//fuzzing:cc_defs.bzl",
     deps = [
         ":cc_fuzzing_rules",
     ],
