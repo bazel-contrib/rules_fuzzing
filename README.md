@@ -47,9 +47,9 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
     name = "rules_fuzzing",
-    sha256 = "4558405e729ee01f98bc6b7bb97f056b31724afbd00147728c0ada65a1476d63",
-    strip_prefix = "rules_fuzzing-f6062a88d83463e2900e47bc218547ba046dad44",
-    urls = ["https://github.com/bazelbuild/rules_fuzzing/archive/f6062a88d83463e2900e47bc218547ba046dad44.zip"],
+    sha256 = "71fa2724c9802c597199a86111a0499fc4fb22426d322334d3f191dadeff5132",
+    strip_prefix = "rules_fuzzing-0.1.0",
+    urls = ["https://github.com/bazelbuild/rules_fuzzing/archive/v0.1.0.zip"],
 )
 
 load("@rules_fuzzing//fuzzing:repositories.bzl", "rules_fuzzing_dependencies")
@@ -61,7 +61,7 @@ load("@rules_fuzzing//fuzzing:init.bzl", "rules_fuzzing_init")
 rules_fuzzing_init()
 ```
 
-> NOTE: The project is still under active development, so you may need to change the `urls` and `sha256` attributes to get the latest features implemented at `HEAD`.
+> NOTE: Replace this snippet with the latest WORKSPACE setup instructions in the release notes. To get the latest unreleased features, you may need to change the `urls` and `sha256` attributes to fetch from `HEAD`.
 
 
 ### Configuring the .bazelrc file
