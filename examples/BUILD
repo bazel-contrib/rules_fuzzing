@@ -17,7 +17,7 @@
 # serve as regression tests. Targets that are expected to crash or hang are
 # disabled in the OSS-Fuzz integration using the "no-oss-fuzz" tag.
 
-load("//fuzzing:cc_deps.bzl", "cc_fuzz_test")
+load("//fuzzing:cc_defs.bzl", "cc_fuzz_test")
 
 cc_fuzz_test(
     name = "empty_fuzz_test",

@@ -16,7 +16,7 @@
 # libFuzzer engine. The launch configuration is supplied by the launcher
 # script through environment variables.
 
-command_line=("${FUZZER_BINARY}")
+command_line=("$(readlink -f ${FUZZER_BINARY})")
 
 # libFuzzer flags.
 

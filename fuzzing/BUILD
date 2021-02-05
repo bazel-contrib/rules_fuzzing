@@ -62,6 +62,6 @@ bool_flag(
 )
 
 exports_files([
-    "cc_deps.bzl",
+    "cc_defs.bzl",
     "instrum_opts.bzl",
 ])

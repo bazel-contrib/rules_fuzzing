@@ -23,6 +23,7 @@ load("@fuzzing_py_deps//:requirements.bzl", "requirement")
 py_binary(
     name = "launcher",
     srcs = ["launcher.py"],
+    python_version = "PY3",
     visibility = ["//visibility:public"],
     deps = [requirement("absl-py")],
 )
@@ -30,6 +31,7 @@ py_binary(
 py_binary(
     name = "make_corpus_dir",
     srcs = ["make_corpus_dir.py"],
+    python_version = "PY3",
     visibility = ["//visibility:public"],
     deps = [requirement("absl-py")],
 )
@@ -37,6 +39,7 @@ py_binary(
 py_binary(
     name = "validate_dict",
     srcs = ["validate_dict.py"],
+    python_version = "PY3",
     visibility = ["//visibility:public"],
     deps = [
         ":dict_validation",

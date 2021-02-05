@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("@rules_fuzzing//fuzzing:cc_deps.bzl", "cc_fuzzing_engine")
+load("@rules_fuzzing//fuzzing:cc_defs.bzl", "cc_fuzzing_engine")
 load("@rules_cc//cc:defs.bzl", "cc_library")
 
 cc_fuzzing_engine(
