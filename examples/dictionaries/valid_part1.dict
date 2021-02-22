@@ -1,20 +1,3 @@
-# Dictionary from Enovy
-":path"
-":method"
-":scheme"
-":status"
-":authority"
-"host"
-"keep-alive"
-":protocol"
-"set-cookie"
-"upgrade"
-"via"
-"te"
-"user-agent"
-"content-length"
-"chunked"
-"transfer-encoding"
 # Lines starting with '#' and empty lines are ignored.
 
 # Adds "blah" (w/o quotes) to the dictionary.
