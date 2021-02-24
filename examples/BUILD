@@ -49,7 +49,10 @@ cc_fuzz_test(
         ":corpus_filegroup",
         "test_corpus_dir",
     ],
-    dicts = ["dict_dir/valid.dict"],
+    dicts = [
+        "dictionaries/valid_part1.dict",
+        "dictionaries/valid_part2.dict",
+    ],
 )
 
 cc_fuzz_test(

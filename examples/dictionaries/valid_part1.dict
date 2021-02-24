@@ -1,20 +1,4 @@
-# Dictionary from Enovy
-":path"
-":method"
-":scheme"
-":status"
-":authority"
-"host"
-"keep-alive"
-":protocol"
-"set-cookie"
-"upgrade"
-"via"
-"te"
-"user-agent"
-"content-length"
-"chunked"
-"transfer-encoding"
+# This is the first part of the example dictionary.
 # Lines starting with '#' and empty lines are ignored.
 
 # Adds "blah" (w/o quotes) to the dictionary.
@@ -25,4 +9,4 @@ kw2="\"ac\\dc\""
 kw3="\xF7\xF8""
 # the name of the keyword followed by '=' may be omitted:
 "foo\x0Abar"
-"ab""
+"ab\""
