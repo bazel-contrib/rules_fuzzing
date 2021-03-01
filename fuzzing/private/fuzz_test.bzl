@@ -21,7 +21,7 @@ load("//fuzzing/private:regression.bzl", "fuzzing_regression_test")
 load("//fuzzing/private/oss_fuzz:package.bzl", "oss_fuzz_package")
 
 def fuzzing_decoration(
-        base_name,
+        name,
         raw_binary,
         engine,
         corpus = None,
@@ -36,7 +36,7 @@ def fuzzing_decoration(
     documentation for the set of targets generated.
 
     Args:
-        base_name: The name prefix of the generated targets. It is normally the
+        name: The name prefix of the generated targets. It is normally the
           fuzz test name in the BUILD file.
         raw_binary: The label of the cc_binary or cc_test of fuzz test
           executable.
@@ -67,10 +67,10 @@ def fuzzing_decoration(
     # targets and their runfiles would be transferred from the remote cache to
     # the local machine, ballooning the size of the output.
 
-    instrum_binary_name = base_name + "_bin"
-    launcher_name = base_name + "_run"
-    corpus_name = base_name + "_corpus"
-    dict_name = base_name + "_dict"
+    instrum_binary_name = name + "_bin"
+    launcher_name = name + "_run"
+    corpus_name = name + "_corpus"
+    dict_name = name + "_dict"
 
     if instrument_binary:
         fuzzing_binary(
@@ -103,7 +103,7 @@ def fuzzing_decoration(
         fuzzing_dictionary(
             name = dict_name,
             dicts = dicts,
-            output = base_name + ".dict",
+            output = name + ".dict",
             testonly = True,
         )
 
@@ -116,14 +116,14 @@ def fuzzing_decoration(
 
     if define_regression_test:
         fuzzing_regression_test(
-            name = base_name,
+            name = name,
             binary = instrum_binary_name,
             tags = test_tags,
         )
 
     oss_fuzz_package(
-        name = base_name + "_oss_fuzz",
-        base_name = base_name,
+        name = name + "_oss_fuzz",
+        base_name = name,
         binary = instrum_binary_name,
         testonly = True,
         tags = ["manual"],
@@ -176,7 +176,7 @@ def cc_fuzz_test(
     )
 
     fuzzing_decoration(
-        base_name = name,
+        name = name,
         raw_binary = raw_binary_name,
         engine = engine,
         corpus = corpus,
