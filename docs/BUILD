@@ -15,7 +15,7 @@
 # Documentation files for the Bazel fuzzing rules.
 # To regenerate, run the 'update_docs.sh' script in the root directory.
 
-# Since the 'bzl_library' rule is currenly used only for documentation
+# Since the 'bzl_library' rule is currently used only for documentation
 # generation, we define all libraries here, to avoid introducing a Skylib
 # dependency on our users.
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
