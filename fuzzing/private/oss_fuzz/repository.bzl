@@ -28,7 +28,7 @@ def _find_llvm_lib(repository_ctx, target_file):
         set -x
         find "$({llvm_config} --libdir)" -name {target_file} | head -1
         """.format(
-            llvm_config = "llvm-config-9",
+            llvm_config = "llvm-config",
             target_file = target_file,
         ),
     ], quiet = False)
