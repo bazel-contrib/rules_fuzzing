@@ -58,6 +58,7 @@ def _extract_build_params(
 
     if sanitizer == "undefined":
         ubsan_lib_base_name = _ubsan_standalone_cxx_lib_name(_get_machine_arch(repository_ctx))
+
         # The Clang linker does not link the UBSAN runtime library by default.
         # We force an explicit linking here.
         ubsan_lib_path = _find_llvm_lib(
