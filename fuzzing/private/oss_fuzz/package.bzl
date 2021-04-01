@@ -29,8 +29,11 @@ def _oss_fuzz_package_impl(ctx):
         outputs = [output_archive],
         inputs = action_inputs,
         command = """
-            declare -r STAGING_DIR="$(pwd)/{output}.staging"
-            mkdir "$STAGING_DIR"
+            declare -r STAGING_DIR="$(mktemp --directory -t oss-fuzz-pkg.XXXXXXXXXX)"
+            function cleanup() {{
+                rm -rf "$STAGING_DIR"
+            }}
+            trap cleanup EXIT
             ln -s "$(pwd)/{binary_path}" "$STAGING_DIR/{base_name}"
             if [[ -n "{corpus_dir}" ]]; then
                 pushd "{corpus_dir}" >/dev/null
