@@ -61,7 +61,7 @@ load("@rules_fuzzing//fuzzing:init.bzl", "rules_fuzzing_init")
 rules_fuzzing_init()
 ```
 
-> NOTE: Replace this snippet with the latest WORKSPACE setup instructions in the release notes. To get the latest unreleased features, you may need to change the `urls` and `sha256` attributes to fetch from `HEAD`.
+> NOTE: Replace this snippet with the [latest release instructions](https://github.com/bazelbuild/rules_fuzzing/releases/latest). To get the latest unreleased features, you may need to change the `urls` and `sha256` attributes to fetch from `HEAD`. For more complex `WORKSPACE` files, you may also need to reconcile conflicting dependencies; read more in the [Bazel documentation](https://docs.bazel.build/versions/master/external.html).
 
 
 ### Configuring the .bazelrc file
