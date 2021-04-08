@@ -29,10 +29,21 @@ FLAGS = flags.FLAGS
 flags.DEFINE_list("corpus_list", [],
                   "Each element in the list stands for a corpus file")
 
+flags.DEFINE_string("corpus_list_file", None,
+                    "An optional file that lists corpus paths by lines")
+
 flags.DEFINE_string("output_dir", None, "The path of the output directory")
 
 flags.mark_flag_as_required("output_dir")
 
+def expand_corpus_to_file_list(corpus, file_list):
+    if not os.path.exists(corpus):
+        raise FileNotFoundError("file " + corpus + " doesn't exist")
+    if os.path.isdir(corpus):
+        # The first element in glob("dir/**") is "dir/", which needs to be excluded
+        file_list.extend(glob.glob(os.path.join(corpus, "**"), recursive=True)[1:])
+    else:
+        file_list.append(corpus)
 
 def main(argv):
     if not os.path.exists(FLAGS.output_dir):
@@ -40,15 +51,13 @@ def main(argv):
 
     expanded_file_list = []
     for corpus in FLAGS.corpus_list:
-        if not os.path.exists(corpus):
-            print("ERROR: file " + corpus + " doesn't exist.", file=stderr)
-            return -1
-        if os.path.isdir(corpus):
-            # The first element in glob("dir/**") is "dir/", which needs to be excluded
-            expanded_file_list += glob.glob(os.path.join(corpus, "**"), recursive=True)[1:]
-        else:
-            expanded_file_list.append(corpus)
-    
+        expand_corpus_to_file_list(corpus, expanded_file_list)
+    if FLAGS.corpus_list_file:
+        with open(FLAGS.corpus_list_file) as corpus_list_file:
+            for corpus_line in corpus_list_file:
+                expand_corpus_to_file_list(
+                    corpus_line.rstrip("\n"), expanded_file_list)
+
     if expanded_file_list:
         for corpus in expanded_file_list:
             dest = os.path.join(FLAGS.output_dir, corpus.replace("/", "-"))

@@ -79,15 +79,19 @@ Rule for creating a script to run the fuzzing test.
 )
 
 def _fuzzing_corpus_impl(ctx):
+    corpus_list_file_args = ctx.actions.args()
+    corpus_list_file_args.set_param_file_format("multiline")
+    corpus_list_file_args.use_param_file("--corpus_list_file=%s", use_always = True)
+    corpus_list_file_args.add_all(ctx.files.srcs)
+
     corpus_dir = ctx.actions.declare_directory(ctx.attr.name)
     cp_args = ctx.actions.args()
-    cp_args.add_joined("--corpus_list", ctx.files.srcs, join_with = ",")
     cp_args.add("--output_dir=" + corpus_dir.path)
 
     ctx.actions.run(
         inputs = ctx.files.srcs,
         outputs = [corpus_dir],
-        arguments = [cp_args],
+        arguments = [cp_args, corpus_list_file_args],
         executable = ctx.executable._corpus_tool,
     )
 
