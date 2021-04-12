@@ -14,8 +14,10 @@
 
 #include "fuzzing/replay/status_util.h"
 
+#include <cstdio>
 #include <cstring>
 #include <string>
+#include <type_traits>
 
 #include "absl/status/status.h"
 #include "absl/strings/str_cat.h"
@@ -26,19 +28,37 @@ namespace {
 
 constexpr size_t kMaxErrorStringSize = 128;
 
-std::string StrError(int errno_value) {
-  char error_str_buf[kMaxErrorStringSize];
-#if (_POSIX_C_SOURCE >= 200112L) && !_GNU_SOURCE
-  const int result =
-      strerror_r(errno_value, error_str_buf, sizeof(error_str_buf));
-  if (result) {
-    return absl::StrCat("Unknown error ", errno_value);
-  } else {
-    return error_str_buf;
-  }
+// Borrowed from absl/base/internal/strerror.cc
+const char* StrErrorAdaptor(int errnum, char* buf, size_t buflen) {
+#if defined(_WIN32)
+  int rc = strerror_s(buf, buflen, errnum);
+  buf[buflen - 1] = '\0';  // guarantee NUL termination
+  if (rc == 0 && strncmp(buf, "Unknown error", buflen) == 0) *buf = '\0';
+  return buf;
 #else
-  return strerror_r(errno_value, error_str_buf, sizeof(error_str_buf));
+  // The type of `ret` is platform-specific; both of these branches must compile
+  // either way but only one will execute on any given platform:
+  auto ret = strerror_r(errnum, buf, buflen);
+  if (std::is_same<decltype(ret), int>::value) {
+    // XSI `strerror_r`; `ret` is `int`:
+    if (ret) *buf = '\0';
+    return buf;
+  } else {
+    // GNU `strerror_r`; `ret` is `char *`:
+    return reinterpret_cast<const char*>(ret);
+  }
 #endif
+}
+
+// Borrowed from absl/base/internal/strerror.cc
+std::string StrErrorInternal(int errnum) {
+  char buf[kMaxErrorStringSize];
+  const char* str = StrErrorAdaptor(errnum, buf, sizeof buf);
+  if (*str == '\0') {
+    snprintf(buf, sizeof buf, "Unknown error %d", errnum);
+    str = buf;
+  }
+  return str;
 }
 
 }  // namespace
@@ -48,7 +68,7 @@ absl::Status ErrnoStatus(absl::string_view message, int errno_value) {
     return absl::OkStatus();
   } else {
     return absl::UnknownError(
-        absl::StrCat(message, " (", StrError(errno_value), ")"));
+        absl::StrCat(message, " (", StrErrorInternal(errno_value), ")"));
   }
 }
 

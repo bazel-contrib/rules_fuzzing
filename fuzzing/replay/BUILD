@@ -33,9 +33,15 @@ cc_library(
     ],
 )
 
+WEAK_LLVM_FUZZER_INITIALIZE = select({
+    "@platforms//os:osx": ["-Wl,-U,_LLVMFuzzerInitialize"],
+    "//conditions:default": [],
+})
+
 cc_library(
     name = "replay_main",
     srcs = ["replay_main.cc"],
+    linkopts = WEAK_LLVM_FUZZER_INITIALIZE,
     deps = [
         ":test_replayer",
         "@com_google_absl//absl/status",
