@@ -24,9 +24,14 @@ package(features = ["-layering_check"])
 
 load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
 
+HF_ARCH = select({
+    "@platforms//os:osx": ["-D_HF_ARCH_DARWIN"],
+    "//conditions:default": ["-D_HF_ARCH_LINUX"],
+})
+
 COMMON_COPTS = [
     "-D_GNU_SOURCE",
-    "-D_HF_ARCH_LINUX",
+] + HF_ARCH + [
     "-fPIC",
     "-Wall",
     "-Wextra",
@@ -54,61 +59,64 @@ LIBRARY_COPTS = [
 
 # Linker options for intercepting common memory operations. Should stay in sync
 # with https://github.com/google/honggfuzz/blob/master/hfuzz_cc/hfuzz-cc.c
-SYMBOL_WRAP_LINKOPTS = [
-    # Intercept common *cmp functions.
-    "-Wl,--wrap=strcmp",
-    "-Wl,--wrap=strcasecmp",
-    "-Wl,--wrap=stricmp",
-    "-Wl,--wrap=strncmp",
-    "-Wl,--wrap=strncasecmp",
-    "-Wl,--wrap=strnicmp",
-    "-Wl,--wrap=strstr",
-    "-Wl,--wrap=strcasestr",
-    "-Wl,--wrap=memcmp",
-    "-Wl,--wrap=bcmp",
-    "-Wl,--wrap=memmem",
-    "-Wl,--wrap=strcpy",
-    # Apache httpd
-    "-Wl,--wrap=ap_cstr_casecmp",
-    "-Wl,--wrap=ap_cstr_casecmpn",
-    "-Wl,--wrap=ap_strcasestr",
-    "-Wl,--wrap=apr_cstr_casecmp",
-    "-Wl,--wrap=apr_cstr_casecmpn",
-    # *SSL
-    "-Wl,--wrap=CRYPTO_memcmp",
-    "-Wl,--wrap=OPENSSL_memcmp",
-    "-Wl,--wrap=OPENSSL_strcasecmp",
-    "-Wl,--wrap=OPENSSL_strncasecmp",
-    "-Wl,--wrap=memcmpct",
-    # libXML2
-    "-Wl,--wrap=xmlStrncmp",
-    "-Wl,--wrap=xmlStrcmp",
-    "-Wl,--wrap=xmlStrEqual",
-    "-Wl,--wrap=xmlStrcasecmp",
-    "-Wl,--wrap=xmlStrncasecmp",
-    "-Wl,--wrap=xmlStrstr",
-    "-Wl,--wrap=xmlStrcasestr",
-    # Samba
-    "-Wl,--wrap=memcmp_const_time",
-    "-Wl,--wrap=strcsequal",
-    # LittleCMS
-    "-Wl,--wrap=cmsstrcasecmp",
-    # GLib
-    "-Wl,--wrap=g_strcmp0",
-    "-Wl,--wrap=g_strcasecmp",
-    "-Wl,--wrap=g_strncasecmp",
-    "-Wl,--wrap=g_strstr_len",
-    "-Wl,--wrap=g_ascii_strcasecmp",
-    "-Wl,--wrap=g_ascii_strncasecmp",
-    "-Wl,--wrap=g_str_has_prefix",
-    "-Wl,--wrap=g_str_has_suffix",
-    # CUrl
-    "-Wl,--wrap=Curl_strcasecompare",
-    "-Wl,--wrap=curl_strequal",
-    "-Wl,--wrap=Curl_safe_strcasecompare",
-    "-Wl,--wrap=Curl_strncasecompare",
-    "-Wl,--wrap=curl_strnequal",
-]
+SYMBOL_WRAP_LINKOPTS = select({
+    "@platforms//os:osx": [],
+    "//conditions:default": [
+        # Intercept common *cmp functions.
+        "-Wl,--wrap=strcmp",
+        "-Wl,--wrap=strcasecmp",
+        "-Wl,--wrap=stricmp",
+        "-Wl,--wrap=strncmp",
+        "-Wl,--wrap=strncasecmp",
+        "-Wl,--wrap=strnicmp",
+        "-Wl,--wrap=strstr",
+        "-Wl,--wrap=strcasestr",
+        "-Wl,--wrap=memcmp",
+        "-Wl,--wrap=bcmp",
+        "-Wl,--wrap=memmem",
+        "-Wl,--wrap=strcpy",
+        # Apache httpd
+        "-Wl,--wrap=ap_cstr_casecmp",
+        "-Wl,--wrap=ap_cstr_casecmpn",
+        "-Wl,--wrap=ap_strcasestr",
+        "-Wl,--wrap=apr_cstr_casecmp",
+        "-Wl,--wrap=apr_cstr_casecmpn",
+        # *SSL
+        "-Wl,--wrap=CRYPTO_memcmp",
+        "-Wl,--wrap=OPENSSL_memcmp",
+        "-Wl,--wrap=OPENSSL_strcasecmp",
+        "-Wl,--wrap=OPENSSL_strncasecmp",
+        "-Wl,--wrap=memcmpct",
+        # libXML2
+        "-Wl,--wrap=xmlStrncmp",
+        "-Wl,--wrap=xmlStrcmp",
+        "-Wl,--wrap=xmlStrEqual",
+        "-Wl,--wrap=xmlStrcasecmp",
+        "-Wl,--wrap=xmlStrncasecmp",
+        "-Wl,--wrap=xmlStrstr",
+        "-Wl,--wrap=xmlStrcasestr",
+        # Samba
+        "-Wl,--wrap=memcmp_const_time",
+        "-Wl,--wrap=strcsequal",
+        # LittleCMS
+        "-Wl,--wrap=cmsstrcasecmp",
+        # GLib
+        "-Wl,--wrap=g_strcmp0",
+        "-Wl,--wrap=g_strcasecmp",
+        "-Wl,--wrap=g_strncasecmp",
+        "-Wl,--wrap=g_strstr_len",
+        "-Wl,--wrap=g_ascii_strcasecmp",
+        "-Wl,--wrap=g_ascii_strncasecmp",
+        "-Wl,--wrap=g_str_has_prefix",
+        "-Wl,--wrap=g_str_has_suffix",
+        # CUrl
+        "-Wl,--wrap=Curl_strcasecompare",
+        "-Wl,--wrap=curl_strequal",
+        "-Wl,--wrap=Curl_safe_strcasecompare",
+        "-Wl,--wrap=Curl_strncasecompare",
+        "-Wl,--wrap=curl_strnequal",
+    ],
+})
 
 cc_library(
     name = "honggfuzz_common",
@@ -116,6 +124,11 @@ cc_library(
     hdrs = glob(["libhfcommon/*.h"]),
     copts = COMMON_COPTS + LIBRARY_COPTS,
 )
+
+LIB_RT = select({
+    "@platforms//os:osx": [],
+    "//conditions:default": ["-lrt"],
+})
 
 cc_library(
     name = "honggfuzz_engine",
@@ -128,8 +141,7 @@ cc_library(
     linkopts = SYMBOL_WRAP_LINKOPTS + [
         "-ldl",
         "-lpthread",
-        "-lrt",
-    ],
+    ] + LIB_RT,
     visibility = ["//visibility:public"],
     deps = [
         ":honggfuzz_common",
@@ -160,7 +172,7 @@ cc_binary(
         "-lunwind-ptrace",
         "-lunwind-generic",
         "-lunwind",
-        "-lrt",
+    ] + LIB_RT + [
         "-llzma",
         "-Wl,-Bstatic",
         "-lBlocksRuntime",
