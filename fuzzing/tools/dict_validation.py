@@ -17,47 +17,22 @@
 Validates the fuzzing dictionary.
 """
 
-from string import hexdigits
+import re
 
-
-def validate_entry(entry):
-    """Validates a single fuzzing dictionary entry.
-
-    Args:
-        entry: a string containing a single entry.
-
-    Returns:
-        True if the argument is a valid fuzzing dictionary entry, 
-        otherwise False.
-    """
-
-    # Use set to contain hex digits to decrease the query time complexity
-    hex_set = set(hexdigits)
-    pos, end = 0, len(entry) - 1
-    while pos < end:
-        pos += 1
-        chr = entry[pos]
-
-        if not (chr.isprintable() or chr.isspace()):
-            return False
-
-        # Handle '\\'
-        if chr == '\\':
-            if pos + 1 <= end and (entry[pos + 1] == '\\' or
-                                   entry[pos + 1] == '"'):
-                pos += 1
-                continue
-
-            # Handle '\xAB'
-            if pos + 3 <= end and entry[pos + 1] == 'x' and entry[
-                    pos + 2] in hex_set and entry[pos + 3] in hex_set:
-                pos += 3
-                continue
-
-            return False
-
-    return True
-
+_DICTIONARY_LINE_RE = re.compile(
+    r'''[^"]*  # Skip an arbitrary prefix (not used by libFuzzer).
+        "      # Must be enclosed in quotes.
+        (
+         [^\\\"]  # One or more non-escape characters...
+        |
+         \\(      # ...or an escape sequence...
+            [\\\"]  # ...consisting of either `\` or `"`...
+           |
+            x[0-9a-f]{2}  # ...or a hexa number, e.g. '\x0f'
+           )
+        )+
+        "''',
+    flags=re.IGNORECASE | re.VERBOSE)
 
 def validate_line(line):
     """Validates a single line in the fuzzing dictionary entry.
@@ -72,15 +47,5 @@ def validate_line(line):
     line = line.strip()
     if not line or line.startswith('#'):
         return True
-    if len(line) < 2 or line[-1] != '"':
-        return False
-
-    left = 0
-    # Find the opening "
-    while left < len(line) - 1 and line[left] != '"':
-        left += 1
-
-    if left >= len(line) - 1:
-        return False
-
-    return validate_entry(line[left:])
+    else:
+        return re.fullmatch(_DICTIONARY_LINE_RE, line) is not None
