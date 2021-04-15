@@ -28,7 +28,6 @@ class DictValidatorTest(unittest.TestCase):
         self.assertTrue(validate_line('":path"'))
         self.assertTrue(validate_line('"keep-alive"'))
         self.assertTrue(validate_line('"te"'))
-        self.assertTrue(validate_line('"ab""'))
 
     def test_escaped_words(self):
         self.assertTrue(validate_line('kw2="\\"ac\\\\dc\\""'))
@@ -38,8 +37,22 @@ class DictValidatorTest(unittest.TestCase):
     def test_invalid_escaped_words(self):
         self.assertFalse(validate_line('"\\A"'))
 
+    def test_unfinished_escape(self):
+        self.assertFalse(validate_line('"\\"'))
+        self.assertFalse(validate_line('"\\x"'))
+        self.assertFalse(validate_line('"\\x1"'))
+
+    def test_invalid_unescaped_words(self):
+        self.assertFalse(validate_line('"""'))
+
     def test_comment(self):
         self.assertTrue(validate_line('# valid dictionary entries'))
+
+    def test_suffix_after_entry(self):
+        self.assertFalse(validate_line('"entry"suffix'))
+
+    def test_empty_entry(self):
+        self.assertFalse(validate_line('""'))
 
     def test_empty_string(self):
         self.assertTrue(validate_line(''))
