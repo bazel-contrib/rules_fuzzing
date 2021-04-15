@@ -33,10 +33,11 @@ flags.DEFINE_string("output_file", "",
 
 def validate_dict(dict_path, output_stream):
     with open(dict_path, 'r') as dict:
-        for line in dict.readlines():
+        for index, line in enumerate(dict.readlines()):
             line = line.strip()
             if not validate_line(line):
-                print("ERROR: invalid dictionary entry '%s'" % line,
+                print("ERROR: invalid dictionary entry '%s' in %s:%d" %
+                      (line, dict_path, index + 1),
                       file=stderr)
                 return False
             if output_stream:
