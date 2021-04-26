@@ -18,12 +18,15 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 load("//fuzzing/private/oss_fuzz:repository.bzl", "oss_fuzz_repository")
 
-def rules_fuzzing_dependencies(oss_fuzz = True, honggfuzz = True):
+def rules_fuzzing_dependencies(oss_fuzz = True, honggfuzz = True, jazzer = True):
     """Instantiates the dependencies of the fuzzing rules.
 
     Args:
       oss_fuzz: Include OSS-Fuzz dependencies.
       honggfuzz: Include Honggfuzz dependencies.
+      jazzer: Include Jazzer repository. Instantiating all Jazzer dependencies
+        additionally requires invoking jazzer_dependencies() in
+        @jazzer//:repositories.bzl and jazzer_init() in @jazzer//:init.bzl.
     """
 
     maybe(
@@ -63,4 +66,13 @@ def rules_fuzzing_dependencies(oss_fuzz = True, honggfuzz = True):
             sha256 = "a6f8040ea62e0f630737f66dce46fb1b86140f118957cb5e3754a764de7a770a",
             url = "https://github.com/google/honggfuzz/archive/e0670137531242d66c9cf8a6dee677c055a8aacb.zip",
             strip_prefix = "honggfuzz-e0670137531242d66c9cf8a6dee677c055a8aacb",
+        )
+
+    if jazzer:
+        maybe(
+            http_archive,
+            name = "jazzer",
+            sha256 = "289138a0a7d6154c51b5b2407a9ae7e1b5e4c1d0ba32fe7ef2d3929cb15578aa",
+            strip_prefix = "jazzer-978ed6a05bb9408e02b2b1c88064e5851399824b",
+            url = "https://github.com/CodeIntelligenceTesting/jazzer/archive/978ed6a05bb9408e02b2b1c88064e5851399824b.zip",
         )

@@ -13,6 +13,7 @@
 # limitations under the License.
 
 load("//fuzzing:cc_defs.bzl", "cc_fuzzing_engine")
+load("//fuzzing:java_defs.bzl", "java_fuzzing_engine")
 load("@rules_cc//cc:defs.bzl", "cc_library")
 
 # libFuzzer specification.
@@ -58,5 +59,16 @@ cc_fuzzing_engine(
     display_name = "Replay",
     launcher = "replay_launcher.sh",
     library = "//fuzzing/replay:replay_main",
+    visibility = ["//visibility:public"],
+)
+
+# Jazzer specification.
+#################################
+
+java_fuzzing_engine(
+    name = "jazzer",
+    display_name = "Jazzer",
+    launcher = "jazzer_launcher.sh",
+    library = "@jazzer//agent:jazzer_api_compile_only",
     visibility = ["//visibility:public"],
 )

@@ -34,6 +34,13 @@ bzl_library(
 )
 
 bzl_library(
+    name = "bazel_skylib",
+    srcs = [
+        "@bazel_skylib//rules:common_settings",
+    ],
+)
+
+bzl_library(
     name = "cc_fuzzing_rules",
     srcs = [
         "//fuzzing:cc_defs.bzl",
@@ -43,11 +50,13 @@ bzl_library(
         "//fuzzing/private:engine.bzl",
         "//fuzzing/private:fuzz_test.bzl",
         "//fuzzing/private:instrum_opts.bzl",
+        "//fuzzing/private:java.bzl",
         "//fuzzing/private:regression.bzl",
         "//fuzzing/private/oss_fuzz:package.bzl",
         "@rules_fuzzing_oss_fuzz//:instrum.bzl",
     ],
     deps = [
+        ":bazel_skylib",
         ":rules_cc",
     ],
 )

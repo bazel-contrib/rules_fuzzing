@@ -56,3 +56,8 @@ build:asan-replay --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
 build:oss-fuzz --//fuzzing:cc_engine=@rules_fuzzing_oss_fuzz//:oss_fuzz_engine
 build:oss-fuzz --@rules_fuzzing//fuzzing:cc_engine_instrumentation=oss-fuzz
 build:oss-fuzz --@rules_fuzzing//fuzzing:cc_engine_sanitizer=none
+
+build:asan-jazzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=libfuzzer
+build:asan-jazzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
+# Workaround for https://github.com/bazelbuild/bazel/issues/11128
+build:asan-jazzer --//fuzzing:cc_engine_sanitizer=asan

@@ -26,6 +26,14 @@ load("@rules_fuzzing//fuzzing:init.bzl", "rules_fuzzing_init")
 
 rules_fuzzing_init()
 
+load("@jazzer//:repositories.bzl", "jazzer_dependencies")
+
+jazzer_dependencies()
+
+load("@jazzer//:init.bzl", "jazzer_init")
+
+jazzer_init()
+
 # The support for running the examples and unit tests.
 
 http_archive(
