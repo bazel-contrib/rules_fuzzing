@@ -23,7 +23,7 @@ _DICTIONARY_LINE_RE = re.compile(
     r'''[^"]*  # Skip an arbitrary prefix (not used by libFuzzer).
         "      # Must be enclosed in quotes.
         (
-         [^\\\"]  # One or more non-escape characters...
+         [^\\]    # One or more non-escape characters...
         |
          \\(      # ...or an escape sequence...
             [\\\"]  # ...consisting of either `\` or `"`...
@@ -31,7 +31,8 @@ _DICTIONARY_LINE_RE = re.compile(
             x[0-9a-f]{2}  # ...or a hexa number, e.g. '\x0f'
            )
         )+
-        "''',
+        "
+        \s*  # Skip any space after the entry.''',
     flags=re.IGNORECASE | re.VERBOSE)
 
 def validate_line(line):
