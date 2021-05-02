@@ -14,7 +14,7 @@
 
 """Defines a rule for creating an instrumented fuzzing executable."""
 
-load("//fuzzing/private:engine.bzl", "CcFuzzingEngineInfo")
+load("//fuzzing/private:engine.bzl", "FuzzingEngineInfo")
 load(
     "//fuzzing/private:instrum_opts.bzl",
     "instrum_defaults",
@@ -35,7 +35,7 @@ Provider for storing information about a fuzz test binary.
         "binary_runfiles": "The runfiles of the fuzz test executable.",
         "corpus_dir": "The directory of the corpus files used as input seeds.",
         "dictionary_file": "The dictionary file to use in fuzzing runs.",
-        "engine_info": "The `CcFuzzingEngineInfo` provider of the fuzzing engine used in the fuzz test.",
+        "engine_info": "The `FuzzingEngineInfo` provider of the fuzzing engine used in the fuzz test.",
     },
 )
 
@@ -120,7 +120,7 @@ def _fuzzing_binary_impl(ctx):
             binary_runfiles = binary_runfiles,
             corpus_dir = ctx.file.corpus,
             dictionary_file = ctx.file.dictionary,
-            engine_info = ctx.attr.engine[CcFuzzingEngineInfo],
+            engine_info = ctx.attr.engine[FuzzingEngineInfo],
         ),
     ]
 
@@ -147,7 +147,7 @@ The instrumentation is controlled by the following flags:
         ),
         "engine": attr.label(
             doc = "The specification of the fuzzing engine used in the binary.",
-            providers = [CcFuzzingEngineInfo],
+            providers = [FuzzingEngineInfo],
             mandatory = True,
         ),
         "corpus": attr.label(
@@ -187,7 +187,7 @@ be incorporated in the target configuration (e.g., on the command line or the
         ),
         "engine": attr.label(
             doc = "The specification of the fuzzing engine used in the binary.",
-            providers = [CcFuzzingEngineInfo],
+            providers = [FuzzingEngineInfo],
             mandatory = True,
         ),
         "corpus": attr.label(

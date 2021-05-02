@@ -16,7 +16,7 @@
 
 load("@bazel_skylib//lib:unittest.bzl", "analysistest", "asserts")
 load("@bazel_skylib//lib:new_sets.bzl", "sets")
-load(":engine.bzl", "CcFuzzingEngineInfo", "cc_fuzzing_engine")
+load(":engine.bzl", "FuzzingEngineInfo", "cc_fuzzing_engine")
 load("@rules_cc//cc:defs.bzl", "cc_library")
 load(":util.bzl", "generate_file")
 
@@ -50,7 +50,7 @@ def _setup_common_stubs():
         testonly = 1,
     )
 
-# Test that the CcFuzzingEngineInfo provider is populated correctly
+# Test that the FuzzingEngineInfo provider is populated correctly
 # (`provider_contents` stem).
 
 def _provider_contents_test_impl(ctx):
@@ -63,12 +63,12 @@ def _provider_contents_test_impl(ctx):
     asserts.equals(
         env,
         "Provider Contents",
-        target_under_test[CcFuzzingEngineInfo].display_name,
+        target_under_test[FuzzingEngineInfo].display_name,
     )
     asserts.equals(
         env,
         "fuzzing/private/launcher_stub.sh",
-        target_under_test[CcFuzzingEngineInfo].launcher.short_path,
+        target_under_test[FuzzingEngineInfo].launcher.short_path,
     )
     asserts.set_equals(
         env,
@@ -79,7 +79,7 @@ def _provider_contents_test_impl(ctx):
         ]),
         sets.make([
             file.short_path
-            for file in target_under_test[CcFuzzingEngineInfo].launcher_runfiles.files.to_list()
+            for file in target_under_test[FuzzingEngineInfo].launcher_runfiles.files.to_list()
         ]),
     )
     asserts.set_equals(
@@ -89,7 +89,7 @@ def _provider_contents_test_impl(ctx):
         ]),
         sets.make([
             (env_var, file.short_path)
-            for env_var, file in target_under_test[CcFuzzingEngineInfo].launcher_environment.items()
+            for env_var, file in target_under_test[FuzzingEngineInfo].launcher_environment.items()
         ]),
     )
     return analysistest.end(env)
