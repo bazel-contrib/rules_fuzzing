@@ -14,11 +14,11 @@
 
 """Rule for packaging fuzz tests in the expected OSS-Fuzz format."""
 
-load("//fuzzing/private:binary.bzl", "CcFuzzingBinaryInfo")
+load("//fuzzing/private:binary.bzl", "FuzzingBinaryInfo")
 
 def _oss_fuzz_package_impl(ctx):
     output_archive = ctx.actions.declare_file(ctx.label.name + ".tar")
-    binary_info = ctx.attr.binary[CcFuzzingBinaryInfo]
+    binary_info = ctx.attr.binary[FuzzingBinaryInfo]
 
     action_inputs = [binary_info.binary_file]
     if binary_info.corpus_dir:
@@ -66,7 +66,7 @@ Packages a fuzz test in a TAR archive compatible with the OSS-Fuzz format.
         "binary": attr.label(
             executable = True,
             doc = "The fuzz test executable.",
-            providers = [CcFuzzingBinaryInfo],
+            providers = [FuzzingBinaryInfo],
             mandatory = True,
             cfg = "target",
         ),
