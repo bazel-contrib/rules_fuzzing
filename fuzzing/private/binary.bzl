@@ -26,7 +26,7 @@ load(
     "sanitizer_configs",
 )
 
-CcFuzzingBinaryInfo = provider(
+FuzzingBinaryInfo = provider(
     doc = """
 Provider for storing information about a fuzz test binary.
 """,
@@ -115,7 +115,7 @@ def _fuzzing_binary_impl(ctx):
             executable = output_file,
             runfiles = binary_runfiles.merge(ctx.runfiles(files = other_runfiles)),
         ),
-        CcFuzzingBinaryInfo(
+        FuzzingBinaryInfo(
             binary_file = ctx.executable.binary,
             binary_runfiles = binary_runfiles,
             corpus_dir = ctx.file.corpus,
@@ -166,7 +166,7 @@ The instrumentation is controlled by the following flags:
         ),
     },
     executable = True,
-    provides = [CcFuzzingBinaryInfo],
+    provides = [FuzzingBinaryInfo],
 )
 
 fuzzing_binary_uninstrumented = rule(
@@ -203,5 +203,5 @@ be incorporated in the target configuration (e.g., on the command line or the
         ),
     },
     executable = True,
-    provides = [CcFuzzingBinaryInfo],
+    provides = [FuzzingBinaryInfo],
 )

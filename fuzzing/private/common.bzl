@@ -14,10 +14,10 @@
 
 """Common building blocks for fuzz test definitions."""
 
-load("//fuzzing/private:binary.bzl", "CcFuzzingBinaryInfo")
+load("//fuzzing/private:binary.bzl", "FuzzingBinaryInfo")
 
 def _fuzzing_launcher_script(ctx):
-    binary_info = ctx.attr.binary[CcFuzzingBinaryInfo]
+    binary_info = ctx.attr.binary[FuzzingBinaryInfo]
     script = ctx.actions.declare_file(ctx.label.name)
 
     script_template = """
@@ -48,7 +48,7 @@ exec "{launcher}" \
 def _fuzzing_launcher_impl(ctx):
     script = _fuzzing_launcher_script(ctx)
 
-    binary_info = ctx.attr.binary[CcFuzzingBinaryInfo]
+    binary_info = ctx.attr.binary[FuzzingBinaryInfo]
     runfiles = ctx.runfiles()
     runfiles = runfiles.merge(binary_info.engine_info.launcher_runfiles)
     runfiles = runfiles.merge(ctx.attr._launcher[DefaultInfo].default_runfiles)
@@ -70,7 +70,7 @@ Rule for creating a script to run the fuzzing test.
         "binary": attr.label(
             executable = True,
             doc = "The executable of the fuzz test to run.",
-            providers = [CcFuzzingBinaryInfo],
+            providers = [FuzzingBinaryInfo],
             cfg = "target",
             mandatory = True,
         ),

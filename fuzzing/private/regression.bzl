@@ -14,10 +14,10 @@
 
 """Regression testing rule for fuzz tests."""
 
-load("//fuzzing/private:binary.bzl", "CcFuzzingBinaryInfo")
+load("//fuzzing/private:binary.bzl", "FuzzingBinaryInfo")
 
 def _fuzzing_regression_test_impl(ctx):
-    binary_info = ctx.attr.binary[CcFuzzingBinaryInfo]
+    binary_info = ctx.attr.binary[FuzzingBinaryInfo]
     script = ctx.actions.declare_file(ctx.label.name)
     script_template = """
 export FUZZER_OUTPUT_CORPUS_DIR="$TEST_TMPDIR/corpus"
@@ -57,7 +57,7 @@ Executes a fuzz test on its seed corpus.
         "binary": attr.label(
             executable = True,
             doc = "The instrumented executable of the fuzz test to run.",
-            providers = [CcFuzzingBinaryInfo],
+            providers = [FuzzingBinaryInfo],
             cfg = "target",
             mandatory = True,
         ),
