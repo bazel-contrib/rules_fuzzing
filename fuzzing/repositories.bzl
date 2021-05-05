@@ -18,7 +18,7 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 load("//fuzzing/private/oss_fuzz:repository.bzl", "oss_fuzz_repository")
 
-def rules_fuzzing_dependencies(oss_fuzz = True, honggfuzz = True, jazzer = True):
+def rules_fuzzing_dependencies(oss_fuzz = True, honggfuzz = True, jazzer = False):
     """Instantiates the dependencies of the fuzzing rules.
 
     Args:

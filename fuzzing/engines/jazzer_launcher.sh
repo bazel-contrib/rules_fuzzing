@@ -1,4 +1,4 @@
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,25 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# The command line arguments for launching fuzz tests run with the libFuzzer
+# The command line arguments for launching fuzz tests run with the Jazzer
 # engine. The launch configuration is supplied by the launcher script through
 # environment variables.
 
 command_line=("$(readlink -f ${FUZZER_BINARY})")
 
-# libFuzzer flags.
+# libFuzzer flags (compatible with Jazzer).
 
 if [[ -n "${FUZZER_DICTIONARY_PATH}" ]]; then
     command_line+=("-dict=${FUZZER_DICTIONARY_PATH}")
 fi
 command_line+=("-artifact_prefix=${FUZZER_ARTIFACTS_DIR}/")
-command_line+=("--reproducer_path=${FUZZER_ARTIFACTS_DIR}")
 if [[ "${FUZZER_TIMEOUT_SECS}" -gt 0 ]]; then
     command_line+=("-max_total_time=${FUZZER_TIMEOUT_SECS}")
 fi
 if (( FUZZER_IS_REGRESSION )); then
     command_line+=("-runs=0")
 fi
+
+# Jazzer flags.
+command_line+=("--reproducer_path=${FUZZER_ARTIFACTS_DIR}")
 
 # Corpus sources.
 

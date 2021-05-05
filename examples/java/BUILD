@@ -1,4 +1,4 @@
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,17 +19,32 @@
 load("@rules_cc//cc:defs.bzl", "cc_binary")
 load("//fuzzing:java_defs.bzl", "java_fuzz_test")
 
-java_fuzz_test(
-    name = "JavaFuzzTest",
+filegroup(
+    name = "corpus",
     srcs = [
-        "com/example/JavaFuzzTest.java",
+        "corpus_0.txt",
+        "corpus_1.txt",
     ],
 )
 
 java_fuzz_test(
+    name = "JavaEmptyFuzzTest",
+    srcs = ["com/example/JavaEmptyFuzzTest.java"],
+    corpus = [
+        "corpus_0.txt",
+    ],
+)
+
+java_fuzz_test(
+    name = "JavaFuzzTest",
+    srcs = ["com/example/JavaFuzzTest.java"],
+)
+
+java_fuzz_test(
     name = "JavaNativeFuzzTest",
-    srcs = [
-        "com/example/JavaNativeFuzzTest.java",
+    srcs = ["com/example/JavaNativeFuzzTest.java"],
+    corpus = [
+        ":corpus",
     ],
     transitive_native_deps = [
         ":native",

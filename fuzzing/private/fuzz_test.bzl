@@ -275,8 +275,6 @@ def java_fuzz_test(
         transitive_native_deps = transitive_native_deps,
     )
 
-    # FIXME: Packaging java_fuzz_tests for OSS-Fuzz requires runfile support (+ some additional
-    #  tweaks).
     fuzzing_decoration(
         name = name,
         raw_binary = raw_binary_name,
@@ -287,5 +285,8 @@ def java_fuzz_test(
         dicts = dicts,
         test_tags = (tags or []) + [
             "fuzz-test",
+            # FIXME: Packaging java_fuzz_tests for OSS-Fuzz requires runfile
+            #  support (+ some additional tweaks).
+            "no-oss-fuzz",
         ],
     )
