@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "examples/java/jni.h"
+#include <jni.h>
 /* Header for class com_example_JavaNativeFuzzTest */
 
 #ifndef EXAMPLES_JAVA_COM_EXAMPLE_JAVANATIVEFUZZTEST_H_
