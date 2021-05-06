@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""The implementation of the cc_fuzzing_engine rule."""
+"""The implementation of the {cc, java}_fuzzing_engine rules."""
 
 FuzzingEngineInfo = provider(
     doc = """
-Provider for storing the specification of a fuzzing engine.
+Provider for storing the language-independent part of the specification of a fuzzing engine.
 """,
     fields = {
         "display_name": "A string representing the human-readable name of the fuzzing engine.",
@@ -89,4 +89,44 @@ Specifies a fuzzing engine that can be used to run C++ fuzz targets.
         ),
     },
     provides = [CcInfo, FuzzingEngineInfo],
+)
+
+def _java_fuzzing_engine_impl(ctx):
+    return [
+        _make_fuzzing_engine_info(ctx),
+        ctx.attr.library[DefaultInfo],
+        ctx.attr.library[JavaInfo],
+    ]
+
+java_fuzzing_engine = rule(
+    implementation = _java_fuzzing_engine_impl,
+    doc = """
+Specifies a fuzzing engine that can be used to run Java fuzz targets.
+""",
+    attrs = {
+        "display_name": attr.string(
+            doc = "The name of the fuzzing engine, as it should be rendered " +
+                  "in human-readable output.",
+            mandatory = True,
+        ),
+        "library": attr.label(
+            doc = "A java_library target that is made available to all Java " +
+                  "fuzz tests.",
+            providers = [JavaInfo],
+        ),
+        "launcher": attr.label(
+            doc = "A shell script that knows how to launch the fuzzing " +
+                  "executable based on configuration specified in the environment.",
+            mandatory = True,
+            allow_single_file = True,
+        ),
+        "launcher_data": attr.label_keyed_string_dict(
+            doc = "A dict mapping additional runtime dependencies needed by " +
+                  "the fuzzing engine to environment variables that will be " +
+                  "available inside the launcher, holding the runtime path " +
+                  "to the dependency.",
+            allow_files = True,
+        ),
+    },
+    provides = [FuzzingEngineInfo, JavaInfo],
 )

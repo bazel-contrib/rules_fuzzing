@@ -24,5 +24,21 @@ exports_files([
     "engine.bzl",
     "fuzz_test.bzl",
     "instrum_opts.bzl",
+    "java_utils.bzl",
     "regression.bzl",
 ])
+
+# Config settings needed for prebuilt engines.
+config_setting(
+    name = "use_sanitizer_none",
+    flag_values = {
+        "@rules_fuzzing//fuzzing:cc_engine_sanitizer": "none",
+    },
+)
+
+config_setting(
+    name = "use_sanitizer_asan",
+    flag_values = {
+        "@rules_fuzzing//fuzzing:cc_engine_sanitizer": "asan",
+    },
+)

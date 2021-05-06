@@ -37,7 +37,7 @@ jobs:
         run: |
           bazel test --test_tag_filters=-fuzz-test --build_tests_only --config=asan //...
   fuzzer_run_tests:
-    name: Brief fuzz test runs
+    name: Brief fuzz test runs (C++)
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
@@ -61,7 +61,7 @@ jobs:
         run: |
           bazel run ${{ matrix.target }} --config=${{ matrix.config }} -- --clean --timeout_secs=5
   regression_tests:
-    name: Regression tests
+    name: Regression tests (C++)
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
@@ -80,4 +80,37 @@ jobs:
         run: |
           bazel test --verbose_failures --test_output=all \
               --build_tag_filters=fuzz-test --config=${{ matrix.config }} \
-              //examples/...
+              //examples:all
+  fuzzer_run_tests_java:
+    name: Brief fuzz test runs (Java)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      matrix:
+        config: ["jazzer", "asan-jazzer"]
+        target: ["//examples/java:JavaEmptyFuzzTest_run"]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -yq clang-10
+      - name: Run smoke test
+        run: |
+          bazel run ${{ matrix.target }} --config=${{ matrix.config }} -- --clean --timeout_secs=5
+  regression_tests_java:
+    name: Regression tests (Java)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      matrix:
+        config: ["jazzer", "asan-jazzer"]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -yq clang-10
+      - name: Run regression tests
+        run: |
+          bazel test --verbose_failures --test_output=all \
+              --build_tag_filters=fuzz-test --config=${{ matrix.config }} \
+              //examples/java/...
