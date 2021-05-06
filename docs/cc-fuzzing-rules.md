@@ -32,7 +32,7 @@ Specifies a fuzzing engine that can be used to run C++ fuzz targets.
 cc_fuzz_test(<a href="#cc_fuzz_test-name">name</a>, <a href="#cc_fuzz_test-corpus">corpus</a>, <a href="#cc_fuzz_test-dicts">dicts</a>, <a href="#cc_fuzz_test-engine">engine</a>, <a href="#cc_fuzz_test-tags">tags</a>, <a href="#cc_fuzz_test-binary_kwargs">binary_kwargs</a>)
 </pre>
 
-Defines a fuzz test and a few associated tools and metadata.
+Defines a C++ fuzz test and a few associated tools and metadata.
 
 For each fuzz test `<name>`, this macro defines a number of targets. The
 most relevant ones are:
@@ -70,7 +70,7 @@ most relevant ones are:
 ## fuzzing_decoration
 
 <pre>
-fuzzing_decoration(<a href="#fuzzing_decoration-base_name">base_name</a>, <a href="#fuzzing_decoration-raw_binary">raw_binary</a>, <a href="#fuzzing_decoration-engine">engine</a>, <a href="#fuzzing_decoration-corpus">corpus</a>, <a href="#fuzzing_decoration-dicts">dicts</a>, <a href="#fuzzing_decoration-instrument_binary">instrument_binary</a>,
+fuzzing_decoration(<a href="#fuzzing_decoration-name">name</a>, <a href="#fuzzing_decoration-raw_binary">raw_binary</a>, <a href="#fuzzing_decoration-engine">engine</a>, <a href="#fuzzing_decoration-corpus">corpus</a>, <a href="#fuzzing_decoration-dicts">dicts</a>, <a href="#fuzzing_decoration-instrument_binary">instrument_binary</a>,
                    <a href="#fuzzing_decoration-define_regression_test">define_regression_test</a>, <a href="#fuzzing_decoration-test_tags">test_tags</a>)
 </pre>
 
@@ -86,7 +86,7 @@ documentation for the set of targets generated.
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="fuzzing_decoration-base_name"></a>base_name |  The name prefix of the generated targets. It is normally the   fuzz test name in the BUILD file.   |  none |
+| <a id="fuzzing_decoration-name"></a>name |  The name prefix of the generated targets. It is normally the   fuzz test name in the BUILD file.   |  none |
 | <a id="fuzzing_decoration-raw_binary"></a>raw_binary |  The label of the cc_binary or cc_test of fuzz test   executable.   |  none |
 | <a id="fuzzing_decoration-engine"></a>engine |  The label of the fuzzing engine used to build the binary.   |  none |
 | <a id="fuzzing_decoration-corpus"></a>corpus |  A list of corpus files.   |  <code>None</code> |
