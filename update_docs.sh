@@ -15,5 +15,5 @@
 
 set -euo pipefail
 
-bazel build //docs:cc_fuzzing_docs
-cp bazel-bin/docs/cc-fuzzing-rules.md docs/
+bazel build //docs:cc_fuzzing_docs //docs:java_fuzzing_docs
+cp bazel-bin/docs/cc-fuzzing-rules.md bazel-bin/docs/java-fuzzing-rules.md docs/
