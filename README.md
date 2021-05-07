@@ -9,6 +9,7 @@ This repository contains [Bazel](https://bazel.build/) [Starlark extensions](htt
 * Multiple fuzzing engines out of the box:
   * [libFuzzer][libfuzzer-doc]
   * [Honggfuzz][honggfuzz-doc]
+  * [Jazzer][jazzer-doc]
 * Multiple sanitizer configurations:
   * [Address Sanitizer][asan-doc]
   * [Memory Sanitizer][msan-doc]
@@ -22,7 +23,7 @@ This repository contains [Bazel](https://bazel.build/) [Starlark extensions](htt
   * Defining additional fuzzing engines
   * Customizing the behavior of the fuzz test rule.
 
-The rule library currently provides support for C++ fuzz tests. Support for additional languages may be added in the future.
+The rule library currently provides support for C++ and Java fuzz tests. Support for additional languages may be added in the future.
 
 Contributions are welcome! Please read the [contribution guidelines](/docs/contributing.md).
 
@@ -54,11 +55,21 @@ http_archive(
 
 load("@rules_fuzzing//fuzzing:repositories.bzl", "rules_fuzzing_dependencies")
 
+# Pass jazzer = True to rules_fuzzing_dependencies for Java fuzzing support.
 rules_fuzzing_dependencies()
 
 load("@rules_fuzzing//fuzzing:init.bzl", "rules_fuzzing_init")
 
 rules_fuzzing_init()
+
+# For Java fuzzing support, uncomment the following lines.
+# load("@jazzer//:repositories.bzl", "jazzer_dependencies")
+#
+# jazzer_dependencies()
+#
+# load("@jazzer//:init.bzl", "jazzer_init")
+#
+# jazzer_init()
 ```
 
 > NOTE: Replace this snippet with the [latest release instructions](https://github.com/bazelbuild/rules_fuzzing/releases/latest). To get the latest unreleased features, you may need to change the `urls` and `sha256` attributes to fetch from `HEAD`. For more complex `WORKSPACE` files, you may also need to reconcile conflicting dependencies; read more in the [Bazel documentation](https://docs.bazel.build/versions/master/external.html).
@@ -79,9 +90,11 @@ build:asan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=libfuzz
 build:asan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
 ```
 
-### Defining the fuzz test
+Examples for other combinations of fuzzing engine and sanitizer can be found in the project's [`.bazelrc`](/.bazelrc).
 
-A fuzz test is specified using a [`cc_fuzz_test` rule](/docs/cc-fuzzing-rules.md#cc_fuzz_test). In the most basic form, a fuzz test requires a source file that implements the fuzz driver entry point.
+### Defining a C++ fuzz test
+
+A C++ fuzz test is specified using a [`cc_fuzz_test` rule](/docs/cc-fuzzing-rules.md#cc_fuzz_test). In the most basic form, a fuzz test requires a source file that implements the fuzz driver entry point.
 
 Let's create a fuzz test that exhibits a buffer overflow. Create a `fuzz_test.cc` file in your workspace root, as follows:
 
@@ -139,11 +152,69 @@ INFO: seed corpus: files: 755 min: 1b max: 35982b total: 252654b rss: 35Mb
 
 The crash is saved under `/tmp/fuzzing/artifacts` and can be further inspected.
 
+### Defining a Java fuzz test
+
+A Java fuzz test is specified using a [`java_fuzz_test` rule](/docs/java-fuzzing-rules.md#java_fuzz_test). In the most basic form, a Java fuzz test consists of a single `.java` file with a class that defines a function `public static fuzzerTestOneInput(byte[] input)`.
+
+The Java equivalent of the C++ fuzz test above would look as follows:
+
+```java
+package com.example;
+
+public class JavaFuzzTest {
+    public static void fuzzerTestOneInput(byte[] data) {
+        if (data.length >= 3 && data[0] == 'F' && data[1] == 'U' &&
+            data[2] == 'Z' && data[data.length] == 'Z') {
+            throw new IllegalStateException(
+                "ArrayIndexOutOfBoundException thrown above");
+        }
+    }
+}
+```
+
+The corresponding build target looks very much like a regular `java_binary`:
+
+```python
+load("@rules_fuzzing//fuzzing:java_defs.bzl", "java_fuzz_test")
+
+java_fuzz_test(
+    name = "JavaFuzzTest",
+    srcs = ["JavaFuzzTest.java"],
+    # target_class is not needed if using the Maven directory layout.
+    target_class = "com.example.JavaFuzzTest",
+)
+```
+
+As with the C++ fuzz tests, you can start the fuzzer ([Jazzer][jazzer-doc]) via
+
+```sh
+$ bazel run --config=jazzer //:JavaFuzzTest_run
+```
+
+Jazzer will quickly hit an `ArrayIndexOutOfBoundsException`:
+
+```
+INFO: Instrumented com.example.JavaFuzzTest (took 98 ms, size +96%)
+INFO: Seed: 4010526312
+INFO: Loaded 1 modules   (512 inline 8-bit counters): 512 [0x7fae23acd800, 0x7fae23acda00),
+INFO: Loaded 1 PC tables (512 PCs): 512 [0x7fae226c9800,0x7fae226cb800),
+INFO:       16 files found in /tmp/fuzzing/corpus
+INFO:        0 files found in test/JavaFuzzTest_corpus
+INFO: -max_len is not provided; libFuzzer will not generate inputs larger than 4096 bytes
+INFO: seed corpus: files: 16 min: 1b max: 19b total: 210b rss: 199Mb
+#18     INITED cov: 3 ft: 3 corp: 2/5b exec/s: 0 rss: 200Mb
+...
+#6665   REDUCE cov: 5 ft: 5 corp: 4/10b lim: 63 exec/s: 0 rss: 202Mb L: 3/3 MS: 3 ChangeBit-ChangeBit-EraseBytes-
+
+== Java Exception: java.lang.ArrayIndexOutOfBoundsException: Index 3 out of bounds for length 3
+    at com.example.JavaFuzzTest.fuzzerTestOneInput(JavaFuzzTest.java:5)
+```
+
 ### OSS-Fuzz integration
 
 Once you wrote and tested the fuzz test, you should run it on continuous fuzzing infrastructure so it starts generating tests and finding new crashes in your code.
 
-The fuzzing rules provide out-of-the-box support for [OSS-Fuzz](https://github.com/google/oss-fuzz), free continuous fuzzing infrastructure from Google for open source projects. Read its [Bazel project guide][bazel-oss-fuzz] for detailed instructions.
+The C++ fuzzing rules provide out-of-the-box support for [OSS-Fuzz](https://github.com/google/oss-fuzz), free continuous fuzzing infrastructure from Google for open source projects. Read its [Bazel project guide][bazel-oss-fuzz] for detailed instructions.
 
 ## Where to go from here?
 
@@ -157,4 +228,5 @@ Check out the [`examples/`](examples/) directory, which showcases additional fea
 [bazel-oss-fuzz]: https://google.github.io/oss-fuzz/getting-started/new-project-guide/bazel/
 [honggfuzz-doc]: https://github.com/google/honggfuzz
 [libfuzzer-doc]: https://llvm.org/docs/LibFuzzer.html
+[jazzer-doc]: https://github.com/CodeIntelligenceTesting/jazzer
 [msan-doc]: https://clang.llvm.org/docs/MemorySanitizer.html
