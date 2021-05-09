@@ -265,8 +265,8 @@ def java_fuzz_test(
         name = raw_binary_name,
         driver = select(
             {
-                "//fuzzing/private:use_sanitizer_none": "@jazzer//driver:jazzer_driver",
-                "//fuzzing/private:use_sanitizer_asan": "@jazzer//driver:jazzer_driver_asan",
+                "@rules_fuzzing//fuzzing/private:use_sanitizer_none": "@jazzer//driver:jazzer_driver",
+                "@rules_fuzzing//fuzzing/private:use_sanitizer_asan": "@jazzer//driver:jazzer_driver_asan",
             },
             no_match_error = "Jazzer only supports the sanitizer settings \"none\" and \"asan\"",
         ),
