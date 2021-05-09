@@ -25,6 +25,28 @@ def _oss_fuzz_package_impl(ctx):
         action_inputs.append(binary_info.corpus_dir)
     if binary_info.dictionary_file:
         action_inputs.append(binary_info.dictionary_file)
+
+    binary_deps = [
+        runfile
+        for runfile in binary_info.binary_runfiles.files.to_list()
+        if runfile != binary_info.binary_file
+    ]
+    action_inputs += binary_deps
+    binary_deps_dir = ctx.attr.base_name + "_deps"
+    binary_dep_snippet = """
+    if [[ -n "{dep_path}" ]]; then
+        ln -s "$(pwd)/{dep_path}" "$STAGING_DIR/{binary_deps_dir}/{dep_name}"
+    fi
+    """
+    binary_deps_script = "".join([
+        binary_dep_snippet.format(
+            binary_deps_dir = binary_deps_dir,
+            dep_name = dep.basename,
+            dep_path = dep.short_path if dep.is_source else dep.path,
+        )
+        for dep in binary_deps
+    ])
+
     ctx.actions.run_shell(
         outputs = [output_archive],
         inputs = action_inputs,
@@ -35,6 +57,8 @@ def _oss_fuzz_package_impl(ctx):
             }}
             trap cleanup EXIT
             ln -s "$(pwd)/{binary_path}" "$STAGING_DIR/{base_name}"
+            mkdir "$STAGING_DIR/{binary_deps_dir}"
+            {binary_deps_script}
             if [[ -n "{corpus_dir}" ]]; then
                 pushd "{corpus_dir}" >/dev/null
                 zip --quiet -r "$STAGING_DIR/{base_name}_seed_corpus.zip" ./*
@@ -46,6 +70,8 @@ def _oss_fuzz_package_impl(ctx):
             tar -chf "{output}" -C "$STAGING_DIR" .
         """.format(
             base_name = ctx.attr.base_name,
+            binary_deps_dir = binary_deps_dir,
+            binary_deps_script = binary_deps_script,
             binary_path = binary_info.binary_file.path,
             corpus_dir = binary_info.corpus_dir.path if binary_info.corpus_dir else "",
             dictionary_path = binary_info.dictionary_file.path if binary_info.dictionary_file else "",
@@ -59,8 +85,8 @@ oss_fuzz_package = rule(
     doc = """
 Packages a fuzz test in a TAR archive compatible with the OSS-Fuzz format.
 
-> NOTE: The current implementation does not yet support packaging the
-> binary runfiles.
+> Note: A binary runfile with base name <dep_name> will be available at the path
+> <base_name>_deps/<dep_name>.
 """,
     attrs = {
         "binary": attr.label(
