@@ -214,7 +214,7 @@ INFO: seed corpus: files: 16 min: 1b max: 19b total: 210b rss: 199Mb
 
 Once you wrote and tested the fuzz test, you should run it on continuous fuzzing infrastructure so it starts generating tests and finding new crashes in your code.
 
-The C++ fuzzing rules provide out-of-the-box support for [OSS-Fuzz](https://github.com/google/oss-fuzz), free continuous fuzzing infrastructure from Google for open source projects. Read its [Bazel project guide][bazel-oss-fuzz] for detailed instructions.
+The fuzzing rules provide out-of-the-box support for [OSS-Fuzz](https://github.com/google/oss-fuzz), free continuous fuzzing infrastructure from Google for open source projects. Read its [Bazel project guide][bazel-oss-fuzz] for detailed instructions.
 
 ## Where to go from here?
 

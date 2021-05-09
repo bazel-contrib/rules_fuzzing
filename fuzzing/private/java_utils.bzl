@@ -90,16 +90,28 @@ def _java_segment_index(path_segments):
 
     return root_index
 
-def _jazzer_fuzz_binary_script(ctx):
-    script = ctx.actions.declare_file(ctx.label.name)
-
-    script_template = """
+_JAZZER_SCRIPT_TEMPLATE = """
 exec "{driver}" \
     --agent_path="{agent}" \
     --cp="{deploy_jar}" \
     --jvm_args="-Djava.library.path={library_path}" \
     "$@"
 """
+
+_JAZZER_OSS_FUZZ_SCRIPT_TEMPLATE = """#!/bin/sh
+# LLVMFuzzerTestOneInput for fuzzer detection.
+this_dir=$(dirname "$0")
+LD_LIBRARY_PATH="$JVM_LD_LIBRARY_PATH":$this_dir \
+ASAN_OPTIONS=$ASAN_OPTIONS:symbolize=1:external_symbolizer_path=$this_dir/llvm-symbolizer:handle_segv=1:allow_user_segv_handler=1:detect_leaks=0 \
+$this_dir/{driver_basename} \
+--agent_path=$this_dir/jazzer_agent_deploy.jar \
+--cp="{deploy_jar}" \
+--jvm_args="-Xmx2048m;-Djava.library.path={library_path}" \
+$@
+"""
+
+def _jazzer_fuzz_binary_script(ctx, is_oss_fuzz):
+    script = ctx.actions.declare_file(ctx.label.name)
 
     # Perform feature detection for
     # https://github.com/bazelbuild/bazel/commit/381a519dfc082d4c62096c4ce77ead1c2e0410d8.
@@ -125,22 +137,34 @@ exec "{driver}" \
         ]
     native_dirs = [path[:path.rfind("/")] for path in native_paths]
 
-    script_content = script_template.format(
-        driver = ctx.executable.driver.short_path,
-        agent = ctx.file._agent.short_path,
-        deploy_jar = ctx.file.target_deploy_jar.short_path,
-        library_path = ":".join(native_dirs),
-    )
+    if is_oss_fuzz:
+        deps_dir = ctx.attr.base_name + "_deps"
+        script_content = _JAZZER_OSS_FUZZ_SCRIPT_TEMPLATE.format(
+            deploy_jar = deps_dir + "/" + ctx.file.target_deploy_jar.basename,
+            driver_basename = "jazzer_driver_asan" if ctx.attr.transitive_native_deps else "jazzer_driver",
+            library_path = deps_dir,
+        )
+    else:
+        script_content = _JAZZER_SCRIPT_TEMPLATE.format(
+            agent = ctx.file._agent.short_path,
+            deploy_jar = ctx.file.target_deploy_jar.short_path,
+            driver = ctx.executable.driver.short_path,
+            library_path = ":".join(native_dirs),
+        )
     ctx.actions.write(script, script_content, is_executable = True)
     return script
 
 def _jazzer_fuzz_binary_impl(ctx):
-    script = _jazzer_fuzz_binary_script(ctx)
+    is_oss_fuzz = ctx.attr._cc_engine.label.name == "oss_fuzz_engine"
+    script = _jazzer_fuzz_binary_script(ctx, is_oss_fuzz)
 
     runfiles = ctx.runfiles()
-    runfiles = runfiles.merge(ctx.attr.driver[DefaultInfo].default_runfiles)
-    runfiles = runfiles.merge(ctx.runfiles([ctx.file._agent]))
-    runfiles = runfiles.merge(ctx.attr.target[0][DefaultInfo].default_runfiles)
+
+    # Driver and agent are provided by OSS-Fuzz, so only include them as
+    # runfiles in normal builds.
+    if not is_oss_fuzz:
+        runfiles = runfiles.merge(ctx.attr.driver[DefaultInfo].default_runfiles)
+        runfiles = runfiles.merge(ctx.runfiles([ctx.file._agent]))
     runfiles = runfiles.merge(ctx.runfiles([ctx.file.target_deploy_jar]))
     for native_dep in ctx.attr.transitive_native_deps:
         runfiles = runfiles.merge(native_dep[DefaultInfo].default_runfiles)
@@ -152,10 +176,21 @@ jazzer_fuzz_binary = rule(
 Rule that creates a binary that invokes Jazzer on the specified target.
 """,
     attrs = {
+        "_cc_engine": attr.label(
+            default = Label("@rules_fuzzing//fuzzing:cc_engine"),
+            doc = "Used to determine whether the binary should be produced " +
+                  "for OSS-Fuzz.",
+        ),
         "_agent": attr.label(
             default = Label("@jazzer//agent:jazzer_agent_deploy.jar"),
             doc = "The Jazzer agent used to instrument the target.",
             allow_single_file = [".jar"],
+        ),
+        "base_name": attr.string(
+            default = "",
+            doc = "The base name of the fuzz test used to form the file names" +
+                  " in the OSS-Fuzz output.",
+            mandatory = True,
         ),
         "driver": attr.label(
             default = Label("@jazzer//driver:jazzer_driver"),

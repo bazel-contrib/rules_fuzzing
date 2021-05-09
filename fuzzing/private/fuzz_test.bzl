@@ -213,6 +213,11 @@ def java_fuzz_test(
       rarely.
     * `<name>_run`: An executable target used to launch the fuzz test using a
       simpler, engine-agnostic command line interface.
+    * `<name>_oss_fuzz`: Generates a `<name>_oss_fuzz.tar` archive containing
+      the fuzz target executable and its associated resources (corpus,
+      dictionary, etc.) in a format suitable for unpacking in the $OUT/
+      directory of an OSS-Fuzz build. This target can be used inside the
+      `build.sh` script of an OSS-Fuzz project.
 
     Args:
         name: A unique name for this target. Required.
@@ -263,6 +268,7 @@ def java_fuzz_test(
     raw_binary_name = name + "_raw_"
     jazzer_fuzz_binary(
         name = raw_binary_name,
+        base_name = name,
         driver = select(
             {
                 "@rules_fuzzing//fuzzing/private:use_sanitizer_none": "@jazzer//driver:jazzer_driver",
@@ -285,8 +291,5 @@ def java_fuzz_test(
         dicts = dicts,
         test_tags = (tags or []) + [
             "fuzz-test",
-            # FIXME: Packaging java_fuzz_tests for OSS-Fuzz requires runfile
-            #  support (+ some additional tweaks).
-            "no-oss-fuzz",
         ],
     )
