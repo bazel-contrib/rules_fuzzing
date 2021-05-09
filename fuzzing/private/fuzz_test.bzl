@@ -242,10 +242,10 @@ def java_fuzz_test(
     if not target_class:
         target_class = determine_primary_class(srcs, name)
     if not target_class:
-        fail("Unable to determine fuzz target class for java_fuzz_test {name}" +
-             ", specify target_class".format(
-                 name = name,
-             ))
+        fail(("Unable to determine fuzz target class for java_fuzz_test {name}" +
+              ", specify target_class.").format(
+            name = name,
+        ))
     deploy_manifest_lines = [
         "Jazzer-Fuzz-Target-Class: %s" % target_class,
     ]
