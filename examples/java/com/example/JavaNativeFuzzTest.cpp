@@ -16,15 +16,16 @@
 
 #include <string>
 
-// simple function containing a crash that requires coverage and string compare
-// instrumentation for the fuzzer to find
+// Prevent the compiler from optimizing away the out-of-bounds read in
+// parseInternal.
+volatile int dummy = 0;
+
 void parseInternal(const std::string &input) {
   if (input[0] == 'a' && input[1] == 'b' && input[5] == 'c') {
     if (input.find("secret_in_native_library") != std::string::npos) {
-      // With ASan: Read past null byte to trigger an OOB read.
-      // Without ASan: Segfault
+      // Read past null byte to trigger an OOB read.
       if (input[input.size() + 1] != 0x12)
-          *reinterpret_cast<char *>(1) = 2;
+        dummy += 1;
     }
   }
 }
