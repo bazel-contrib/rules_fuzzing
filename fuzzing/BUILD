@@ -70,5 +70,6 @@ bool_flag(
 
 exports_files([
     "cc_defs.bzl",
+    "java_defs.bzl",
     "instrum_opts.bzl",
 ])

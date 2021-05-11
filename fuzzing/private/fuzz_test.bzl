@@ -242,10 +242,10 @@ def java_fuzz_test(
     if not target_class:
         target_class = determine_primary_class(srcs, name)
     if not target_class:
-        fail("Unable to determine fuzz target class for java_fuzz_test {name}" +
-             ", specify target_class".format(
-                 name = name,
-             ))
+        fail(("Unable to determine fuzz target class for java_fuzz_test {name}" +
+              ", specify target_class.").format(
+            name = name,
+        ))
     deploy_manifest_lines = [
         "Jazzer-Fuzz-Target-Class: %s" % target_class,
     ]
@@ -265,8 +265,8 @@ def java_fuzz_test(
         name = raw_binary_name,
         driver = select(
             {
-                "//fuzzing/private:use_sanitizer_none": "@jazzer//driver:jazzer_driver",
-                "//fuzzing/private:use_sanitizer_asan": "@jazzer//driver:jazzer_driver_asan",
+                "@rules_fuzzing//fuzzing/private:use_sanitizer_none": "@jazzer//driver:jazzer_driver",
+                "@rules_fuzzing//fuzzing/private:use_sanitizer_asan": "@jazzer//driver:jazzer_driver_asan",
             },
             no_match_error = "Jazzer only supports the sanitizer settings \"none\" and \"asan\"",
         ),
