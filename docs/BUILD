@@ -41,10 +41,11 @@ bzl_library(
 )
 
 bzl_library(
-    name = "cc_fuzzing_rules",
+    name = "fuzzing_rules",
     srcs = [
         "//fuzzing:cc_defs.bzl",
         "//fuzzing:instrum_opts.bzl",
+        "//fuzzing:java_defs.bzl",
         "//fuzzing/private:binary.bzl",
         "//fuzzing/private:common.bzl",
         "//fuzzing/private:engine.bzl",
@@ -66,28 +67,7 @@ stardoc(
     out = "cc-fuzzing-rules.md",
     input = "//fuzzing:cc_defs.bzl",
     deps = [
-        ":cc_fuzzing_rules",
-    ],
-)
-
-bzl_library(
-    name = "java_fuzzing_rules",
-    srcs = [
-        "//fuzzing:instrum_opts.bzl",
-        "//fuzzing:java_defs.bzl",
-        "//fuzzing/private:binary.bzl",
-        "//fuzzing/private:common.bzl",
-        "//fuzzing/private:engine.bzl",
-        "//fuzzing/private:fuzz_test.bzl",
-        "//fuzzing/private:instrum_opts.bzl",
-        "//fuzzing/private:java_utils.bzl",
-        "//fuzzing/private:regression.bzl",
-        "//fuzzing/private/oss_fuzz:package.bzl",
-        "@rules_fuzzing_oss_fuzz//:instrum.bzl",
-    ],
-    deps = [
-        ":bazel_skylib",
-        ":rules_cc",
+        ":fuzzing_rules",
     ],
 )
 
@@ -96,6 +76,6 @@ stardoc(
     out = "java-fuzzing-rules.md",
     input = "//fuzzing:java_defs.bzl",
     deps = [
-        ":java_fuzzing_rules",
+        ":fuzzing_rules",
     ],
 )

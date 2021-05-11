@@ -16,16 +16,13 @@
 
 #include <string>
 
-// Prevent the compiler from optimizing away the out-of-bounds read in
-// parseInternal.
-volatile int dummy = 0;
-
-void parseInternal(const std::string &input) {
+__attribute__((optnone)) void parseInternal(const std::string &input) {
   if (input[0] == 'a' && input[1] == 'b' && input[5] == 'c') {
     if (input.find("secret_in_native_library") != std::string::npos) {
       // Read past null byte to trigger an OOB read.
-      if (input[input.size() + 1] != 0x12)
-        dummy += 1;
+      if (input[input.size() + 1] != 0x12) {
+        return;
+      }
     }
   }
 }
