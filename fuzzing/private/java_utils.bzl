@@ -138,11 +138,11 @@ def _jazzer_fuzz_binary_script(ctx, is_oss_fuzz):
     native_dirs = [path[:path.rfind("/")] for path in native_paths]
 
     if is_oss_fuzz:
-        deps_dir = ctx.attr.base_name + "_deps"
+        runfiles_dir = ctx.attr.base_name + ".runfiles"
         script_content = _JAZZER_OSS_FUZZ_SCRIPT_TEMPLATE.format(
-            deploy_jar = deps_dir + "/" + ctx.file.target_deploy_jar.basename,
+            deploy_jar = runfiles_dir + "/" + ctx.file.target_deploy_jar.basename,
             driver_basename = "jazzer_driver_asan" if ctx.attr.transitive_native_deps else "jazzer_driver",
-            library_path = deps_dir,
+            library_path = runfiles_dir,
         )
     else:
         script_content = _JAZZER_SCRIPT_TEMPLATE.format(
