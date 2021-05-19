@@ -36,6 +36,7 @@ Provider for storing information about a fuzz test binary.
         "corpus_dir": "The directory of the corpus files used as input seeds.",
         "dictionary_file": "The dictionary file to use in fuzzing runs.",
         "engine_info": "The `FuzzingEngineInfo` provider of the fuzzing engine used in the fuzz test.",
+        "options_file": "The .options file to use in OSS-Fuzz.",
     },
 )
 
@@ -110,6 +111,8 @@ def _fuzzing_binary_impl(ctx):
         other_runfiles.append(ctx.file.corpus)
     if ctx.file.dictionary:
         other_runfiles.append(ctx.file.dictionary)
+    if ctx.file.options:
+        other_runfiles.append(ctx.file.options)
     return [
         DefaultInfo(
             executable = output_file,
@@ -121,6 +124,7 @@ def _fuzzing_binary_impl(ctx):
             corpus_dir = ctx.file.corpus,
             dictionary_file = ctx.file.dictionary,
             engine_info = ctx.attr.engine[FuzzingEngineInfo],
+            options_file = ctx.file.options,
         ),
     ]
 
@@ -156,6 +160,10 @@ The instrumentation is controlled by the following flags:
         ),
         "dictionary": attr.label(
             doc = "A dictionary file to use in fuzzing runs.",
+            allow_single_file = True,
+        ),
+        "options": attr.label(
+            doc = "A file with INI-style options for OSS-Fuzz.",
             allow_single_file = True,
         ),
         "_allowlist_function_transition": attr.label(
@@ -196,6 +204,10 @@ be incorporated in the target configuration (e.g., on the command line or the
         ),
         "dictionary": attr.label(
             doc = "A dictionary file to use in fuzzing runs.",
+            allow_single_file = True,
+        ),
+        "options": attr.label(
+            doc = "A file with INI-style options for OSS-Fuzz.",
             allow_single_file = True,
         ),
         "_instrument_binary": attr.bool(
