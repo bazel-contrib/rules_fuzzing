@@ -14,10 +14,16 @@
 
 // A fuzz target that demonstrates the use of FuzzeddataProvider.
 
-#include <fuzzer/FuzzedDataProvider.h>
-
 #include <cstddef>
 #include <cstdint>
+
+// Workaround for
+// https://github.com/llvm/llvm-project/commit/0cccccf0d2cbd707503263785f9a0407d3e2bd5ea
+// causing missing symbol errors in the FuzzedDataProvider.h header with
+// clang 10.
+// FIXME: Remove once a clang release ships with this commit.
+#include <limits>
+#include <fuzzer/FuzzedDataProvider.h> // NOLINT
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
   FuzzedDataProvider fuzzed_data(data, size);
