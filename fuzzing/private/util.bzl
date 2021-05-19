@@ -14,6 +14,8 @@
 
 """Miscellaneous utilities."""
 
+load("@bazel_skylib//lib:paths.bzl", "paths")
+
 def _generate_file_impl(ctx):
     ctx.actions.write(ctx.outputs.output, ctx.attr.contents)
 
@@ -33,3 +35,8 @@ Generates a file with a specified content string.
         ),
     },
 )
+
+# Returns the path of a runfile that can be used to look up its absolute path
+# via the rlocation function provided by Bazel's runfiles libraries.
+def runfile_path(ctx, runfile):
+    return paths.normalize(ctx.workspace_name + "/" + runfile.short_path)
