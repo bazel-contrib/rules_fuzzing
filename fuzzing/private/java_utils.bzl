@@ -134,13 +134,35 @@ exec "{driver}" \
     ctx.actions.write(script, script_content, is_executable = True)
     return script
 
+def _is_required_runfile(target, runtime_classpath, runfile):
+    # The jars in the runtime classpath are all merged into the deploy jar and
+    # thus don't need to be included in the runfiles for the fuzzer.
+    if runfile in runtime_classpath:
+        return False
+
+    # A java_binary target has a dependency on the local JDK. Since the Jazzer
+    # driver launches its own JVM, these runfiles are not needed.
+    if runfile.owner != None and runfile.owner.workspace_name == "local_jdk":
+        return False
+    return True
+
+def _filter_target_runfiles(ctx, target):
+    compilation_info = target[JavaInfo].compilation_info
+    runtime_classpath = compilation_info.runtime_classpath.to_list()
+    all_runfiles = target[DefaultInfo].default_runfiles
+    return ctx.runfiles([
+        runfile
+        for runfile in all_runfiles.files.to_list()
+        if _is_required_runfile(target, runtime_classpath, runfile)
+    ])
+
 def _jazzer_fuzz_binary_impl(ctx):
     script = _jazzer_fuzz_binary_script(ctx)
 
     runfiles = ctx.runfiles()
     runfiles = runfiles.merge(ctx.attr.driver[DefaultInfo].default_runfiles)
     runfiles = runfiles.merge(ctx.runfiles([ctx.file._agent]))
-    runfiles = runfiles.merge(ctx.attr.target[0][DefaultInfo].default_runfiles)
+    runfiles = runfiles.merge(_filter_target_runfiles(ctx, ctx.attr.target[0]))
     runfiles = runfiles.merge(ctx.runfiles([ctx.file.target_deploy_jar]))
     for native_dep in ctx.attr.transitive_native_deps:
         runfiles = runfiles.merge(native_dep[DefaultInfo].default_runfiles)
