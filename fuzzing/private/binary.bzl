@@ -14,6 +14,7 @@
 
 """Defines a rule for creating an instrumented fuzzing executable."""
 
+load("@bazel_skylib//lib:dicts.bzl", "dicts")
 load("//fuzzing/private:engine.bzl", "FuzzingEngineInfo")
 load(
     "//fuzzing/private:instrum_opts.bzl",
@@ -35,8 +36,12 @@ Provider for storing information about a fuzz test binary.
         "binary_runfiles": "The runfiles of the fuzz test executable.",
         "corpus_dir": "The directory of the corpus files used as input seeds.",
         "dictionary_file": "The dictionary file to use in fuzzing runs.",
-        "engine_info": "The `FuzzingEngineInfo` provider of the fuzzing engine used in the fuzz test.",
-        "options_file": "The .options file to use in OSS-Fuzz.",
+        "engine_info": "The `FuzzingEngineInfo` provider of the fuzzing " +
+                       "engine used in the fuzz test.",
+        "options_file": "A file containing fuzzing engine and sanitizer " +
+                        "options to use during execution. The file loosely " +
+                        "follows the INI format and currently only applies " +
+                        "to OSS-Fuzz.",
     },
 )
 
@@ -128,6 +133,28 @@ def _fuzzing_binary_impl(ctx):
         ),
     ]
 
+_common_fuzzing_binary_attrs = {
+    "engine": attr.label(
+        doc = "The specification of the fuzzing engine used in the binary.",
+        providers = [FuzzingEngineInfo],
+        mandatory = True,
+    ),
+    "corpus": attr.label(
+        doc = "A directory of corpus files used as input seeds.",
+        allow_single_file = True,
+    ),
+    "dictionary": attr.label(
+        doc = "A dictionary file to use in fuzzing runs.",
+        allow_single_file = True,
+    ),
+    "options": attr.label(
+        doc = "A file containing fuzzing engine and sanitizer options to use " +
+              "use during execution. The file loosely follows the INI " +
+              "format and currently only applies to OSS-Fuzz.",
+        allow_single_file = True,
+    ),
+}
+
 fuzzing_binary = rule(
     implementation = _fuzzing_binary_impl,
     doc = """
@@ -142,29 +169,12 @@ The instrumentation is controlled by the following flags:
  * `@rules_fuzzing//fuzzing:cc_engine_sanitizer`
  * `@rules_fuzzing//fuzzing:cc_fuzzing_build_mode`
 """,
-    attrs = {
+    attrs = dicts.add(_common_fuzzing_binary_attrs, {
         "binary": attr.label(
             executable = True,
             doc = "The fuzz test executable to instrument.",
             cfg = fuzzing_binary_transition,
             mandatory = True,
-        ),
-        "engine": attr.label(
-            doc = "The specification of the fuzzing engine used in the binary.",
-            providers = [FuzzingEngineInfo],
-            mandatory = True,
-        ),
-        "corpus": attr.label(
-            doc = "A directory of corpus files used as input seeds.",
-            allow_single_file = True,
-        ),
-        "dictionary": attr.label(
-            doc = "A dictionary file to use in fuzzing runs.",
-            allow_single_file = True,
-        ),
-        "options": attr.label(
-            doc = "A file with INI-style options for OSS-Fuzz.",
-            allow_single_file = True,
         ),
         "_allowlist_function_transition": attr.label(
             default = "@bazel_tools//tools/allowlists/function_transition_allowlist",
@@ -172,7 +182,7 @@ The instrumentation is controlled by the following flags:
         "_instrument_binary": attr.bool(
             default = True,
         ),
-    },
+    }),
     executable = True,
     provides = [FuzzingBinaryInfo],
 )
@@ -186,34 +196,17 @@ The fuzz test still requires instrumentation to function correctly, so it should
 be incorporated in the target configuration (e.g., on the command line or the
 .bazelrc configuration file).
 """,
-    attrs = {
+    attrs = dicts.add(_common_fuzzing_binary_attrs, {
         "binary": attr.label(
             executable = True,
             doc = "The instrumented fuzz test executable.",
             cfg = "target",
             mandatory = True,
         ),
-        "engine": attr.label(
-            doc = "The specification of the fuzzing engine used in the binary.",
-            providers = [FuzzingEngineInfo],
-            mandatory = True,
-        ),
-        "corpus": attr.label(
-            doc = "A directory of corpus files used as input seeds.",
-            allow_single_file = True,
-        ),
-        "dictionary": attr.label(
-            doc = "A dictionary file to use in fuzzing runs.",
-            allow_single_file = True,
-        ),
-        "options": attr.label(
-            doc = "A file with INI-style options for OSS-Fuzz.",
-            allow_single_file = True,
-        ),
         "_instrument_binary": attr.bool(
             default = False,
         ),
-    },
+    }),
     executable = True,
     provides = [FuzzingBinaryInfo],
 )
