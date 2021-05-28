@@ -43,12 +43,16 @@ def _oss_fuzz_package_impl(ctx):
             if [[ -n "{dictionary_path}" ]]; then
                 ln -s "$(pwd)/{dictionary_path}" "$STAGING_DIR/{base_name}.dict"
             fi
+            if [[ -n "{options_path}" ]]; then
+                ln -s "$(pwd)/{options_path}" "$STAGING_DIR/{base_name}.options"
+            fi
             tar -chf "{output}" -C "$STAGING_DIR" .
         """.format(
             base_name = ctx.attr.base_name,
             binary_path = binary_info.binary_file.path,
             corpus_dir = binary_info.corpus_dir.path if binary_info.corpus_dir else "",
             dictionary_path = binary_info.dictionary_file.path if binary_info.dictionary_file else "",
+            options_path = binary_info.options_file.path if binary_info.options_file else "",
             output = output_archive.path,
         ),
     )
