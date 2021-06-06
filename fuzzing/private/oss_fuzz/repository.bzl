@@ -103,12 +103,37 @@ def _extract_build_params(
         instrum_cxxopts = instrum_cxxopts,
     )
 
+# The paths under $OUT of the OSS-Fuzz provided Jazzer files.
+_JAZZER_IN_AGENT_DEPLOY_JAR = "jazzer_agent_deploy.jar"
+_JAZZER_IN_DRIVER = "jazzer_driver"
+_JAZZER_IN_DRIVER_ADDRESS_SANITIZER = "jazzer_driver_asan"
+
+# The filenames under which the OSS-Fuzz provided Jazzer files will be available
+# in this repository.
+_JAZZER_OUT_AGENT_DEPLOY_JAR = _JAZZER_IN_AGENT_DEPLOY_JAR
+_JAZZER_OUT_DRIVER_NO_SANITIZER = "jazzer_driver_no_sanitizer"
+_JAZZER_OUT_DRIVER_WITH_SANITIZER = "jazzer_driver_with_sanitizer"
+
+def _export_jazzer(repository_ctx, out_path, sanitizer):
+    if out_path == None:
+        return []
+    exported_files = []
+    repository_ctx.symlink(out_path + "/" + _JAZZER_IN_AGENT_DEPLOY_JAR, _JAZZER_OUT_AGENT_DEPLOY_JAR)
+    exported_files.append(_JAZZER_OUT_AGENT_DEPLOY_JAR)
+    repository_ctx.symlink(out_path + "/" + _JAZZER_IN_DRIVER, _JAZZER_OUT_DRIVER_NO_SANITIZER)
+    exported_files.append(_JAZZER_OUT_DRIVER_NO_SANITIZER)
+    if sanitizer == "address":
+        repository_ctx.symlink(out_path + "/" + _JAZZER_IN_DRIVER_ADDRESS_SANITIZER, _JAZZER_OUT_DRIVER_WITH_SANITIZER)
+        exported_files.append(_JAZZER_OUT_DRIVER_WITH_SANITIZER)
+    return exported_files
+
 def _oss_fuzz_repository(repository_ctx):
     environ = repository_ctx.os.environ
     fuzzing_engine_library = environ.get("LIB_FUZZING_ENGINE")
     sanitizer = environ.get("SANITIZER")
     cflags = environ.get("FUZZING_CFLAGS") or environ.get("CFLAGS", "")
     cxxflags = environ.get("FUZZING_CXXFLAGS") or environ.get("CXXFLAGS", "")
+    out_path = environ.get("OUT")
 
     build_params = _extract_build_params(
         repository_ctx,
@@ -117,6 +142,7 @@ def _oss_fuzz_repository(repository_ctx):
         cflags.split(" "),
         cxxflags.split(" "),
     )
+    exported_files = _export_jazzer(repository_ctx, out_path, sanitizer)
 
     repository_ctx.template(
         "BUILD",
@@ -124,6 +150,7 @@ def _oss_fuzz_repository(repository_ctx):
         {
             "%{stub_srcs}": _to_list_repr(build_params.stub_srcs),
             "%{stub_linkopts}": _to_list_repr(build_params.stub_linkopts),
+            "%{exported_files}": _to_list_repr(exported_files),
         },
     )
     repository_ctx.template(
@@ -148,6 +175,7 @@ oss_fuzz_repository = repository_rule(
         "CFLAGS",
         "CXXFLAGS",
         "SANITIZER",
+        "OUT",
     ],
     local = True,
     doc = """
