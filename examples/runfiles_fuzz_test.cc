@@ -18,24 +18,27 @@
 #include <cstdint>
 
 #include <fstream>
-#include <memory>
+#include <iostream>
 #include <string>
 
 #include "tools/cpp/runfiles/runfiles.h"
 
-using bazel::tools::cpp::runfiles::Runfiles;
+using ::bazel::tools::cpp::runfiles::Runfiles;
 
 namespace {
-  std::unique_ptr<Runfiles> runfiles = nullptr;
+  Runfiles *runfiles = nullptr;
 }
 
 extern "C" void LLVMFuzzerInitialize(int *argc, char ***argv) {
   std::string error;
-  runfiles = std::unique_ptr<Runfiles>(Runfiles::Create((*argv)[0], &error));
+  runfiles = Runfiles::Create((*argv)[0], &error);
+  if (runfiles == nullptr) {
+    std::cerr << error;
+    abort();
+  }
 }
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
-  if (runfiles == nullptr) abort();
   std::string path = runfiles->Rlocation("rules_fuzzing/examples/corpus_0.txt");
   if (path.empty()) abort();
   std::ifstream in(path);

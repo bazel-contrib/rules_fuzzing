@@ -30,6 +30,9 @@ def _oss_fuzz_package_impl(ctx):
             real_path = runfile.path,
             runfile_path = runfile_path(ctx, runfile),
         )
+        # In order not to duplicate the fuzz test binary, it is excluded from
+        # the runfiles here. A symlink from the runfiles tree to the binary in
+        # the top-level directory is added further below.
         for runfile in binary_runfiles
         if runfile != binary_info.binary_file
     ])
