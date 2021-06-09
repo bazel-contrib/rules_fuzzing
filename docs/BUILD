@@ -37,6 +37,7 @@ bzl_library(
     name = "bazel_skylib",
     srcs = [
         "@bazel_skylib//lib:dicts",
+        "@bazel_skylib//lib:paths",
         "@bazel_skylib//rules:common_settings",
     ],
 )
@@ -54,6 +55,7 @@ bzl_library(
         "//fuzzing/private:instrum_opts.bzl",
         "//fuzzing/private:java_utils.bzl",
         "//fuzzing/private:regression.bzl",
+        "//fuzzing/private:util.bzl",
         "//fuzzing/private/oss_fuzz:package.bzl",
         "@rules_fuzzing_oss_fuzz//:instrum.bzl",
     ],

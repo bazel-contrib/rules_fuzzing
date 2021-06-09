@@ -111,3 +111,14 @@ cc_fuzz_test(
         "@re2",
     ],
 )
+
+cc_fuzz_test(
+    name = "runfiles_fuzz_test",
+    srcs = ["runfiles_fuzz_test.cc"],
+    data = [
+        ":corpus_0.txt",
+    ],
+    deps = [
+        "@bazel_tools//tools/cpp/runfiles",
+    ],
+)

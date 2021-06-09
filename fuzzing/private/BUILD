@@ -26,6 +26,7 @@ exports_files([
     "instrum_opts.bzl",
     "java_utils.bzl",
     "regression.bzl",
+    "util.bzl",
 ])
 
 # Config settings needed for prebuilt engines.
