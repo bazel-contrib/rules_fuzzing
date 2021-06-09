@@ -103,15 +103,24 @@ def _extract_build_params(
         instrum_cxxopts = instrum_cxxopts,
     )
 
-# The paths under $OUT of the OSS-Fuzz provided Jazzer files.
+# The filename under which the Jazzer agent is available in $OUT.
 _JAZZER_IN_AGENT_DEPLOY_JAR = "jazzer_agent_deploy.jar"
+
+# The filename under which the Jazzer agent is available in
+# @rules_fuzzing_oss_fuzz.
+_JAZZER_OUT_AGENT_DEPLOY_JAR = _JAZZER_IN_AGENT_DEPLOY_JAR
+
+# The filenames under which the Jazzer drivers with various sanitizers are
+# available in $OUT.
 _JAZZER_IN_DRIVER = "jazzer_driver"
 _JAZZER_IN_DRIVER_ADDRESS_SANITIZER = "jazzer_driver_asan"
 
-# The filenames under which the OSS-Fuzz provided Jazzer files will be available
-# in this repository.
-_JAZZER_OUT_AGENT_DEPLOY_JAR = _JAZZER_IN_AGENT_DEPLOY_JAR
+# The filename under which the Jazzer driver for Java-only projects is available
+# in @rules_fuzzing_oss_fuzz.
 _JAZZER_OUT_DRIVER_NO_SANITIZER = "jazzer_driver_no_sanitizer"
+
+# The filename under which the Jazzer driver with the sanitizer specified by
+# $SANITIZER is available in @rules_fuzzing_oss_fuzz.
 _JAZZER_OUT_DRIVER_WITH_SANITIZER = "jazzer_driver_with_sanitizer"
 
 def _export_jazzer(repository_ctx, out_path, sanitizer):
