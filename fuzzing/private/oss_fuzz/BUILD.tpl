@@ -30,5 +30,5 @@ cc_library(
 )
 
 exports_files([
-    "instrum.bzl",
+    "instrum.bzl", %{exported_files}
 ])
