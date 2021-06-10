@@ -103,37 +103,21 @@ def _extract_build_params(
         instrum_cxxopts = instrum_cxxopts,
     )
 
-# The filename under which the Jazzer agent is available in $OUT.
-_JAZZER_IN_AGENT_DEPLOY_JAR = "jazzer_agent_deploy.jar"
+# The filenames under which the various Jazzer binaries are available in $OUT
+# and in @rules_fuzzing_oss_fuzz.
+_JAZZER_BINARIES = [
+    "jazzer_agent_deploy.jar",
+    "jazzer_driver",
+    "jazzer_driver_with_sanitizer",
+]
 
-# The filename under which the Jazzer agent is available in
-# @rules_fuzzing_oss_fuzz.
-_JAZZER_OUT_AGENT_DEPLOY_JAR = _JAZZER_IN_AGENT_DEPLOY_JAR
-
-# The filenames under which the Jazzer drivers with various sanitizers are
-# available in $OUT.
-_JAZZER_IN_DRIVER = "jazzer_driver"
-_JAZZER_IN_DRIVER_ADDRESS_SANITIZER = "jazzer_driver_asan"
-
-# The filename under which the Jazzer driver for Java-only projects is available
-# in @rules_fuzzing_oss_fuzz.
-_JAZZER_OUT_DRIVER_NO_SANITIZER = "jazzer_driver_no_sanitizer"
-
-# The filename under which the Jazzer driver with the sanitizer specified by
-# $SANITIZER is available in @rules_fuzzing_oss_fuzz.
-_JAZZER_OUT_DRIVER_WITH_SANITIZER = "jazzer_driver_with_sanitizer"
-
-def _export_jazzer(repository_ctx, out_path, sanitizer):
+def _export_jazzer(repository_ctx, out_path):
     if out_path == None:
         return []
     exported_files = []
-    repository_ctx.symlink(out_path + "/" + _JAZZER_IN_AGENT_DEPLOY_JAR, _JAZZER_OUT_AGENT_DEPLOY_JAR)
-    exported_files.append(_JAZZER_OUT_AGENT_DEPLOY_JAR)
-    repository_ctx.symlink(out_path + "/" + _JAZZER_IN_DRIVER, _JAZZER_OUT_DRIVER_NO_SANITIZER)
-    exported_files.append(_JAZZER_OUT_DRIVER_NO_SANITIZER)
-    if sanitizer == "address":
-        repository_ctx.symlink(out_path + "/" + _JAZZER_IN_DRIVER_ADDRESS_SANITIZER, _JAZZER_OUT_DRIVER_WITH_SANITIZER)
-        exported_files.append(_JAZZER_OUT_DRIVER_WITH_SANITIZER)
+    for jazzer_binary in _JAZZER_BINARIES:
+        repository_ctx.symlink(out_path + "/" + jazzer_binary, jazzer_binary)
+        exported_files.append(jazzer_binary)
     return exported_files
 
 def _oss_fuzz_repository(repository_ctx):
@@ -151,7 +135,7 @@ def _oss_fuzz_repository(repository_ctx):
         cflags.split(" "),
         cxxflags.split(" "),
     )
-    exported_files = _export_jazzer(repository_ctx, out_path, sanitizer)
+    exported_files = _export_jazzer(repository_ctx, out_path)
 
     repository_ctx.template(
         "BUILD",
