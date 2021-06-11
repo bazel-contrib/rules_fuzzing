@@ -38,6 +38,9 @@ java_fuzz_test(
 java_fuzz_test(
     name = "JavaFuzzTest",
     srcs = ["com/example/JavaFuzzTest.java"],
+    tags = [
+        "no-oss-fuzz",
+    ],
 )
 
 java_fuzz_test(
@@ -46,7 +49,10 @@ java_fuzz_test(
     corpus = [
         ":corpus",
     ],
-    transitive_native_deps = [
+    tags = [
+        "no-oss-fuzz",
+    ],
+    deps = [
         ":native",
     ],
 )

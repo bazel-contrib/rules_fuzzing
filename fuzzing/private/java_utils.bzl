@@ -15,6 +15,7 @@
 """Utilities and helper rules for Java fuzz tests."""
 
 load("//fuzzing/private:binary.bzl", "fuzzing_binary_transition")
+load("//fuzzing/private:util.bzl", "runfile_path")
 
 # A Starlark reimplementation of a part of Bazel's JavaCommon#determinePrimaryClass.
 def determine_primary_class(srcs, name):
@@ -80,51 +81,65 @@ def _java_segment_index(path_segments):
 
     return root_index
 
-def _jazzer_fuzz_binary_script(ctx):
+def _jazzer_fuzz_binary_script(ctx, native_libs, driver):
     script = ctx.actions.declare_file(ctx.label.name)
 
-    script_template = """
-exec "{driver}" \
-    --agent_path="{agent}" \
-    --cp="{deploy_jar}" \
-    --jvm_args="-Djava.library.path={library_path}" \
+    # The script is split into two parts: The first is emitted as-is, the second
+    # is a template that is passed to format(). Without the split, curly braces
+    # in the first part would need to be escaped.
+    script_literal_part = """#!/bin/bash
+# LLVMFuzzerTestOneInput - OSS-Fuzz needs this string literal to appear
+# somewhere in the script so it is recognized as a fuzz target.
+
+# --- begin runfiles.bash initialization v2 ---
+# Copy-pasted from the Bazel Bash runfiles library v2.
+set -uo pipefail; f=bazel_tools/tools/bash/runfiles/runfiles.bash
+source "${RUNFILES_DIR:-/dev/null}/$f" 2>/dev/null || \
+source "$(grep -sm1 "^$f " "${RUNFILES_MANIFEST_FILE:-/dev/null}" | cut -f2- -d' ')" 2>/dev/null || \
+source "$0.runfiles/$f" 2>/dev/null || \
+source "$(grep -sm1 "^$f " "$0.runfiles_manifest" | cut -f2- -d' ')" 2>/dev/null || \
+source "$(grep -sm1 "^$f " "$0.exe.runfiles_manifest" | cut -f2- -d' ')" 2>/dev/null || \
+{ echo>&2 "ERROR: cannot find $f"; exit 1; }; f=; set -e
+# --- end runfiles.bash initialization v2 ---
+
+# Export the env variables required for subprocesses to find their runfiles.
+runfiles_export_envvars
+
+# Determine the path to load libjvm.so from, either relative to the location of
+# the java binary or to $JAVA_HOME, if set. On OSS-Fuzz, the path is provided in
+# JVM_LD_LIBRARY_PATH.
+JAVA_BIN=$(readlink -f "$(which java)")
+JAVA_HOME=${JAVA_HOME:-${JAVA_BIN%/bin/java}}
+# The location of libjvm.so relative to the JDK differs between JDK <= 8 and 9+.
+JVM_LD_LIBRARY_PATH=${JVM_LD_LIBRARY_PATH:-"$JAVA_HOME/lib/server:$JAVA_HOME/lib/amd64/server"}
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$JVM_LD_LIBRARY_PATH
+"""
+
+    script_format_part = """
+source "$(rlocation {sanitizer_options})"
+exec "$(rlocation {driver})" \
+    --agent_path="$(rlocation {agent})" \
+    --cp="$(rlocation {deploy_jar})" \
+    --jvm_args="-Djava.library.path={native_dirs}" \
     "$@"
 """
 
-    # Perform feature detection for
-    # https://github.com/bazelbuild/bazel/commit/381a519dfc082d4c62096c4ce77ead1c2e0410d8.
-    target_info = ctx.attr.target[0][JavaInfo]
-    if "transitive_native_libraries" in dir(target_info):
-        # The current version of Bazel contains the commit, which means that
-        # the JavaInfo of the target includes information about all transitive
-        # native library dependencies.
-        native_libraries_list = target_info.transitive_native_libraries.to_list()
-        native_paths = [
-            lib.dynamic_library.short_path
-            for lib in native_libraries_list
-        ]
-    else:
-        # Fall back to the list of native library dependencies specified by the user.
-        native_files = [
-            native_dep[DefaultInfo].files
-            for native_dep in ctx.attr.transitive_native_deps
-        ]
-        native_paths = [
-            file.short_path
-            for file in depset(transitive = native_files).to_list()
-        ]
-    native_dirs = [path[:path.rfind("/")] for path in native_paths]
+    native_dirs = [
+        "$(dirname \"$(rlocation %s)\")" % runfile_path(ctx, lib)
+        for lib in native_libs
+    ]
 
-    script_content = script_template.format(
-        driver = ctx.executable.driver.short_path,
-        agent = ctx.file._agent.short_path,
-        deploy_jar = ctx.file.target_deploy_jar.short_path,
-        library_path = ":".join(native_dirs),
+    script_content = script_literal_part + script_format_part.format(
+        agent = runfile_path(ctx, ctx.file.agent),
+        deploy_jar = runfile_path(ctx, ctx.file.target_deploy_jar),
+        driver = runfile_path(ctx, driver),
+        native_dirs = ":".join(native_dirs),
+        sanitizer_options = runfile_path(ctx, ctx.file.sanitizer_options),
     )
     ctx.actions.write(script, script_content, is_executable = True)
     return script
 
-def _is_required_runfile(target, runtime_classpath, runfile):
+def _is_required_runfile(runfile, runtime_classpath = []):
     # The jars in the runtime classpath are all merged into the deploy jar and
     # thus don't need to be included in the runfiles for the fuzzer.
     if runfile in runtime_classpath:
@@ -143,19 +158,79 @@ def _filter_target_runfiles(ctx, target):
     return ctx.runfiles([
         runfile
         for runfile in all_runfiles.files.to_list()
-        if _is_required_runfile(target, runtime_classpath, runfile)
+        if _is_required_runfile(runfile, runtime_classpath)
     ])
 
+def _is_potential_native_dependency(file):
+    if file.extension not in ["dll", "dylib", "so"]:
+        return False
+    if not _is_required_runfile(file):
+        return False
+    return True
+
+def _native_library_files(ctx):
+    target_info = ctx.attr.target[0][DefaultInfo]
+    target_java_info = ctx.attr.target[0][JavaInfo]
+
+    # Perform feature detection for
+    # https://github.com/bazelbuild/bazel/commit/381a519dfc082d4c62096c4ce77ead1c2e0410d8.
+    if hasattr(target_java_info, "transitive_native_libraries"):
+        # The current version of Bazel contains the commit, which means that
+        # the JavaInfo of the target includes information about all transitive
+        # native library dependencies.
+        native_libraries_list = target_java_info.transitive_native_libraries.to_list()
+        return [lib.dynamic_library for lib in native_libraries_list]
+    else:
+        # If precise information about transitive native libraries is not
+        # available, fall back to an overapproximation that includes all
+        # runfiles with file extensions indicating a shared library.
+        runfiles_list = target_info.default_runfiles.files.to_list()
+        return [
+            runfile
+            for runfile in runfiles_list
+            if _is_potential_native_dependency(runfile)
+        ]
+
 def _jazzer_fuzz_binary_impl(ctx):
-    script = _jazzer_fuzz_binary_script(ctx)
+    native_libs = _native_library_files(ctx)
+
+    # Use a driver with a linked in sanitizer if the fuzz test has native
+    # dependencies.
+    if native_libs:
+        driver = ctx.executable.driver_with_native
+        driver_info = ctx.attr.driver_with_native[DefaultInfo]
+    else:
+        driver = ctx.executable.driver_java_only
+        driver_info = ctx.attr.driver_java_only[DefaultInfo]
+
+    # The DefaultInfo's default_runfiles of an executable file target do not
+    # contain the executable itself, which thus needs to be added explicitly.
+    driver_runfiles = driver_info.default_runfiles
+    driver_executable = driver_info.files_to_run.executable
+    driver_runfiles = driver_runfiles.merge(ctx.runfiles([driver_executable]))
 
     runfiles = ctx.runfiles()
-    runfiles = runfiles.merge(ctx.attr.driver[DefaultInfo].default_runfiles)
-    runfiles = runfiles.merge(ctx.runfiles([ctx.file._agent]))
-    runfiles = runfiles.merge(_filter_target_runfiles(ctx, ctx.attr.target[0]))
+    runfiles = runfiles.merge(driver_runfiles)
+
+    # Used by the wrapper script created in _jazzer_fuzz_binary_script.
+    runfiles = runfiles.merge(ctx.attr._bash_runfiles_library[DefaultInfo].default_runfiles)
+
+    # While the Jazzer agent is already included in the runfiles of
+    # @jazzer//driver:jazzer_driver, it has to be added here explicitly for the
+    # case where both are provided by OSS-Fuzz.
+    runfiles = runfiles.merge(ctx.runfiles([ctx.file.agent]))
+
+    # The Java fuzz target packaged as a jar including all Java dependencies.
+    # This does not include e.g. data runfiles and shared libraries.
     runfiles = runfiles.merge(ctx.runfiles([ctx.file.target_deploy_jar]))
-    for native_dep in ctx.attr.transitive_native_deps:
-        runfiles = runfiles.merge(native_dep[DefaultInfo].default_runfiles)
+
+    # The full runfiles of the Java fuzz target, but with the files of the local
+    # JDK and all jar files excluded.
+    runfiles = runfiles.merge(_filter_target_runfiles(ctx, ctx.attr.target[0]))
+
+    runfiles = runfiles.merge(ctx.runfiles([ctx.file.sanitizer_options]))
+
+    script = _jazzer_fuzz_binary_script(ctx, native_libs, driver)
     return [DefaultInfo(executable = script, runfiles = runfiles)]
 
 jazzer_fuzz_binary = rule(
@@ -164,26 +239,36 @@ jazzer_fuzz_binary = rule(
 Rule that creates a binary that invokes Jazzer on the specified target.
 """,
     attrs = {
-        "_agent": attr.label(
-            default = Label("@jazzer//agent:jazzer_agent_deploy.jar"),
+        "agent": attr.label(
             doc = "The Jazzer agent used to instrument the target.",
             allow_single_file = [".jar"],
         ),
-        "driver": attr.label(
-            default = Label("@jazzer//driver:jazzer_driver"),
-            doc = "The Jazzer driver binary used to fuzz the target.",
+        "_bash_runfiles_library": attr.label(
+            default = "@bazel_tools//tools/bash/runfiles",
+        ),
+        "driver_java_only": attr.label(
+            doc = "The Jazzer driver binary used to fuzz a Java-only target.",
+            allow_single_file = True,
             executable = True,
             # Build in target configuration rather than host because the driver
             # uses transitions to set the correct C++ standard for its
             # dependencies.
             cfg = "target",
         ),
-        "transitive_native_deps": attr.label_list(
-            doc = "The native libraries the fuzz target transitively depends " +
-                  "on. The libraries are automatically instrumented for " +
-                  "fuzzing.",
-            providers = [CcInfo],
-            cfg = fuzzing_binary_transition,
+        "driver_with_native": attr.label(
+            doc = "The Jazzer driver binary used to fuzz a Java target with " +
+                  "native dependencies.",
+            allow_single_file = True,
+            executable = True,
+            # Build in target configuration rather than host because the driver
+            # uses transitions to set the correct C++ standard for its
+            # dependencies.
+            cfg = "target",
+        ),
+        "sanitizer_options": attr.label(
+            doc = "A shell script that can export environment variables with " +
+                  "sanitizer options.",
+            allow_single_file = [".sh"],
         ),
         "target": attr.label(
             doc = "The fuzz target.",

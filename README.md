@@ -139,8 +139,8 @@ Our libFuzzer test will start running and immediately discover the buffer overfl
 
 ```
 INFO: Seed: 2957541205
-INFO: Loaded 1 modules   (8 inline 8-bit counters): 8 [0x5aab10, 0x5aab18), 
-INFO: Loaded 1 PC tables (8 PCs): 8 [0x5aab18,0x5aab98), 
+INFO: Loaded 1 modules   (8 inline 8-bit counters): 8 [0x5aab10, 0x5aab18),
+INFO: Loaded 1 PC tables (8 PCs): 8 [0x5aab18,0x5aab98),
 INFO:      755 files found in /tmp/fuzzing/corpus
 INFO:        0 files found in fuzz_test_corpus
 INFO: -max_len is not provided; libFuzzer will not generate inputs larger than 35982 bytes
@@ -214,7 +214,7 @@ INFO: seed corpus: files: 16 min: 1b max: 19b total: 210b rss: 199Mb
 
 Once you wrote and tested the fuzz test, you should run it on continuous fuzzing infrastructure so it starts generating tests and finding new crashes in your code.
 
-The C++ fuzzing rules provide out-of-the-box support for [OSS-Fuzz](https://github.com/google/oss-fuzz), free continuous fuzzing infrastructure from Google for open source projects. Read its [Bazel project guide][bazel-oss-fuzz] for detailed instructions.
+The fuzzing rules provide out-of-the-box support for [OSS-Fuzz](https://github.com/google/oss-fuzz), free continuous fuzzing infrastructure from Google for open source projects. Read its [Bazel project guide][bazel-oss-fuzz] for detailed instructions.
 
 ## Where to go from here?
 
