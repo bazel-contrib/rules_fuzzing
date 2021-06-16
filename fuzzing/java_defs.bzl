@@ -25,6 +25,7 @@ load(
 )
 load(
     "//fuzzing/private:engine.bzl",
+    _FuzzingEngineInfo = "FuzzingEngineInfo",
     _java_fuzzing_engine = "java_fuzzing_engine",
 )
 
@@ -32,3 +33,5 @@ java_fuzz_test = _java_fuzz_test
 java_fuzzing_engine = _java_fuzzing_engine
 
 fuzzing_decoration = _fuzzing_decoration
+
+FuzzingEngineInfo = _FuzzingEngineInfo

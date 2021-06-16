@@ -25,6 +25,7 @@ load(
 )
 load(
     "//fuzzing/private:engine.bzl",
+    _FuzzingEngineInfo = "FuzzingEngineInfo",
     _cc_fuzzing_engine = "cc_fuzzing_engine",
 )
 
@@ -32,3 +33,5 @@ cc_fuzz_test = _cc_fuzz_test
 cc_fuzzing_engine = _cc_fuzzing_engine
 
 fuzzing_decoration = _fuzzing_decoration
+
+FuzzingEngineInfo = _FuzzingEngineInfo
