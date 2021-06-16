@@ -29,6 +29,8 @@ if [[ "${FUZZER_TIMEOUT_SECS}" -gt 0 ]]; then
 fi
 if (( FUZZER_IS_REGRESSION )); then
     command_line+=("-runs=0")
+else
+    command_line+=("${FUZZER_OUTPUT_CORPUS_DIR}")
 fi
 
 # Jazzer flags.
@@ -36,7 +38,6 @@ command_line+=("--reproducer_path=${FUZZER_ARTIFACTS_DIR}")
 
 # Corpus sources.
 
-command_line+=("${FUZZER_OUTPUT_CORPUS_DIR}")
 if [[ -n "${FUZZER_SEED_CORPUS_DIR}" ]]; then
     command_line+=("${FUZZER_SEED_CORPUS_DIR}")
 fi
