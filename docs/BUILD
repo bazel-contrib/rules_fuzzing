@@ -35,7 +35,7 @@ bzl_library(
 
 bzl_library(
     name = "bazel_skylib",
-    srcs = [
+    deps = [
         "@bazel_skylib//lib:dicts",
         "@bazel_skylib//lib:paths",
         "@bazel_skylib//rules:common_settings",
