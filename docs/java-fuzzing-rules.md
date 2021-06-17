@@ -24,6 +24,29 @@ Specifies a fuzzing engine that can be used to run Java fuzz targets.
 | <a id="java_fuzzing_engine-library"></a>library |  A java_library target that is made available to all Java fuzz tests.   | <a href="https://bazel.build/docs/build-ref.html#labels">Label</a> | optional | None |
 
 
+<a id="#FuzzingEngineInfo"></a>
+
+## FuzzingEngineInfo
+
+<pre>
+FuzzingEngineInfo(<a href="#FuzzingEngineInfo-display_name">display_name</a>, <a href="#FuzzingEngineInfo-launcher">launcher</a>, <a href="#FuzzingEngineInfo-launcher_runfiles">launcher_runfiles</a>, <a href="#FuzzingEngineInfo-launcher_environment">launcher_environment</a>)
+</pre>
+
+
+Provider for storing the language-independent part of the specification of a fuzzing engine.
+
+
+**FIELDS**
+
+
+| Name  | Description |
+| :------------- | :------------- |
+| <a id="FuzzingEngineInfo-display_name"></a>display_name |  A string representing the human-readable name of the fuzzing engine.    |
+| <a id="FuzzingEngineInfo-launcher"></a>launcher |  A file representing the shell script that launches the fuzz target.    |
+| <a id="FuzzingEngineInfo-launcher_runfiles"></a>launcher_runfiles |  The runfiles needed by the launcher script on the fuzzing engine side, such as helper tools and their data dependencies.    |
+| <a id="FuzzingEngineInfo-launcher_environment"></a>launcher_environment |  A dictionary from environment variables to files used by the launcher script.    |
+
+
 <a id="#fuzzing_decoration"></a>
 
 ## fuzzing_decoration
@@ -85,7 +108,7 @@ most relevant ones are:
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
 | <a id="java_fuzz_test-name"></a>name |  A unique name for this target. Required.   |  none |
-| <a id="java_fuzz_test-srcs"></a>srcs |  <p align="center"> - </p>   |  <code>None</code> |
+| <a id="java_fuzz_test-srcs"></a>srcs |  A list of source files of the target.   |  <code>None</code> |
 | <a id="java_fuzz_test-target_class"></a>target_class |  The class that contains the static fuzzerTestOneInput   method. Defaults to the same class main_class would.   |  <code>None</code> |
 | <a id="java_fuzz_test-transitive_native_deps"></a>transitive_native_deps |  A list of all native libraries that the fuzz   target transitively depends on. The libraries are instrumented   automatically and do not need to be mentioned in deps. Listing the   libraries in this way is no longer required as of Bazel 5.   |  <code>None</code> |
 | <a id="java_fuzz_test-corpus"></a>corpus |  A list containing corpus files.   |  <code>None</code> |
