@@ -14,17 +14,7 @@
 
 """Utilities and helper rules for Java fuzz tests."""
 
-load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
 load("//fuzzing/private:binary.bzl", "fuzzing_binary_transition")
-load(
-    "//fuzzing/private:instrum_opts.bzl",
-    "instrum_defaults",
-    "instrum_opts",
-)
-load(
-    "//fuzzing:instrum_opts.bzl",
-    "sanitizer_configs",
-)
 
 # A Starlark reimplementation of a part of Bazel's JavaCommon#determinePrimaryClass.
 def determine_primary_class(srcs, name):

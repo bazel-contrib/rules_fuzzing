@@ -216,6 +216,7 @@ def java_fuzz_test(
 
     Args:
         name: A unique name for this target. Required.
+        srcs: A list of source files of the target.
         target_class: The class that contains the static fuzzerTestOneInput
           method. Defaults to the same class main_class would.
         transitive_native_deps: A list of all native libraries that the fuzz

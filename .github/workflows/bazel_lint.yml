@@ -36,5 +36,5 @@ jobs:
       with:
         go-version: '^1.13.1' # The Go version to download (if necessary) and use.
     - run: go get github.com/bazelbuild/buildtools/buildifier
-    - run: buildifier -mode=check $(find . -type f \( -name BUILD.bazel -or -name BUILD -or -name *.bzl \))
+    - run: buildifier -lint=warn -mode=check $(find . -type f \( -name BUILD.bazel -or -name BUILD -or -name *.bzl \))
 
