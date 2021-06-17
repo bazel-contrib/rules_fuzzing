@@ -24,6 +24,29 @@ Specifies a fuzzing engine that can be used to run C++ fuzz targets.
 | <a id="cc_fuzzing_engine-library"></a>library |  A cc_library target that implements the fuzzing engine entry point.   | <a href="https://bazel.build/docs/build-ref.html#labels">Label</a> | required |  |
 
 
+<a id="#FuzzingEngineInfo"></a>
+
+## FuzzingEngineInfo
+
+<pre>
+FuzzingEngineInfo(<a href="#FuzzingEngineInfo-display_name">display_name</a>, <a href="#FuzzingEngineInfo-launcher">launcher</a>, <a href="#FuzzingEngineInfo-launcher_runfiles">launcher_runfiles</a>, <a href="#FuzzingEngineInfo-launcher_environment">launcher_environment</a>)
+</pre>
+
+
+Provider for storing the language-independent part of the specification of a fuzzing engine.
+
+
+**FIELDS**
+
+
+| Name  | Description |
+| :------------- | :------------- |
+| <a id="FuzzingEngineInfo-display_name"></a>display_name |  A string representing the human-readable name of the fuzzing engine.    |
+| <a id="FuzzingEngineInfo-launcher"></a>launcher |  A file representing the shell script that launches the fuzz target.    |
+| <a id="FuzzingEngineInfo-launcher_runfiles"></a>launcher_runfiles |  The runfiles needed by the launcher script on the fuzzing engine side, such as helper tools and their data dependencies.    |
+| <a id="FuzzingEngineInfo-launcher_environment"></a>launcher_environment |  A dictionary from environment variables to files used by the launcher script.    |
+
+
 <a id="#cc_fuzz_test"></a>
 
 ## cc_fuzz_test
