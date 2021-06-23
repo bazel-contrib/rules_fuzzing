@@ -57,6 +57,18 @@ java_fuzz_test(
     ],
 )
 
+java_fuzz_test(
+    name = "JavaNativeRunfileFuzzTest",
+    srcs = ["com/example/JavaNativeRunfileFuzzTest.java"],
+    data = [
+        "corpus_0.txt",
+    ],
+    deps = [
+        ":native_runfile",
+        "@bazel_tools//tools/java/runfiles",
+    ],
+)
+
 # A native library that interfaces with Java through the JNI.
 cc_binary(
     name = "native",
@@ -66,6 +78,22 @@ cc_binary(
     ],
     linkshared = True,
     deps = [
+        "@bazel_tools//tools/jdk:jni",
+    ],
+)
+
+cc_binary(
+    name = "native_runfile",
+    srcs = [
+        "com/example/JavaNativeRunfileFuzzTest.cpp",
+        "com/example/JavaNativeRunfileFuzzTest.h",
+    ],
+    data = [
+        "corpus_1.txt",
+    ],
+    linkshared = True,
+    deps = [
+        "@bazel_tools//tools/cpp/runfiles",
         "@bazel_tools//tools/jdk:jni",
     ],
 )
