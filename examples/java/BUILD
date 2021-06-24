@@ -91,6 +91,8 @@ cc_binary(
     data = [
         "corpus_1.txt",
     ],
+    # Build as a shared library that can be loaded by a Java application at
+    # runtime via System.loadLibrary().
     linkshared = True,
     deps = [
         "@bazel_tools//tools/cpp/runfiles",
