@@ -59,14 +59,14 @@ build:oss-fuzz --@rules_fuzzing//fuzzing:cc_engine_sanitizer=none
 
 # Jazzer without sanitizer (Java only)
 build:jazzer --//fuzzing:java_engine=//fuzzing/engines:jazzer
-build:jazzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=none
+build:jazzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=jazzer
 build:jazzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=none
 # Workaround for https://github.com/bazelbuild/bazel/issues/11128
 build:jazzer --//fuzzing:cc_engine_sanitizer=none
 
 # Jazzer + ASAN
 build:asan-jazzer --//fuzzing:java_engine=//fuzzing/engines:jazzer
-build:asan-jazzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=libfuzzer
+build:asan-jazzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=jazzer
 build:asan-jazzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
 # Workaround for https://github.com/bazelbuild/bazel/issues/11128
 build:asan-jazzer --//fuzzing:cc_engine_sanitizer=asan
