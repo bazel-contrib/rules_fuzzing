@@ -91,6 +91,8 @@ def _jazzer_fuzz_binary_script(ctx, native_libs, driver):
 # LLVMFuzzerTestOneInput - OSS-Fuzz needs this string literal to appear
 # somewhere in the script so it is recognized as a fuzz target.
 
+# Bazel-provided code snippet that should be copy-pasted as is at use sites.
+# Taken from @bazel_tools//tools/bash/runfiles.
 # --- begin runfiles.bash initialization v2 ---
 # Copy-pasted from the Bazel Bash runfiles library v2.
 set -uo pipefail; f=bazel_tools/tools/bash/runfiles/runfiles.bash
