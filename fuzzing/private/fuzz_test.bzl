@@ -194,7 +194,6 @@ def java_fuzz_test(
         name,
         srcs = None,
         target_class = None,
-        transitive_native_deps = None,
         corpus = None,
         dicts = None,
         engine = "@rules_fuzzing//fuzzing:java_engine",
@@ -213,16 +212,17 @@ def java_fuzz_test(
       rarely.
     * `<name>_run`: An executable target used to launch the fuzz test using a
       simpler, engine-agnostic command line interface.
+    * `<name>_oss_fuzz`: Generates a `<name>_oss_fuzz.tar` archive containing
+      the fuzz target executable and its associated resources (corpus,
+      dictionary, etc.) in a format suitable for unpacking in the $OUT/
+      directory of an OSS-Fuzz build. This target can be used inside the
+      `build.sh` script of an OSS-Fuzz project.
 
     Args:
         name: A unique name for this target. Required.
         srcs: A list of source files of the target.
         target_class: The class that contains the static fuzzerTestOneInput
           method. Defaults to the same class main_class would.
-        transitive_native_deps: A list of all native libraries that the fuzz
-          target transitively depends on. The libraries are instrumented
-          automatically and do not need to be mentioned in deps. Listing the
-          libraries in this way is no longer required as of Bazel 5.
         corpus: A list containing corpus files.
         dicts: A list containing dictionaries.
         engine: A label pointing to the fuzzing engine to use.
@@ -251,8 +251,6 @@ def java_fuzz_test(
         "Jazzer-Fuzz-Target-Class: %s" % target_class,
     ]
     binary_kwargs.setdefault("deps", []).append(engine)
-    if transitive_native_deps:
-        binary_kwargs["deps"] += transitive_native_deps
     native.java_binary(
         name = raw_target_name,
         srcs = srcs,
@@ -264,16 +262,28 @@ def java_fuzz_test(
     raw_binary_name = name + "_raw_"
     jazzer_fuzz_binary(
         name = raw_binary_name,
-        driver = select(
-            {
-                "@rules_fuzzing//fuzzing/private:use_sanitizer_none": "@jazzer//driver:jazzer_driver",
-                "@rules_fuzzing//fuzzing/private:use_sanitizer_asan": "@jazzer//driver:jazzer_driver_asan",
-            },
-            no_match_error = "Jazzer only supports the sanitizer settings \"none\" and \"asan\"",
-        ),
+        agent = select({
+            "@rules_fuzzing//fuzzing/private:use_oss_fuzz": "@rules_fuzzing_oss_fuzz//:jazzer_agent_deploy.jar",
+            "//conditions:default": "@jazzer//agent:jazzer_agent_deploy.jar",
+        }),
+        # Since the choice of sanitizer is explicit for local fuzzing, we also
+        # let it apply to projects with no native dependencies.
+        driver_java_only = select({
+            "@rules_fuzzing//fuzzing/private:use_oss_fuzz": "@rules_fuzzing_oss_fuzz//:jazzer_driver",
+            "@rules_fuzzing//fuzzing/private:use_sanitizer_none": "@jazzer//driver:jazzer_driver",
+            "@rules_fuzzing//fuzzing/private:use_sanitizer_asan": "@jazzer//driver:jazzer_driver_asan",
+        }, no_match_error = "Jazzer only supports the sanitizer settings \"none\" and \"asan\""),
+        driver_with_native = select({
+            "@rules_fuzzing//fuzzing/private:use_oss_fuzz": "@rules_fuzzing_oss_fuzz//:jazzer_driver_with_sanitizer",
+            "@rules_fuzzing//fuzzing/private:use_sanitizer_none": "@jazzer//driver:jazzer_driver",
+            "@rules_fuzzing//fuzzing/private:use_sanitizer_asan": "@jazzer//driver:jazzer_driver_asan",
+        }, no_match_error = "Jazzer only supports the sanitizer settings \"none\" and \"asan\""),
+        sanitizer_options = select({
+            "@rules_fuzzing//fuzzing/private:use_oss_fuzz": "@rules_fuzzing//fuzzing/private:oss_fuzz_jazzer_sanitizer_options.sh",
+            "//conditions:default": "@rules_fuzzing//fuzzing/private:local_jazzer_sanitizer_options.sh",
+        }),
         target = raw_target_name,
         target_deploy_jar = raw_target_name + "_deploy.jar",
-        transitive_native_deps = transitive_native_deps,
     )
 
     fuzzing_decoration(
@@ -286,8 +296,5 @@ def java_fuzz_test(
         dicts = dicts,
         test_tags = (tags or []) + [
             "fuzz-test",
-            # FIXME: Packaging java_fuzz_tests for OSS-Fuzz requires runfile
-            #  support (+ some additional tweaks).
-            "no-oss-fuzz",
         ],
     )

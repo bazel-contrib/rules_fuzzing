@@ -38,6 +38,9 @@ java_fuzz_test(
 java_fuzz_test(
     name = "JavaFuzzTest",
     srcs = ["com/example/JavaFuzzTest.java"],
+    tags = [
+        "no-oss-fuzz",
+    ],
 )
 
 java_fuzz_test(
@@ -46,8 +49,23 @@ java_fuzz_test(
     corpus = [
         ":corpus",
     ],
-    transitive_native_deps = [
+    tags = [
+        "no-oss-fuzz",
+    ],
+    deps = [
         ":native",
+    ],
+)
+
+java_fuzz_test(
+    name = "JavaNativeRunfileFuzzTest",
+    srcs = ["com/example/JavaNativeRunfileFuzzTest.java"],
+    data = [
+        "corpus_0.txt",
+    ],
+    deps = [
+        ":native_runfile",
+        "@bazel_tools//tools/java/runfiles",
     ],
 )
 
@@ -60,6 +78,24 @@ cc_binary(
     ],
     linkshared = True,
     deps = [
+        "@bazel_tools//tools/jdk:jni",
+    ],
+)
+
+cc_binary(
+    name = "native_runfile",
+    srcs = [
+        "com/example/JavaNativeRunfileFuzzTest.cpp",
+        "com/example/JavaNativeRunfileFuzzTest.h",
+    ],
+    data = [
+        "corpus_1.txt",
+    ],
+    # Build as a shared library that can be loaded by a Java application at
+    # runtime via System.loadLibrary().
+    linkshared = True,
+    deps = [
+        "@bazel_tools//tools/cpp/runfiles",
         "@bazel_tools//tools/jdk:jni",
     ],
 )

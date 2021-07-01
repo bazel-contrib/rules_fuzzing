@@ -83,8 +83,7 @@ documentation for the set of targets generated.
 ## java_fuzz_test
 
 <pre>
-java_fuzz_test(<a href="#java_fuzz_test-name">name</a>, <a href="#java_fuzz_test-srcs">srcs</a>, <a href="#java_fuzz_test-target_class">target_class</a>, <a href="#java_fuzz_test-transitive_native_deps">transitive_native_deps</a>, <a href="#java_fuzz_test-corpus">corpus</a>, <a href="#java_fuzz_test-dicts">dicts</a>, <a href="#java_fuzz_test-engine">engine</a>, <a href="#java_fuzz_test-tags">tags</a>,
-               <a href="#java_fuzz_test-binary_kwargs">binary_kwargs</a>)
+java_fuzz_test(<a href="#java_fuzz_test-name">name</a>, <a href="#java_fuzz_test-srcs">srcs</a>, <a href="#java_fuzz_test-target_class">target_class</a>, <a href="#java_fuzz_test-corpus">corpus</a>, <a href="#java_fuzz_test-dicts">dicts</a>, <a href="#java_fuzz_test-engine">engine</a>, <a href="#java_fuzz_test-tags">tags</a>, <a href="#java_fuzz_test-binary_kwargs">binary_kwargs</a>)
 </pre>
 
 Defines a Java fuzz test and a few associated tools and metadata.
@@ -100,6 +99,11 @@ most relevant ones are:
   rarely.
 * `<name>_run`: An executable target used to launch the fuzz test using a
   simpler, engine-agnostic command line interface.
+* `<name>_oss_fuzz`: Generates a `<name>_oss_fuzz.tar` archive containing
+  the fuzz target executable and its associated resources (corpus,
+  dictionary, etc.) in a format suitable for unpacking in the $OUT/
+  directory of an OSS-Fuzz build. This target can be used inside the
+  `build.sh` script of an OSS-Fuzz project.
 
 
 **PARAMETERS**
@@ -110,7 +114,6 @@ most relevant ones are:
 | <a id="java_fuzz_test-name"></a>name |  A unique name for this target. Required.   |  none |
 | <a id="java_fuzz_test-srcs"></a>srcs |  A list of source files of the target.   |  <code>None</code> |
 | <a id="java_fuzz_test-target_class"></a>target_class |  The class that contains the static fuzzerTestOneInput   method. Defaults to the same class main_class would.   |  <code>None</code> |
-| <a id="java_fuzz_test-transitive_native_deps"></a>transitive_native_deps |  A list of all native libraries that the fuzz   target transitively depends on. The libraries are instrumented   automatically and do not need to be mentioned in deps. Listing the   libraries in this way is no longer required as of Bazel 5.   |  <code>None</code> |
 | <a id="java_fuzz_test-corpus"></a>corpus |  A list containing corpus files.   |  <code>None</code> |
 | <a id="java_fuzz_test-dicts"></a>dicts |  A list containing dictionaries.   |  <code>None</code> |
 | <a id="java_fuzz_test-engine"></a>engine |  A label pointing to the fuzzing engine to use.   |  <code>"@rules_fuzzing//fuzzing:java_engine"</code> |
