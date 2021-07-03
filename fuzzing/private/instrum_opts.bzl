@@ -80,6 +80,15 @@ instrum_defaults = struct(
     libfuzzer = _make_opts(
         copts = ["-fsanitize=fuzzer-no-link"],
     ),
+    # Jazzer is based on libFuzzer and hence generally requires the same
+    # instrumentation for native code. Since it does not support
+    # LeakSanitizer, the corresponding instrumentation can be disabled.
+    jazzer = _make_opts(
+        copts = [
+            "-fsanitize=fuzzer-no-link",
+            "-fno-sanitize=leak",
+        ],
+    ),
     # Reflects the set of options at
     # https://github.com/google/honggfuzz/blob/master/hfuzz_cc/hfuzz-cc.c
     honggfuzz = _make_opts(
