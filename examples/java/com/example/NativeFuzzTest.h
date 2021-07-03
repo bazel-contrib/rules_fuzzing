@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//    https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,9 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.example;
+#include <jni.h>
+/* Header for class com_example_NativeFuzzTest */
 
-public class JavaEmptyFuzzTest {
-    public static void fuzzerTestOneInput(byte[] input) {
-    }
+#ifndef EXAMPLES_JAVA_COM_EXAMPLE_NATIVEFUZZTEST_H_
+#define EXAMPLES_JAVA_COM_EXAMPLE_NATIVEFUZZTEST_H_
+#ifdef __cplusplus
+extern "C" {
+#endif
+/*
+ * Class:     com_example_NativeFuzzTest
+ * Method:    parse
+ * Signature: (Ljava/lang/String;)Z
+ */
+JNIEXPORT jboolean JNICALL
+Java_com_example_NativeFuzzTest_parse(JNIEnv *, jobject, jstring);
+
+#ifdef __cplusplus
 }
+#endif
+#endif  // EXAMPLES_JAVA_COM_EXAMPLE_NATIVEFUZZTEST_H_

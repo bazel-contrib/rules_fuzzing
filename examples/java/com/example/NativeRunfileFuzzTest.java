@@ -20,7 +20,7 @@ import com.google.devtools.build.runfiles.Runfiles;
 import java.io.IOException;
 import java.io.File;
 
-public class JavaNativeRunfileFuzzTest {
+public class NativeRunfileFuzzTest {
 
     static {
         System.loadLibrary("native_runfile");

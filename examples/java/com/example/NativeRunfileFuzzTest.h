@@ -13,22 +13,22 @@
 // limitations under the License.
 
 #include <jni.h>
-/* Header for class com_example_JavaNativeFuzzTest */
+/* Header for class com_example_NativeRunfileFuzzTest */
 
-#ifndef EXAMPLES_JAVA_COM_EXAMPLE_JAVANATIVEFUZZTEST_H_
-#define EXAMPLES_JAVA_COM_EXAMPLE_JAVANATIVEFUZZTEST_H_
+#ifndef EXAMPLES_JAVA_COM_EXAMPLE_NATIVERUNFILEFUZZTEST_H_
+#define EXAMPLES_JAVA_COM_EXAMPLE_NATIVERUNFILEFUZZTEST_H_
 #ifdef __cplusplus
 extern "C" {
 #endif
 /*
- * Class:     com_example_JavaNativeFuzzTest
- * Method:    parse
- * Signature: (Ljava/lang/String;)Z
+ * Class:     com_example_NativeRunfileFuzzTest
+ * Method:    loadCppRunfile
+ * Signature: ()V
  */
-JNIEXPORT jboolean JNICALL
-Java_com_example_JavaNativeFuzzTest_parse(JNIEnv *, jobject, jstring);
+JNIEXPORT void JNICALL
+Java_com_example_NativeRunfileFuzzTest_loadCppRunfile(JNIEnv *, jobject);
 
 #ifdef __cplusplus
 }
 #endif
-#endif  // EXAMPLES_JAVA_COM_EXAMPLE_JAVANATIVEFUZZTEST_H_
+#endif  // EXAMPLES_JAVA_COM_EXAMPLE_NATIVERUNFILEFUZZTEST_H_

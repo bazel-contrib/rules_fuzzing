@@ -15,20 +15,22 @@
 package com.example;
 
 import com.code_intelligence.jazzer.api.FuzzedDataProvider;
+import com.code_intelligence.jazzer.api.FuzzerSecurityIssueMedium;
 
-public class JavaNativeFuzzTest {
-    static {
-        System.loadLibrary("native");
+public class FuzzTest {
+    public static void fuzzerInitialize() {
+        // Optional initialization to be run before the first call to fuzzerTestOneInput.
     }
 
     public static void fuzzerTestOneInput(FuzzedDataProvider data) {
-        int val = data.consumeInt();
-        String stringData = data.consumeRemainingAsString();
-        if (val == 17759716 && stringData.length() > 10 && stringData.contains("jazzer")) {
-            // call native function which contains a crash
-            new com.example.JavaNativeFuzzTest().parse(stringData);
+        String input = data.consumeRemainingAsString();
+        if (input.startsWith("magicstring") && input.length() > 30
+                && input.charAt(25) == 'C') {
+            mustNeverBeCalled();
         }
     }
 
-    private native boolean parse(String bytes);
+    private static void mustNeverBeCalled() {
+        throw new FuzzerSecurityIssueMedium("mustNeverBeCalled has been called");
+    }
 }
