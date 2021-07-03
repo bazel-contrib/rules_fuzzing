@@ -31,8 +31,9 @@ def _oss_fuzz_package_impl(ctx):
             runfile_path = runfile_path(ctx, runfile),
         )
         # In order not to duplicate the fuzz test binary, it is excluded from
-        # the runfiles here. A symlink from the runfiles tree to the binary in
-        # the top-level directory is added further below.
+        # the runfiles here. This deviates from the usual Bazel runfiles layout,
+        # but is required since ClusterFuzz executes fuzz targets in
+        # subdirectories and would thus duplicate every C++ fuzz target.
         for runfile in binary_runfiles
         if runfile != binary_info.binary_file
     ])
@@ -71,16 +72,9 @@ def _oss_fuzz_package_impl(ctx):
                 ln -s "$(pwd)/{options_path}" "$STAGING_DIR/{base_name}.options"
             fi
             tar -chf "{output}" -C "$STAGING_DIR" .
-            # Add a relative symlink to the fuzz test binary to its runfiles.
-            declare -r BINARY_RUNFILES_PATH="$STAGING_DIR/{binary_runfiles_dir}/{binary_runfile_path}"
-            declare -r BINARY_RELATIVE_PATH="$(realpath -m -s --relative-to="$(dirname $BINARY_RUNFILES_PATH)" "$STAGING_DIR/{base_name}")"
-            mkdir -p "$(dirname "$BINARY_RUNFILES_PATH")"
-            ln -s "$BINARY_RELATIVE_PATH" "$BINARY_RUNFILES_PATH"
-            tar -rf "{output}" -C "$STAGING_DIR" "./{binary_runfiles_dir}/{binary_runfile_path}"
         """.format(
             base_name = ctx.attr.base_name,
             binary_path = binary_info.binary_file.path,
-            binary_runfile_path = runfile_path(ctx, binary_info.binary_file),
             binary_runfiles_dir = ctx.attr.base_name + ".runfiles",
             corpus_dir = binary_info.corpus_dir.path if binary_info.corpus_dir else "",
             dictionary_path = binary_info.dictionary_file.path if binary_info.dictionary_file else "",
