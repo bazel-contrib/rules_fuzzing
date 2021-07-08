@@ -23,6 +23,7 @@ def _fuzzing_launcher_script(ctx):
     script_template = """
 {environment}
 echo "Launching {binary_path} as a {engine_name} fuzz test..."
+RUNFILES_DIR="$0.runfiles" \
 exec "{launcher}" \
     --engine_launcher="{engine_launcher}" \
     --binary_path="{binary_path}" \
