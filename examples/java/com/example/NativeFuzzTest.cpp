@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "JavaNativeFuzzTest.h"
+#include "NativeFuzzTest.h"
 
 #include <string>
 
@@ -27,7 +27,7 @@ __attribute__((optnone)) void parseInternal(const std::string &input) {
   }
 }
 
-JNIEXPORT jboolean JNICALL Java_com_example_JavaNativeFuzzTest_parse(
+JNIEXPORT jboolean JNICALL Java_com_example_NativeFuzzTest_parse(
     JNIEnv *env, jobject o, jstring bytes) {
   const char *input(env->GetStringUTFChars(bytes, nullptr));
   parseInternal(input);

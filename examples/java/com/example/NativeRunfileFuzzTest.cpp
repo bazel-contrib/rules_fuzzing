@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "JavaNativeRunfileFuzzTest.h"
+#include "NativeRunfileFuzzTest.h"
 
 #include <fstream>
 #include <iostream>
@@ -21,7 +21,7 @@
 #include "tools/cpp/runfiles/runfiles.h"
 
 JNIEXPORT void JNICALL
-Java_com_example_JavaNativeRunfileFuzzTest_loadCppRunfile(JNIEnv *env,
+Java_com_example_NativeRunfileFuzzTest_loadCppRunfile(JNIEnv *env,
                                                           jobject o) {
   using ::bazel::tools::cpp::runfiles::Runfiles;
   std::string error;

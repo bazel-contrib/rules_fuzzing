@@ -28,24 +28,24 @@ filegroup(
 )
 
 java_fuzz_test(
-    name = "JavaEmptyFuzzTest",
-    srcs = ["com/example/JavaEmptyFuzzTest.java"],
+    name = "EmptyFuzzTest",
+    srcs = ["com/example/EmptyFuzzTest.java"],
     corpus = [
         "corpus_0.txt",
     ],
 )
 
 java_fuzz_test(
-    name = "JavaFuzzTest",
-    srcs = ["com/example/JavaFuzzTest.java"],
+    name = "FuzzTest",
+    srcs = ["com/example/FuzzTest.java"],
     tags = [
         "no-oss-fuzz",
     ],
 )
 
 java_fuzz_test(
-    name = "JavaNativeFuzzTest",
-    srcs = ["com/example/JavaNativeFuzzTest.java"],
+    name = "NativeFuzzTest",
+    srcs = ["com/example/NativeFuzzTest.java"],
     corpus = [
         ":corpus",
     ],
@@ -58,8 +58,8 @@ java_fuzz_test(
 )
 
 java_fuzz_test(
-    name = "JavaNativeRunfileFuzzTest",
-    srcs = ["com/example/JavaNativeRunfileFuzzTest.java"],
+    name = "NativeRunfileFuzzTest",
+    srcs = ["com/example/NativeRunfileFuzzTest.java"],
     data = [
         "corpus_0.txt",
     ],
@@ -73,8 +73,8 @@ java_fuzz_test(
 cc_binary(
     name = "native",
     srcs = [
-        "com/example/JavaNativeFuzzTest.cpp",
-        "com/example/JavaNativeFuzzTest.h",
+        "com/example/NativeFuzzTest.cpp",
+        "com/example/NativeFuzzTest.h",
     ],
     linkshared = True,
     deps = [
@@ -85,8 +85,8 @@ cc_binary(
 cc_binary(
     name = "native_runfile",
     srcs = [
-        "com/example/JavaNativeRunfileFuzzTest.cpp",
-        "com/example/JavaNativeRunfileFuzzTest.h",
+        "com/example/NativeRunfileFuzzTest.cpp",
+        "com/example/NativeRunfileFuzzTest.h",
     ],
     data = [
         "corpus_1.txt",
