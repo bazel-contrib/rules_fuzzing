@@ -61,12 +61,14 @@ build:oss-fuzz --@rules_fuzzing//fuzzing:cc_engine_sanitizer=none
 build:jazzer --//fuzzing:java_engine=//fuzzing/engines:jazzer
 build:jazzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=jazzer
 build:jazzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=none
-# Workaround for https://github.com/bazelbuild/bazel/issues/11128
-build:jazzer --//fuzzing:cc_engine_sanitizer=none
 
 # Jazzer + ASAN
 build:asan-jazzer --//fuzzing:java_engine=//fuzzing/engines:jazzer
 build:asan-jazzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=jazzer
 build:asan-jazzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
-# Workaround for https://github.com/bazelbuild/bazel/issues/11128
+
+# Internal workaround for https://github.com/bazelbuild/bazel/issues/11128.
+# Do not copy these lines into your .bazelrc, they are only needed within
+# rules_fuzzing.
+build:jazzer --//fuzzing:cc_engine_sanitizer=none
 build:asan-jazzer --//fuzzing:cc_engine_sanitizer=asan
