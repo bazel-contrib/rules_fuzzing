@@ -4,12 +4,14 @@ This repository contains [Bazel](https://bazel.build/) [Starlark extensions](htt
 
 [Fuzzing](https://en.wikipedia.org/wiki/Fuzzing) is an effective technique for uncovering security and stability bugs in software. Fuzzing works by invoking the code under test (e.g., a library API) with automatically generated data, and observing its execution to discover incorrect behavior, such as memory corruption or failed invariants. Read more [here](https://github.com/google/fuzzing) about fuzzing, additional examples, best practices, and other resources.
 
+The rule library currently provides support for C++ and Java fuzz tests. Support for additional languages may be added in the future.
+
 ## Features at a glance
 
 * Multiple fuzzing engines out of the box:
   * [libFuzzer][libfuzzer-doc]
   * [Honggfuzz][honggfuzz-doc]
-  * [Jazzer][jazzer-doc]
+  * Java fuzzing through [Jazzer][jazzer-doc]
 * Multiple sanitizer configurations:
   * [Address Sanitizer][asan-doc]
   * [Memory Sanitizer][msan-doc]
@@ -22,8 +24,6 @@ This repository contains [Bazel](https://bazel.build/) [Starlark extensions](htt
 * Customization options:
   * Defining additional fuzzing engines
   * Customizing the behavior of the fuzz test rule.
-
-The rule library currently provides support for C++ and Java fuzz tests. Support for additional languages may be added in the future.
 
 Contributions are welcome! Please read the [contribution guidelines](/docs/contributing.md).
 
