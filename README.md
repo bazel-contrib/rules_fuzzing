@@ -162,7 +162,7 @@ load("@jazzer//:init.bzl", "jazzer_init")
 jazzer_init()
 ```
 
-To use Jazzer, it is convienient to also define a `bazel.rc` configuration, similar to the C++ libFuzzer one above:
+To use Jazzer, it is convienient to also define a `.bazelrc` configuration, similar to the C++ libFuzzer one above:
 
 ```
 # Define --config=jazzer for Jazzer without sanitizer (Java only).
