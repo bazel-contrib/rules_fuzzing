@@ -165,20 +165,24 @@ jazzer_init()
 To use Jazzer, it is convienient to also define a `.bazelrc` configuration, similar to the C++ libFuzzer one above:
 
 ```
+# Force the use of Clang for all builds.
+build --action_env=CC=clang-10
+build --action_env=CXX=clang++-10
+
 # Define --config=jazzer for Jazzer without sanitizer (Java only).
-build:jazzer --@rules_fuzzing//fuzzing:java_engine=//fuzzing/engines:jazzer
+build:jazzer --@rules_fuzzing//fuzzing:java_engine=@rules_fuzzing//fuzzing/engines:jazzer
 build:jazzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=jazzer
 build:jazzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=none
 
 # Define --config=asan-jazzer for Jazzer + ASAN.
-build:asan-jazzer --@rules_fuzzing//fuzzing:java_engine=//fuzzing/engines:jazzer
+build:asan-jazzer --@rules_fuzzing//fuzzing:java_engine=@rules_fuzzing//fuzzing/engines:jazzer
 build:asan-jazzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=jazzer
 build:asan-jazzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
 ```
 
 A Java fuzz test is specified using a [`java_fuzz_test` rule](/docs/java-fuzzing-rules.md#java_fuzz_test). In the most basic form, a Java fuzz test consists of a single `.java` file with a class that defines a function `public static fuzzerTestOneInput(byte[] input)`.
 
-The Java equivalent of the C++ fuzz test above would look as follows:
+Create the `com/example/JavaFuzzTest.java` file in your workspace root, as follows:
 
 ```java
 package com.example;
@@ -194,14 +198,14 @@ public class JavaFuzzTest {
 }
 ```
 
-The corresponding build target looks very much like a regular `java_binary`:
+You should now define the corresponding target in the `BUILD` file, which looks very much like a regular `java_binary`:
 
 ```python
 load("@rules_fuzzing//fuzzing:java_defs.bzl", "java_fuzz_test")
 
 java_fuzz_test(
     name = "JavaFuzzTest",
-    srcs = ["JavaFuzzTest.java"],
+    srcs = ["com/example/JavaFuzzTest.java"],
     # target_class is not needed if using the Maven directory layout.
     target_class = "com.example.JavaFuzzTest",
 )
