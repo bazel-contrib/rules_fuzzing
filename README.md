@@ -169,12 +169,10 @@ To use Jazzer, it is convienient to also define a `.bazelrc` configuration, simi
 build:jazzer --@rules_fuzzing//fuzzing:java_engine=//fuzzing/engines:jazzer
 build:jazzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=jazzer
 build:jazzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=none
-build:jazzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=none
 
 # Define --config=asan-jazzer for Jazzer + ASAN.
 build:asan-jazzer --@rules_fuzzing//fuzzing:java_engine=//fuzzing/engines:jazzer
 build:asan-jazzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=jazzer
-build:asan-jazzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
 build:asan-jazzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
 ```
 
