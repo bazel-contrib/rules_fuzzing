@@ -165,7 +165,7 @@ jazzer_init()
 To use Jazzer, it is convienient to also define a `.bazelrc` configuration, similar to the C++ libFuzzer one above:
 
 ```
-# Force the use of Clang for all builds.
+# Force the use of Clang for all builds (needed to build Jazzer).
 build --action_env=CC=clang-10
 build --action_env=CXX=clang++-10
 
