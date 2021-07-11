@@ -166,8 +166,8 @@ To use Jazzer, it is convienient to also define a `.bazelrc` configuration, simi
 
 ```
 # Force the use of Clang for all builds (needed to build Jazzer).
-build --action_env=CC=clang-10
-build --action_env=CXX=clang++-10
+build --action_env=CC=clang
+build --action_env=CXX=clang++
 
 # Define --config=jazzer for Jazzer without sanitizer (Java only).
 build:jazzer --@rules_fuzzing//fuzzing:java_engine=@rules_fuzzing//fuzzing/engines:jazzer
