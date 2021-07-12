@@ -80,7 +80,7 @@ build:asan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=libfuzz
 build:asan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
 ```
 
-Examples for other combinations of fuzzing engine and sanitizer can be found in the project's [`.bazelrc`](/.bazelrc).
+Examples for other combinations of fuzzing engine and sanitizer can be found in the [User Guide](/docs/guide.md#configuring-the-bazelrc-file).
 
 ### Defining a C++ fuzz test
 

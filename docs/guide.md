@@ -161,21 +161,50 @@ $ bazel test \
     //examples:re2_fuzz_test
 ```
 
-This command is clearly too verbose to be used manually, so we recommend combining these options as a `--config` setting in your project's [`.bazelrc` file][bazelrc-docs]. For the example above, we can define an `asan-libfuzzer` config setting as follows:
-
-```
-build:asan-libfuzzer --//fuzzing:cc_engine=//fuzzing/engines:libfuzzer
-build:asan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=libfuzzer
-build:asan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
-```
-
-To run your fuzz test, now you can simply invoke:
+This command is clearly too verbose to be used manually, so we recommend combining these options as a `--config` setting in your project's [`.bazelrc` file][bazelrc-docs]. For example, the command above can be replaced with:
 
 ```sh
 $ bazel test --config=asan-libfuzzer //examples:re2_fuzz_test
 ```
 
-You can add to your `.bazelrc` file as many configurations as you need. Feel free to use the [`.bazelrc` file of this repository](/.bazelrc) as a starting point.
+For convenience, we define below the most common configurations that you can pick and choose for your own `.bazelrc` file:
+
+```
+# --config=asan-libfuzzer
+build:asan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine=@rules_fuzzing//fuzzing/engines:libfuzzer
+build:asan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=libfuzzer
+build:asan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
+
+# --config=msan-libfuzzer
+build:msan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine=@rules_fuzzing//fuzzing/engines:libfuzzer
+build:msan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=libfuzzer
+build:msan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=msan
+
+# --config=asan-honggfuzz
+build:asan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine=@rules_fuzzing//fuzzing/engines:honggfuzz
+build:asan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine_instrumentation=honggfuzz
+build:asan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
+
+# --config=msan-honggfuzz
+build:msan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine=@rules_fuzzing//fuzzing/engines:honggfuzz
+build:msan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine_instrumentation=honggfuzz
+build:msan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine_sanitizer=msan
+
+# --config=asan-replay
+build:asan-replay --@rules_fuzzing//fuzzing:cc_engine=@rules_fuzzing//fuzzing/engines:replay
+build:asan-replay --@rules_fuzzing//fuzzing:cc_engine_instrumentation=none
+build:asan-replay --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
+
+# --config=jazzer (Jazzer without sanitizer - Java only)
+build:jazzer --@rules_fuzzing//fuzzing:java_engine=@rules_fuzzing//fuzzing/engines:jazzer
+build:jazzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=jazzer
+build:jazzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=none
+
+# --config=asan-jazzer
+build:asan-jazzer --@rules_fuzzing//fuzzing:java_engine=@rules_fuzzing//fuzzing/engines:jazzer
+build:asan-jazzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=jazzer
+build:asan-jazzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
+```
 
 ## Advanced topics
 
