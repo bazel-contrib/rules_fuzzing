@@ -4,12 +4,14 @@ This repository contains [Bazel](https://bazel.build/) [Starlark extensions](htt
 
 [Fuzzing](https://en.wikipedia.org/wiki/Fuzzing) is an effective technique for uncovering security and stability bugs in software. Fuzzing works by invoking the code under test (e.g., a library API) with automatically generated data, and observing its execution to discover incorrect behavior, such as memory corruption or failed invariants. Read more [here](https://github.com/google/fuzzing) about fuzzing, additional examples, best practices, and other resources.
 
+The rule library currently provides support for C++ and Java fuzz tests. Support for additional languages may be added in the future.
+
 ## Features at a glance
 
 * Multiple fuzzing engines out of the box:
   * [libFuzzer][libfuzzer-doc]
   * [Honggfuzz][honggfuzz-doc]
-  * [Jazzer][jazzer-doc]
+  * Java fuzzing through [Jazzer][jazzer-doc]
 * Multiple sanitizer configurations:
   * [Address Sanitizer][asan-doc]
   * [Memory Sanitizer][msan-doc]
@@ -22,8 +24,6 @@ This repository contains [Bazel](https://bazel.build/) [Starlark extensions](htt
 * Customization options:
   * Defining additional fuzzing engines
   * Customizing the behavior of the fuzz test rule.
-
-The rule library currently provides support for C++ and Java fuzz tests. Support for additional languages may be added in the future.
 
 Contributions are welcome! Please read the [contribution guidelines](/docs/contributing.md).
 
@@ -55,21 +55,11 @@ http_archive(
 
 load("@rules_fuzzing//fuzzing:repositories.bzl", "rules_fuzzing_dependencies")
 
-# Pass jazzer = True to rules_fuzzing_dependencies for Java fuzzing support.
 rules_fuzzing_dependencies()
 
 load("@rules_fuzzing//fuzzing:init.bzl", "rules_fuzzing_init")
 
 rules_fuzzing_init()
-
-# For Java fuzzing support, uncomment the following lines.
-# load("@jazzer//:repositories.bzl", "jazzer_dependencies")
-#
-# jazzer_dependencies()
-#
-# load("@jazzer//:init.bzl", "jazzer_init")
-#
-# jazzer_init()
 ```
 
 > NOTE: Replace this snippet with the [latest release instructions](https://github.com/bazelbuild/rules_fuzzing/releases/latest). To get the latest unreleased features, you may need to change the `urls` and `sha256` attributes to fetch from `HEAD`. For more complex `WORKSPACE` files, you may also need to reconcile conflicting dependencies; read more in the [Bazel documentation](https://docs.bazel.build/versions/master/external.html).
@@ -90,7 +80,7 @@ build:asan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=libfuzz
 build:asan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
 ```
 
-Examples for other combinations of fuzzing engine and sanitizer can be found in the project's [`.bazelrc`](/.bazelrc).
+Examples for other combinations of fuzzing engine and sanitizer can be found in the [User Guide](/docs/guide.md#configuring-the-bazelrc-file).
 
 ### Defining a C++ fuzz test
 
@@ -152,11 +142,49 @@ INFO: seed corpus: files: 755 min: 1b max: 35982b total: 252654b rss: 35Mb
 
 The crash is saved under `/tmp/fuzzing/artifacts` and can be further inspected.
 
-### Defining a Java fuzz test
+### Java fuzzing
+
+You can write `java_fuzz_test`s through the [Jazzer][jazzer-doc] fuzzing engine. You will need to enable it in your WORKSPACE `rules_fuzzing_dependencies` call:
+
+```python
+load("@rules_fuzzing//fuzzing:repositories.bzl", "rules_fuzzing_dependencies")
+
+rules_fuzzing_dependencies(jazzer = True)
+
+load("@rules_fuzzing//fuzzing:init.bzl", "rules_fuzzing_init")
+
+rules_fuzzing_init()
+
+load("@jazzer//:repositories.bzl", "jazzer_dependencies")
+
+jazzer_dependencies()
+
+load("@jazzer//:init.bzl", "jazzer_init")
+
+jazzer_init()
+```
+
+To use Jazzer, it is convenient to also define a `.bazelrc` configuration, similar to the C++ libFuzzer one above:
+
+```
+# Force the use of Clang for all builds (Jazzer requires at least Clang 9).
+build --action_env=CC=clang
+build --action_env=CXX=clang++
+
+# Define --config=jazzer for Jazzer without sanitizer (Java only).
+build:jazzer --@rules_fuzzing//fuzzing:java_engine=@rules_fuzzing//fuzzing/engines:jazzer
+build:jazzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=jazzer
+build:jazzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=none
+
+# Define --config=asan-jazzer for Jazzer + ASAN.
+build:asan-jazzer --@rules_fuzzing//fuzzing:java_engine=@rules_fuzzing//fuzzing/engines:jazzer
+build:asan-jazzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=jazzer
+build:asan-jazzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
+```
 
 A Java fuzz test is specified using a [`java_fuzz_test` rule](/docs/java-fuzzing-rules.md#java_fuzz_test). In the most basic form, a Java fuzz test consists of a single `.java` file with a class that defines a function `public static fuzzerTestOneInput(byte[] input)`.
 
-The Java equivalent of the C++ fuzz test above would look as follows:
+Create the `src/com/example/JavaFuzzTest.java` file in your workspace root, as follows:
 
 ```java
 package com.example;
@@ -172,20 +200,20 @@ public class JavaFuzzTest {
 }
 ```
 
-The corresponding build target looks very much like a regular `java_binary`:
+You should now define the corresponding target in the `BUILD` file, which looks very much like a regular `java_binary`:
 
 ```python
 load("@rules_fuzzing//fuzzing:java_defs.bzl", "java_fuzz_test")
 
 java_fuzz_test(
     name = "JavaFuzzTest",
-    srcs = ["JavaFuzzTest.java"],
+    srcs = ["src/com/example/JavaFuzzTest.java"],
     # target_class is not needed if using the Maven directory layout.
-    target_class = "com.example.JavaFuzzTest",
+    # target_class = "com.example.JavaFuzzTest",
 )
 ```
 
-As with the C++ fuzz tests, you can start the fuzzer ([Jazzer][jazzer-doc]) via
+You can now start the fuzzer using the Jazzer engine by running:
 
 ```sh
 $ bazel run --config=jazzer //:JavaFuzzTest_run
