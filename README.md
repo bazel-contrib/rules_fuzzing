@@ -144,7 +144,7 @@ The crash is saved under `/tmp/fuzzing/artifacts` and can be further inspected.
 
 ### Java fuzzing
 
-You can write `java_fuzz_tests` through the [Jazzer][jazzer-doc] fuzzing engine. You will need to enable it in your WORKSPACE `rules_fuzzing_dependencies` call:
+You can write `java_fuzz_test`s through the [Jazzer][jazzer-doc] fuzzing engine. You will need to enable it in your WORKSPACE `rules_fuzzing_dependencies` call:
 
 ```python
 load("@rules_fuzzing//fuzzing:repositories.bzl", "rules_fuzzing_dependencies")
