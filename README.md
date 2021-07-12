@@ -162,10 +162,10 @@ load("@jazzer//:init.bzl", "jazzer_init")
 jazzer_init()
 ```
 
-To use Jazzer, it is convienient to also define a `.bazelrc` configuration, similar to the C++ libFuzzer one above:
+To use Jazzer, it is convenient to also define a `.bazelrc` configuration, similar to the C++ libFuzzer one above:
 
 ```
-# Force the use of Clang for all builds (needed to build Jazzer).
+# Force the use of Clang for all builds (Jazzer requires at least Clang 9).
 build --action_env=CC=clang
 build --action_env=CXX=clang++
 
@@ -182,7 +182,7 @@ build:asan-jazzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
 
 A Java fuzz test is specified using a [`java_fuzz_test` rule](/docs/java-fuzzing-rules.md#java_fuzz_test). In the most basic form, a Java fuzz test consists of a single `.java` file with a class that defines a function `public static fuzzerTestOneInput(byte[] input)`.
 
-Create the `com/example/JavaFuzzTest.java` file in your workspace root, as follows:
+Create the `src/com/example/JavaFuzzTest.java` file in your workspace root, as follows:
 
 ```java
 package com.example;
@@ -205,9 +205,9 @@ load("@rules_fuzzing//fuzzing:java_defs.bzl", "java_fuzz_test")
 
 java_fuzz_test(
     name = "JavaFuzzTest",
-    srcs = ["com/example/JavaFuzzTest.java"],
+    srcs = ["src/com/example/JavaFuzzTest.java"],
     # target_class is not needed if using the Maven directory layout.
-    target_class = "com.example.JavaFuzzTest",
+    # target_class = "com.example.JavaFuzzTest",
 )
 ```
 
