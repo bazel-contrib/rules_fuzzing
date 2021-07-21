@@ -21,4 +21,4 @@ if [[ -n "${FUZZER_SEED_CORPUS_DIR}" ]]; then
     command_line+=("${FUZZER_SEED_CORPUS_DIR}")
 fi
 
-exec "${command_line[@]}"
+exec "${command_line[@]}" "$@"
