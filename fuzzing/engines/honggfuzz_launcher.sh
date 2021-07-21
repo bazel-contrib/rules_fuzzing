@@ -41,4 +41,4 @@ if [[ -n "${FUZZER_DICTIONARY_PATH}" ]]; then
 fi
 command_line+=("--" "${FUZZER_BINARY}")
 
-exec "${command_line[@]}"
+exec "${command_line[@]}" "$@"

@@ -102,7 +102,7 @@ def main(argv):
         os.environ["FUZZER_DICTIONARY_PATH"] = FLAGS.dictionary_path
     if FLAGS.corpus_dir:
         os.environ["FUZZER_SEED_CORPUS_DIR"] = FLAGS.corpus_dir
-    os.execv("/bin/bash", ["/bin/bash", FLAGS.engine_launcher, "--"] + argv[1:])
+    os.execv("/bin/bash", ["/bin/bash", FLAGS.engine_launcher] + argv[1:])
 
 
 if __name__ == "__main__":
