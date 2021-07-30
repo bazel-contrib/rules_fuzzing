@@ -81,6 +81,28 @@ jobs:
           bazel test --verbose_failures --test_output=all \
               --build_tag_filters=fuzz-test --config=${{ matrix.config }} \
               //examples:all
+  coverage:
+    name: Coverage gathering (C++)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      matrix:
+        target: ["//examples:empty_fuzz_test", "//examples:re2_fuzz_test"]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -yq \
+            clang-10 \
+            libunwind-dev \
+            libblocksruntime-dev
+      - name: Gather coverage
+        run: |
+          bazel coverage ${{ matrix.target }}
+      - name: Check coverage gathered is non-empty
+        run: |
+          [[ -s bazel-out/_coverage/_coverage_report.dat ]]
   fuzzer_run_tests_java:
     name: Brief fuzz test runs (Java)
     runs-on: ubuntu-latest

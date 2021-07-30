@@ -46,7 +46,14 @@ exec '{engine_launcher}'
     runfiles = ctx.runfiles()
     runfiles = runfiles.merge(ctx.attr.binary[DefaultInfo].default_runfiles)
     runfiles = runfiles.merge(binary_info.engine_info.launcher_runfiles)
-    return [DefaultInfo(executable = script, runfiles = runfiles)]
+
+    return [
+        DefaultInfo(executable = script, runfiles = runfiles),
+        coverage_common.instrumented_files_info(
+            ctx,
+            dependency_attributes = ["binary"],
+        ),
+    ]
 
 fuzzing_regression_test = rule(
     implementation = _fuzzing_regression_test_impl,
@@ -60,6 +67,16 @@ Executes a fuzz test on its seed corpus.
             providers = [FuzzingBinaryInfo],
             cfg = "target",
             mandatory = True,
+        ),
+        "_lcov_merger": attr.label(
+            default = "@bazel_tools//tools/test:lcov_merger",
+            executable = True,
+            cfg = "host",
+        ),
+        "_collect_cc_coverage": attr.label(
+            default = "@bazel_tools//tools/test:collect_cc_coverage",
+            executable = True,
+            cfg = "host",
         ),
     },
     test = True,

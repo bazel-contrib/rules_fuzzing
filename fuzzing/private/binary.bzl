@@ -131,6 +131,10 @@ def _fuzzing_binary_impl(ctx):
             engine_info = ctx.attr.engine[FuzzingEngineInfo],
             options_file = ctx.file.options,
         ),
+        coverage_common.instrumented_files_info(
+            ctx,
+            dependency_attributes = ["binary"],
+        ),
     ]
 
 _common_fuzzing_binary_attrs = {
