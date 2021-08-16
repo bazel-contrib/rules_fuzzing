@@ -58,6 +58,10 @@ cc_fuzz_test(
 cc_fuzz_test(
     name = "fuzzed_data_provider_fuzz_test",
     srcs = ["fuzzed_data_provider_fuzz_test.cc"],
+    target_compatible_with = select({
+        "//:clang": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
 )
 
 cc_fuzz_test(
