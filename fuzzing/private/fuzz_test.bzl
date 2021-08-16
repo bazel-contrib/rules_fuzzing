@@ -174,6 +174,7 @@ def cc_fuzz_test(
     # instrumented configuration.
     raw_binary_name = name + "_raw_"
     binary_kwargs.setdefault("deps", []).append(engine)
+    binary_kwargs.setdefault("tags", []).append("manual")
     cc_binary(
         name = raw_binary_name,
         **binary_kwargs
@@ -251,6 +252,7 @@ def java_fuzz_test(
         "Jazzer-Fuzz-Target-Class: %s" % target_class,
     ]
     binary_kwargs.setdefault("deps", []).append(engine)
+    binary_kwargs.setdefault("tags", []).append("manual")
     native.java_binary(
         name = raw_target_name,
         srcs = srcs,
@@ -282,6 +284,7 @@ def java_fuzz_test(
             "@rules_fuzzing//fuzzing/private:use_oss_fuzz": "@rules_fuzzing//fuzzing/private:oss_fuzz_jazzer_sanitizer_options.sh",
             "//conditions:default": "@rules_fuzzing//fuzzing/private:local_jazzer_sanitizer_options.sh",
         }),
+        tags = ["manual"],
         target = raw_target_name,
         target_deploy_jar = raw_target_name + "_deploy.jar",
     )
