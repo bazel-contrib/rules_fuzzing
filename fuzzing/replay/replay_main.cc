@@ -22,7 +22,7 @@
 
 extern "C" {
 int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size);
-int LLVMFuzzerInitialize(int* argc, char*** argv) __attribute__((weak_import));
+int LLVMFuzzerInitialize(int* argc, char*** argv) __attribute__((weak));
 }
 
 namespace {

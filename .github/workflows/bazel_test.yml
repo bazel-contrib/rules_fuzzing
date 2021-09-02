@@ -114,3 +114,26 @@ jobs:
           bazel test --verbose_failures --test_output=all \
               --build_tag_filters=fuzz-test --config=${{ matrix.config }} \
               //examples/java/...
+  regression_tests_gcc:
+    name: Regression tests (GCC)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Run regression tests with GCC
+        run: |
+          bazel test --action_env=CC=gcc --action_env=CXX=g++ \
+              --verbose_failures --test_output=all \
+              //examples/...
+  regression_tests_mac:
+    name: Regression tests (macOS)
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Run regression tests on macOS
+        run: |
+          bazel test --verbose_failures --test_output=all \
+              -- //examples/... -//examples/java:all
