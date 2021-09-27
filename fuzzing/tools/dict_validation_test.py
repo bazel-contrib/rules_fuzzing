@@ -25,10 +25,16 @@ class DictValidatorTest(unittest.TestCase):
 
     def test_plain_entries(self):
         self.assertTrue(validate_line('kw1="blah"'))
-        self.assertTrue(validate_line('":path"'))
-        self.assertTrue(validate_line('"keep-alive"'))
-        self.assertTrue(validate_line('"te"'))
-        self.assertTrue(validate_line('"ab""'))
+        self.assertTrue(validate_line('"0123456789"'))
+        self.assertTrue(validate_line('"abcdefghijklmnopqrstuvwxyz"'))
+        self.assertTrue(validate_line('"ABCDEFGHIJKLMNOPQRSTUVWXYZ"'))
+        self.assertTrue(validate_line('"!"#$%&\'()*+,-./:;<=>?@[]^_`{|}~ "'))
+        self.assertTrue(validate_line('"\t\r\f\v"'))
+
+    def test_bad_chars(self):
+        self.assertFalse(validate_line('"\x07"'))
+        self.assertFalse(validate_line('"Ā"'))
+        self.assertFalse(validate_line('"😀"'))
 
     def test_escaped_words(self):
         self.assertTrue(validate_line('kw2="\\"ac\\\\dc\\""'))
