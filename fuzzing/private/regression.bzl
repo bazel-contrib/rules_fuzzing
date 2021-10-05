@@ -25,6 +25,7 @@ export FUZZER_ARTIFACTS_DIR="$TEST_TMPDIR/artifacts"
 export FUZZER_BINARY='{fuzzer_binary}'
 export FUZZER_SEED_CORPUS_DIR='{seed_corpus_dir}'
 export FUZZER_IS_REGRESSION=1
+export PYTHON3_INTERPRETER='{python3_interpreter_path}'
 {engine_launcher_environment}
 
 mkdir -p "$FUZZER_OUTPUT_CORPUS_DIR"
@@ -32,9 +33,22 @@ mkdir -p "$FUZZER_ARTIFACTS_DIR"
 
 exec '{engine_launcher}'
 """
+    runfiles = ctx.runfiles()
+    runfiles = runfiles.merge(ctx.attr.binary[DefaultInfo].default_runfiles)
+    runfiles = runfiles.merge(binary_info.engine_info.launcher_runfiles)
+
+    py3_runtime = ctx.toolchains["@rules_python//python:toolchain_type"].py3_runtime
+    if py3_runtime.interpreter:
+        runfiles = runfiles.merge(ctx.runfiles(files = [py3_runtime.interpreter]))
+        runfiles = runfiles.merge(ctx.runfiles(files = py3_runtime.files.to_list()))
+        python3_interpreter_path = py3_runtime.interpreter.short_path
+    else:
+        python3_interpreter_path = py3_runtime.interpreter_path
+
     script_content = script_template.format(
         fuzzer_binary = ctx.executable.binary.short_path,
         seed_corpus_dir = binary_info.corpus_dir.short_path,
+        python3_interpreter_path = python3_interpreter_path,
         engine_launcher_environment = "\n".join([
             "export %s='%s'" % (var, file.short_path)
             for var, file in binary_info.engine_info.launcher_environment.items()
@@ -42,10 +56,6 @@ exec '{engine_launcher}'
         engine_launcher = binary_info.engine_info.launcher.short_path,
     )
     ctx.actions.write(script, script_content, is_executable = True)
-
-    runfiles = ctx.runfiles()
-    runfiles = runfiles.merge(ctx.attr.binary[DefaultInfo].default_runfiles)
-    runfiles = runfiles.merge(binary_info.engine_info.launcher_runfiles)
     return [DefaultInfo(executable = script, runfiles = runfiles)]
 
 fuzzing_regression_test = rule(
@@ -62,5 +72,6 @@ Executes a fuzz test on its seed corpus.
             mandatory = True,
         ),
     },
+    toolchains = ["@rules_python//python:toolchain_type"],
     test = True,
 )

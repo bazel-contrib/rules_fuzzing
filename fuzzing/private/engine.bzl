@@ -32,6 +32,7 @@ def _make_fuzzing_engine_info(ctx):
 
     launcher_runfiles = ctx.runfiles(files = [ctx.file.launcher])
     env_vars = {}
+
     for data_label, data_env_var in ctx.attr.launcher_data.items():
         data_files = data_label.files.to_list()
         if data_env_var:

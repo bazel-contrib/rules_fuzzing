@@ -16,7 +16,7 @@
 # engine. The launch configuration is supplied by the launcher script through
 # environment variables.
 
-command_line=("$(python3 -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' ${FUZZER_BINARY})")
+command_line=("$("${PYTHON3_INTERPRETER}" -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' ${FUZZER_BINARY})")
 
 # libFuzzer flags (compatible with Jazzer).
 

@@ -16,7 +16,7 @@ if (( ! FUZZER_IS_REGRESSION )); then
     echo "NOTE: Non-regression mode is not supported by the replay engine."
 fi
 
-command_line=("$(python3 -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' ${FUZZER_BINARY})")
+command_line=("$("${PYTHON3_INTERPRETER}" -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' ${FUZZER_BINARY})")
 if [[ -n "${FUZZER_SEED_CORPUS_DIR}" ]]; then
     command_line+=("${FUZZER_SEED_CORPUS_DIR}")
 fi

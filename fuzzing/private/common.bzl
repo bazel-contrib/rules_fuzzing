@@ -16,12 +16,13 @@
 
 load("//fuzzing/private:binary.bzl", "FuzzingBinaryInfo")
 
-def _fuzzing_launcher_script(ctx):
+def _fuzzing_launcher_script(ctx, python3_interpreter_path):
     binary_info = ctx.attr.binary[FuzzingBinaryInfo]
     script = ctx.actions.declare_file(ctx.label.name)
 
     script_template = """
-{environment}
+export PYTHON3_INTERPRETER='{python3_interpreter_path}'
+{launcher_environment}
 echo "Launching {binary_path} as a {engine_name} fuzz test..."
 RUNFILES_DIR="$0.runfiles" \
 exec "{launcher}" \
@@ -32,7 +33,8 @@ exec "{launcher}" \
     "$@"
 """
     script_content = script_template.format(
-        environment = "\n".join([
+        python3_interpreter_path = python3_interpreter_path,
+        launcher_environment = "\n".join([
             "export %s='%s'" % (var, file.short_path)
             for var, file in binary_info.engine_info.launcher_environment.items()
         ]),
@@ -47,13 +49,22 @@ exec "{launcher}" \
     return script
 
 def _fuzzing_launcher_impl(ctx):
-    script = _fuzzing_launcher_script(ctx)
-
     binary_info = ctx.attr.binary[FuzzingBinaryInfo]
     runfiles = ctx.runfiles()
     runfiles = runfiles.merge(binary_info.engine_info.launcher_runfiles)
     runfiles = runfiles.merge(ctx.attr._launcher[DefaultInfo].default_runfiles)
     runfiles = runfiles.merge(ctx.attr.binary[DefaultInfo].default_runfiles)
+
+    py3_runtime = ctx.toolchains["@rules_python//python:toolchain_type"].py3_runtime
+    if py3_runtime.interpreter:
+        runfiles = runfiles.merge(ctx.runfiles(files = [py3_runtime.interpreter]))
+        runfiles = runfiles.merge(ctx.runfiles(files = py3_runtime.files.to_list()))
+        python3_interpreter_path = py3_runtime.interpreter.short_path
+    else:
+        python3_interpreter_path = py3_runtime.interpreter_path
+
+    script = _fuzzing_launcher_script(ctx, python3_interpreter_path)
+
     return [DefaultInfo(executable = script, runfiles = runfiles)]
 
 fuzzing_launcher = rule(
@@ -76,6 +87,7 @@ Rule for creating a script to run the fuzzing test.
             mandatory = True,
         ),
     },
+    toolchains = ["@rules_python//python:toolchain_type"],
     executable = True,
 )
 
