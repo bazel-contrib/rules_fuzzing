@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-command_line="$(python3 -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' ${HONGGFUZZ_PATH})"
+command_line="$("${REALPATH_PATH}" ${HONGGFUZZ_PATH})"
 command_line+=("--workspace=${FUZZER_OUTPUT_ROOT}")
 
 if [[ -n "${FUZZER_SEED_CORPUS_DIR}" ]]; then

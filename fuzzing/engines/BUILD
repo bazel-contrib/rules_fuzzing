@@ -23,6 +23,9 @@ cc_fuzzing_engine(
     name = "libfuzzer",
     display_name = "libFuzzer",
     launcher = "libfuzzer_launcher.sh",
+    launcher_data = {
+        "//fuzzing/tools:realpath": "REALPATH_PATH",
+    },
     library = ":libfuzzer_stub",
     visibility = ["//visibility:public"],
 )
@@ -46,6 +49,7 @@ cc_fuzzing_engine(
     launcher = "honggfuzz_launcher.sh",
     launcher_data = {
         "@honggfuzz//:honggfuzz": "HONGGFUZZ_PATH",
+        "//fuzzing/tools:realpath": "REALPATH_PATH",
     },
     library = "@honggfuzz//:honggfuzz_engine",
     visibility = ["//visibility:public"],
@@ -58,6 +62,9 @@ cc_fuzzing_engine(
     name = "replay",
     display_name = "Replay",
     launcher = "replay_launcher.sh",
+    launcher_data = {
+        "//fuzzing/tools:realpath": "REALPATH_PATH",
+    },
     library = "//fuzzing/replay:replay_main",
     visibility = ["//visibility:public"],
 )
@@ -69,6 +76,9 @@ java_fuzzing_engine(
     name = "jazzer",
     display_name = "Jazzer",
     launcher = "jazzer_launcher.sh",
+    launcher_data = {
+        "//fuzzing/tools:realpath": "REALPATH_PATH",
+    },
     library = "@jazzer//agent:jazzer_api_compile_only",
     visibility = ["//visibility:public"],
 )

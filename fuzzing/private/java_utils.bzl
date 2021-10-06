@@ -106,18 +106,18 @@ source "$(grep -sm1 "^$f " "$0.exe.runfiles_manifest" | cut -f2- -d' ')" 2>/dev/
 
 # Export the env variables required for subprocesses to find their runfiles.
 runfiles_export_envvars
-
-# Determine the path to load libjvm.so from, either relative to the location of
-# the java binary or to $JAVA_HOME, if set. On OSS-Fuzz, the path is provided in
-# JVM_LD_LIBRARY_PATH.
-JAVA_BIN=$(python3 -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' "$(which java)")
-JAVA_HOME=${JAVA_HOME:-${JAVA_BIN%/bin/java}}
-# The location of libjvm.so relative to the JDK differs between JDK <= 8 and 9+.
-JVM_LD_LIBRARY_PATH=${JVM_LD_LIBRARY_PATH:-"$JAVA_HOME/lib/server:$JAVA_HOME/lib/amd64/server"}
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$JVM_LD_LIBRARY_PATH
 """
 
     script_format_part = """
+# Determine the path to load libjvm.so from, either relative to the location of
+# the java binary or to $JAVA_HOME, if set. On OSS-Fuzz, the path is provided in
+# JVM_LD_LIBRARY_PATH.
+JAVA_BIN=$("$(rlocation {realpath})" "$(which java)")
+JAVA_HOME=${{JAVA_HOME:-${{JAVA_BIN%/bin/java}}}}
+# The location of libjvm.so relative to the JDK differs between JDK <= 8 and 9+.
+JVM_LD_LIBRARY_PATH=${{JVM_LD_LIBRARY_PATH:-"$JAVA_HOME/lib/server:$JAVA_HOME/lib/amd64/server"}}
+export LD_LIBRARY_PATH=${{LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}}$JVM_LD_LIBRARY_PATH
+
 source "$(rlocation {sanitizer_options})"
 exec "$(rlocation {driver})" \
     --agent_path="$(rlocation {agent})" \
@@ -136,6 +136,7 @@ exec "$(rlocation {driver})" \
         deploy_jar = runfile_path(ctx, ctx.file.target_deploy_jar),
         driver = runfile_path(ctx, driver),
         native_dirs = ":".join(native_dirs),
+        realpath = runfile_path(ctx, ctx.executable._realpath),
         sanitizer_options = runfile_path(ctx, ctx.file.sanitizer_options),
     )
     ctx.actions.write(script, script_content, is_executable = True)
@@ -232,6 +233,9 @@ def _jazzer_fuzz_binary_impl(ctx):
 
     runfiles = runfiles.merge(ctx.runfiles([ctx.file.sanitizer_options]))
 
+    runfiles = runfiles.merge(ctx.runfiles([ctx.executable._realpath]))
+    runfiles = runfiles.merge(ctx.attr._realpath[DefaultInfo].default_runfiles)
+
     script = _jazzer_fuzz_binary_script(ctx, native_libs, driver)
     return [DefaultInfo(executable = script, runfiles = runfiles)]
 
@@ -282,6 +286,12 @@ Rule that creates a binary that invokes Jazzer on the specified target.
             doc = "The deploy jar of the fuzz target.",
             allow_single_file = [".jar"],
             mandatory = True,
+        ),
+        "_realpath": attr.label(
+            doc = "The realpath util needed by the binary script.",
+            default = "//fuzzing/tools:realpath",
+            executable = True,
+            cfg = "target",
         ),
         "_allowlist_function_transition": attr.label(
             default = "@bazel_tools//tools/allowlists/function_transition_allowlist",

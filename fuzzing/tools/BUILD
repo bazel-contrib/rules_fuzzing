@@ -37,6 +37,13 @@ py_binary(
 )
 
 py_binary(
+    name = "realpath",
+    srcs = ["realpath.py"],
+    python_version = "PY3",
+    visibility = ["//visibility:public"],
+)
+
+py_binary(
     name = "validate_dict",
     srcs = ["validate_dict.py"],
     python_version = "PY3",
