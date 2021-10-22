@@ -106,6 +106,12 @@ source "$(grep -sm1 "^$f " "$0.exe.runfiles_manifest" | cut -f2- -d' ')" 2>/dev/
 
 # Export the env variables required for subprocesses to find their runfiles.
 runfiles_export_envvars
+
+# When the runfiles tree exists but does not contain local_jdk, this script is
+# executing on OSS-Fuzz. Link the current JAVA_HOME into the runfiles tree.
+if [ -d "$0.runfiles" ] && [ ! -d "$0.runfiles/local_jdk" ]; then
+    ln -s "$JAVA_HOME" "$0.runfiles/local_jdk"
+fi
 """
 
     script_format_part = """
