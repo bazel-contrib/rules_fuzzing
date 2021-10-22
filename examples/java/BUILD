@@ -52,9 +52,10 @@ java_fuzz_test(
     tags = [
         "no-oss-fuzz",
     ],
-    deps = [
-        ":native",
-    ],
+    deps = select({
+        "@platforms//os:macos": [":libnative.dylib"],
+        "//conditions:default": [":native"],
+    }),
 )
 
 java_fuzz_test(
@@ -63,8 +64,10 @@ java_fuzz_test(
     data = [
         "corpus_0.txt",
     ],
-    deps = [
-        ":native_runfile",
+    deps = select({
+        "@platforms//os:macos": [":libnative_runfile.dylib"],
+        "//conditions:default": [":native_runfile"],
+    }) + [
         "@bazel_tools//tools/java/runfiles",
     ],
 )
@@ -80,18 +83,59 @@ java_fuzz_test(
 # A native library that interfaces with Java through the JNI.
 cc_binary(
     name = "native",
+    linkshared = True,
+    tags = ["manual"],
+    deps = [
+        ":native_lib",
+    ],
+)
+
+# Workaround for https://github.com/bazelbuild/bazel/issues/11082.
+cc_binary(
+    name = "libnative.dylib",
+    linkshared = True,
+    tags = ["manual"],
+    deps = [
+        ":native_lib",
+    ],
+)
+
+cc_library(
+    name = "native_lib",
     srcs = [
         "com/example/NativeFuzzTest.cpp",
         "com/example/NativeFuzzTest.h",
     ],
-    linkshared = True,
     deps = [
         "@bazel_tools//tools/jdk:jni",
     ],
+    alwayslink = True,
 )
 
 cc_binary(
     name = "native_runfile",
+    # Build as a shared library that can be loaded by a Java application at
+    # runtime via System.loadLibrary().
+    linkshared = True,
+    tags = ["manual"],
+    deps = [
+        ":native_runfile_lib",
+    ],
+)
+
+cc_binary(
+    name = "libnative_runfile.dylib",
+    # Build as a shared library that can be loaded by a Java application at
+    # runtime via System.loadLibrary().
+    linkshared = True,
+    tags = ["manual"],
+    deps = [
+        ":native_runfile_lib",
+    ],
+)
+
+cc_library(
+    name = "native_runfile_lib",
     srcs = [
         "com/example/NativeRunfileFuzzTest.cpp",
         "com/example/NativeRunfileFuzzTest.h",
@@ -99,13 +143,11 @@ cc_binary(
     data = [
         "corpus_1.txt",
     ],
-    # Build as a shared library that can be loaded by a Java application at
-    # runtime via System.loadLibrary().
-    linkshared = True,
     deps = [
         "@bazel_tools//tools/cpp/runfiles",
         "@bazel_tools//tools/jdk:jni",
     ],
+    alwayslink = True,
 )
 
 cc_binary(
