@@ -173,7 +173,15 @@ def cc_fuzz_test(
     # this target directly. Instead, the binary should be built through the
     # instrumented configuration.
     raw_binary_name = name + "_raw_"
-    binary_kwargs.setdefault("deps", []).append(engine)
+    binary_kwargs.setdefault("deps", [])
+
+    # Use += rather than append to allow users to pass in select() expressions for
+    # deps, which only support concatenation with +.
+    # Workaround for https://github.com/bazelbuild/bazel/issues/14157.
+    # buildifier: disable=list-append
+    binary_kwargs["deps"] += [engine]
+
+    # tags is not configurable and can thus use append.
     binary_kwargs.setdefault("tags", []).append("manual")
     cc_binary(
         name = raw_binary_name,
@@ -248,15 +256,24 @@ def java_fuzz_test(
               ", specify target_class.").format(
             name = name,
         ))
-    deploy_manifest_lines = [
-        "Jazzer-Fuzz-Target-Class: %s" % target_class,
-    ]
-    binary_kwargs.setdefault("deps", []).append(engine)
+    target_class_manifest_line = "Jazzer-Fuzz-Target-Class: %s" % target_class
+    binary_kwargs.setdefault("deps", [])
+
+    # Use += rather than append to allow users to pass in select() expressions for
+    # deps, which only support concatenation with +.
+    # Workaround for https://github.com/bazelbuild/bazel/issues/14157.
+    # buildifier: disable=list-append
+    binary_kwargs["deps"] += [engine]
+    binary_kwargs.setdefault("deploy_manifest_lines", [])
+
+    # buildifier: disable=list-append
+    binary_kwargs["deploy_manifest_lines"] += [target_class_manifest_line]
+
+    # tags is not configurable and can thus use append.
     binary_kwargs.setdefault("tags", []).append("manual")
     native.java_binary(
         name = raw_target_name,
         srcs = srcs,
-        deploy_manifest_lines = deploy_manifest_lines,
         create_executable = False,
         **binary_kwargs
     )
