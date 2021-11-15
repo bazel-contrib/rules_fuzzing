@@ -282,6 +282,7 @@ Rule that creates a binary that invokes Jazzer on the specified target.
             doc = "The deploy jar of the fuzz target.",
             allow_single_file = [".jar"],
             mandatory = True,
+            cfg = fuzzing_binary_transition,
         ),
         "_allowlist_function_transition": attr.label(
             default = "@bazel_tools//tools/allowlists/function_transition_allowlist",
