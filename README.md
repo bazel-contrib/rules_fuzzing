@@ -15,6 +15,7 @@ The rule library currently provides support for C++ and Java fuzz tests. Support
 * Multiple sanitizer configurations:
   * [Address Sanitizer][asan-doc]
   * [Memory Sanitizer][msan-doc]
+  * [Undefined Behavior Sanitizer][ubsan-doc]
 * Corpora and dictionaries.
 * Simple "bazel run/test" commands to build and run the fuzz tests.
   * No need to understand the details of each fuzzing engine.
@@ -258,3 +259,4 @@ Check out the [`examples/`](examples/) directory, which showcases additional fea
 [libfuzzer-doc]: https://llvm.org/docs/LibFuzzer.html
 [jazzer-doc]: https://github.com/CodeIntelligenceTesting/jazzer
 [msan-doc]: https://clang.llvm.org/docs/MemorySanitizer.html
+[ubsan-doc]: https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html

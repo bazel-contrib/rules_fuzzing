@@ -144,6 +144,7 @@ The fuzzing rules library defines the following Bazel configuration flags that a
    * `asan`: [Address Sanitizer (ASAN)][asan-doc].
    * `msan`: [Memory Sanitizer (MSAN)][msan-doc].
    * `msan-origin-tracking`: MSAN with [origin tracking][msan-origin-tracking] enabled (useful for debugging crash reproducers; available separately due to it being 1.5-2x slower).
+   * `ubsan`: [Undefined Behavior Sanitizer (UBSAN)][ubsan-doc].
 
 * `--@rules_fuzzing//fuzzing:cc_fuzzing_build_mode` is a bool flag that specifies whether the special [`FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION` macro][fuzzing-build-mode] is defined during the build. This is turned on by default and most users should not need to change this flag.
 
@@ -180,6 +181,11 @@ build:msan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine=@rules_fuzzing//fuzzing
 build:msan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=libfuzzer
 build:msan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=msan
 
+# --config=ubsan-libfuzzer
+build:ubsan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine=@rules_fuzzing//fuzzing/engines:libfuzzer
+build:ubsan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=libfuzzer
+build:ubsan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=ubsan
+
 # --config=asan-honggfuzz
 build:asan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine=@rules_fuzzing//fuzzing/engines:honggfuzz
 build:asan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine_instrumentation=honggfuzz
@@ -189,6 +195,11 @@ build:asan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
 build:msan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine=@rules_fuzzing//fuzzing/engines:honggfuzz
 build:msan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine_instrumentation=honggfuzz
 build:msan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine_sanitizer=msan
+
+# --config=ubsan-honggfuzz
+build:ubsan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine=@rules_fuzzing//fuzzing/engines:honggfuzz
+build:ubsan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine_instrumentation=honggfuzz
+build:ubsan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine_sanitizer=ubsan
 
 # --config=asan-replay
 build:asan-replay --@rules_fuzzing//fuzzing:cc_engine=@rules_fuzzing//fuzzing/engines:replay
@@ -204,6 +215,11 @@ build:jazzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=none
 build:asan-jazzer --@rules_fuzzing//fuzzing:java_engine=@rules_fuzzing//fuzzing/engines:jazzer
 build:asan-jazzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=jazzer
 build:asan-jazzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
+
+# --config=ubsan-jazzer
+build:ubsan-jazzer --@rules_fuzzing//fuzzing:java_engine=@rules_fuzzing//fuzzing/engines:jazzer
+build:ubsan-jazzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=jazzer
+build:ubsan-jazzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=ubsan
 ```
 
 ## Advanced topics
@@ -241,3 +257,4 @@ A fuzzing engine launcher script receives configuration through the following en
 [msan-doc]: https://clang.llvm.org/docs/MemorySanitizer.html
 [msan-origin-tracking]: https://clang.llvm.org/docs/MemorySanitizer.html#origin-tracking
 [seed-corpus]: https://github.com/google/fuzzing/blob/master/docs/good-fuzz-target.md#seed-corpus
+[ubsan-doc]: https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html

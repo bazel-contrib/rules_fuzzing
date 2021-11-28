@@ -274,12 +274,14 @@ def java_fuzz_test(
             "@rules_fuzzing//fuzzing/private:use_oss_fuzz": "@rules_fuzzing_oss_fuzz//:jazzer_driver",
             "@rules_fuzzing//fuzzing/private:use_sanitizer_none": "@jazzer//driver:jazzer_driver",
             "@rules_fuzzing//fuzzing/private:use_sanitizer_asan": "@jazzer//driver:jazzer_driver_asan",
-        }, no_match_error = "Jazzer only supports the sanitizer settings \"none\" and \"asan\""),
+            "@rules_fuzzing//fuzzing/private:use_sanitizer_ubsan": "@jazzer//driver:jazzer_driver_ubsan",
+        }, no_match_error = "Jazzer only supports the sanitizer settings: \"none\", \"asan\", \"ubsan\""),
         driver_with_native = select({
             "@rules_fuzzing//fuzzing/private:use_oss_fuzz": "@rules_fuzzing_oss_fuzz//:jazzer_driver_with_sanitizer",
             "@rules_fuzzing//fuzzing/private:use_sanitizer_none": "@jazzer//driver:jazzer_driver",
             "@rules_fuzzing//fuzzing/private:use_sanitizer_asan": "@jazzer//driver:jazzer_driver_asan",
-        }, no_match_error = "Jazzer only supports the sanitizer settings \"none\" and \"asan\""),
+            "@rules_fuzzing//fuzzing/private:use_sanitizer_ubsan": "@jazzer//driver:jazzer_driver_ubsan",
+        }, no_match_error = "Jazzer only supports the sanitizer settings: \"none\", \"asan\", \"ubsan\""),
         sanitizer_options = select({
             "@rules_fuzzing//fuzzing/private:use_oss_fuzz": "@rules_fuzzing//fuzzing/private:oss_fuzz_jazzer_sanitizer_options.sh",
             "//conditions:default": "@rules_fuzzing//fuzzing/private:local_jazzer_sanitizer_options.sh",

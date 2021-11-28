@@ -45,6 +45,13 @@ config_setting(
 )
 
 config_setting(
+    name = "use_sanitizer_ubsan",
+    flag_values = {
+        "@rules_fuzzing//fuzzing:cc_engine_sanitizer": "ubsan",
+    },
+)
+
+config_setting(
     name = "use_oss_fuzz",
     flag_values = {
         "@rules_fuzzing//fuzzing:cc_engine": "@rules_fuzzing_oss_fuzz//:oss_fuzz_engine",
