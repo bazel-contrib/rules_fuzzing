@@ -38,6 +38,11 @@ build:msan-libfuzzer-repro --//fuzzing:cc_engine=//fuzzing/engines:libfuzzer
 build:msan-libfuzzer-repro --@rules_fuzzing//fuzzing:cc_engine_instrumentation=libfuzzer
 build:msan-libfuzzer-repro --@rules_fuzzing//fuzzing:cc_engine_sanitizer=msan-origin-tracking
 
+# LibFuzzer + UBSAN
+build:ubsan-libfuzzer --//fuzzing:cc_engine=//fuzzing/engines:libfuzzer
+build:ubsan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=libfuzzer
+build:ubsan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=ubsan
+
 # Honggfuzz + ASAN
 build:asan-honggfuzz --//fuzzing:cc_engine=//fuzzing/engines:honggfuzz
 build:asan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine_instrumentation=honggfuzz
@@ -47,6 +52,11 @@ build:asan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
 build:msan-honggfuzz --//fuzzing:cc_engine=//fuzzing/engines:honggfuzz
 build:msan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine_instrumentation=honggfuzz
 build:msan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine_sanitizer=msan
+
+# Honggfuzz + UBSAN
+build:ubsan-honggfuzz --//fuzzing:cc_engine=//fuzzing/engines:honggfuzz
+build:ubsan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine_instrumentation=honggfuzz
+build:ubsan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine_sanitizer=ubsan
 
 # Replay + ASAN
 build:asan-replay --//fuzzing:cc_engine=//fuzzing/engines:replay
@@ -70,3 +80,10 @@ build:asan-jazzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=jazzer
 build:asan-jazzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
 # Workaround for https://github.com/bazelbuild/bazel/issues/11128
 build:asan-jazzer --//fuzzing:cc_engine_sanitizer=asan
+
+# Jazzer + UBSAN
+build:ubsan-jazzer --//fuzzing:java_engine=//fuzzing/engines:jazzer
+build:ubsan-jazzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=jazzer
+build:ubsan-jazzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=ubsan
+# Workaround for https://github.com/bazelbuild/bazel/issues/11128
+build:ubsan-jazzer --//fuzzing:cc_engine_sanitizer=ubsan

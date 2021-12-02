@@ -126,3 +126,19 @@ cc_fuzz_test(
         "@bazel_tools//tools/cpp/runfiles",
     ],
 )
+
+cc_fuzz_test(
+    name = "ubsan_int_overflow_fuzz_test",
+    srcs = ["ubsan_int_overflow_fuzz_test.cc"],
+    tags = [
+        "no-oss-fuzz",
+    ],
+)
+
+cc_fuzz_test(
+    name = "ubsan_function_ptr_fuzz_test",
+    srcs = ["ubsan_function_ptr_fuzz_test.cc"],
+    tags = [
+        "no-oss-fuzz",
+    ],
+)

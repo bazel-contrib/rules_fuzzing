@@ -54,6 +54,9 @@ string_flag(
         # MSAN + origin tracking enabled.
         # Useful for debugging crash reproducers, 1.5-2x slower.
         "msan-origin-tracking",
+        # Undefined Behavior sanitizer (UBSAN).
+        # See https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
+        "ubsan",
     ],
     visibility = ["//visibility:public"],
 )

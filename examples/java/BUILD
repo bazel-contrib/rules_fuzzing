@@ -69,6 +69,14 @@ java_fuzz_test(
     ],
 )
 
+java_fuzz_test(
+    name = "NativeUbsanFuncPtrFuzzTest",
+    srcs = ["com/example/NativeUbsanFuncPtrFuzzTest.java"],
+    deps = [
+        ":native_ubsan_func_ptr",
+    ],
+)
+
 # A native library that interfaces with Java through the JNI.
 cc_binary(
     name = "native",
@@ -96,6 +104,18 @@ cc_binary(
     linkshared = True,
     deps = [
         "@bazel_tools//tools/cpp/runfiles",
+        "@bazel_tools//tools/jdk:jni",
+    ],
+)
+
+cc_binary(
+    name = "native_ubsan_func_ptr",
+    srcs = [
+        "com/example/NativeUbsanFuncPtrFuzzTest.cpp",
+        "com/example/NativeUbsanFuncPtrFuzzTest.h",
+    ],
+    linkshared = True,
+    deps = [
         "@bazel_tools//tools/jdk:jni",
     ],
 )
