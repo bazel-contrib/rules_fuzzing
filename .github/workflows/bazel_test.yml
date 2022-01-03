@@ -135,5 +135,4 @@ jobs:
         uses: actions/checkout@v2
       - name: Run regression tests on macOS
         run: |
-          bazel test --verbose_failures --test_output=all \
-              -- //examples/... -//examples/java:all
+          bazel test --verbose_failures --test_output=all //examples/...
