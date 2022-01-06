@@ -8,10 +8,9 @@ The rule library currently provides support for C++ and Java fuzz tests. Support
 
 ## Features at a glance
 
-* Multiple fuzzing engines out of the box:
-  * [libFuzzer][libfuzzer-doc]
-  * [Honggfuzz][honggfuzz-doc]
-  * Java fuzzing through [Jazzer][jazzer-doc]
+* C++ and Java fuzzing, with several fuzzing engines supported out of the box:
+  * C++: [libFuzzer][libfuzzer-doc] and [Honggfuzz][honggfuzz-doc]
+  * Java: [Jazzer][jazzer-doc]
 * Multiple sanitizer configurations:
   * [Address Sanitizer][asan-doc]
   * [Memory Sanitizer][msan-doc]
@@ -23,21 +22,29 @@ The rule library currently provides support for C++ and Java fuzz tests. Support
 * Out-of-the-box [OSS-Fuzz](https://github.com/google/oss-fuzz) support that [substantially simplifies][bazel-oss-fuzz] the project integration effort.
 * Regression testing support, useful in continuous integration.
 * Customization options:
-  * Defining additional fuzzing engines
+  * Defining additional fuzzing engines.
   * Customizing the behavior of the fuzz test rule.
 
 Contributions are welcome! Please read the [contribution guidelines](/docs/contributing.md).
 
 ## Getting started
 
-This section will walk you through the steps to set up fuzzing in your Bazel project and write your first fuzz test. We assume Bazel [is installed](https://docs.bazel.build/versions/4.0.0/install.html) on your machine.
+This section will walk you through the steps to set up fuzzing in your Bazel project and write your first fuzz test. We assume Bazel [is installed](https://docs.bazel.build/versions/main/install.html) on your machine.
 
 ### Prerequisites
 
-The fuzz tests require a Clang compiler. The libFuzzer engine requires at least Clang 6.0. In addition, the Honggfuzz engine requires the `libunwind-dev` and `libblocksruntime-dev` packages:
+The fuzzing rules have been tested on Bazel 4.0.0 or later. Check your Bazel version by running `bazel --version`.
+
+C++ fuzzing requires a Clang compiler. The libFuzzer engine requires at least Clang 6.0. In addition, the Honggfuzz engine requires the `libunwind-dev` and `libblocksruntime-dev` packages:
 
 ```sh
 $ sudo apt-get install clang libunwind-dev libblocksruntime-dev
+```
+
+Java fuzzing requires Clang and the LLD linker:
+
+```sh
+$ sudo apt-get install clang lld
 ```
 
 ### Configuring the WORKSPACE
