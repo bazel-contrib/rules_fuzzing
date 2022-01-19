@@ -181,7 +181,11 @@ def _native_library_files(ctx):
         # the JavaInfo of the target includes information about all transitive
         # native library dependencies.
         native_libraries_list = target_java_info.transitive_native_libraries.to_list()
-        return [lib.dynamic_library for lib in native_libraries_list]
+        return [
+            lib.dynamic_library
+            for lib in native_libraries_list
+            if lib.dynamic_library != None
+        ]
     else:
         # If precise information about transitive native libraries is not
         # available, fall back to an overapproximation that includes all
