@@ -132,7 +132,10 @@ exec "$(rlocation {driver})" \
         agent = runfile_path(ctx, ctx.file.agent),
         deploy_jar = runfile_path(ctx, ctx.file.target_deploy_jar),
         driver = runfile_path(ctx, driver),
-        native_dirs = ":".join(native_dirs),
+        # Jazzer requires the path separator to be escaped in --jvm_args.
+        # See:
+        # https://github.com/CodeIntelligenceTesting/jazzer#passing-jvm-arguments
+        native_dirs = "\\:".join(native_dirs),
         sanitizer_options = runfile_path(ctx, ctx.file.sanitizer_options),
     )
     ctx.actions.write(script, script_content, is_executable = True)
