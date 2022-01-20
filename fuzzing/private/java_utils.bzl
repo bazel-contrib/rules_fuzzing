@@ -132,7 +132,10 @@ exec "$(rlocation {driver})" \
         agent = runfile_path(ctx, ctx.file.agent),
         deploy_jar = runfile_path(ctx, ctx.file.target_deploy_jar),
         driver = runfile_path(ctx, driver),
-        native_dirs = ":".join(native_dirs),
+        # Jazzer requires the path separator to be escaped in --jvm_args.
+        # See:
+        # https://github.com/CodeIntelligenceTesting/jazzer#passing-jvm-arguments
+        native_dirs = "\\:".join(native_dirs),
         sanitizer_options = runfile_path(ctx, ctx.file.sanitizer_options),
     )
     ctx.actions.write(script, script_content, is_executable = True)
@@ -178,7 +181,11 @@ def _native_library_files(ctx):
         # the JavaInfo of the target includes information about all transitive
         # native library dependencies.
         native_libraries_list = target_java_info.transitive_native_libraries.to_list()
-        return [lib.dynamic_library for lib in native_libraries_list]
+        return [
+            lib.dynamic_library
+            for lib in native_libraries_list
+            if lib.dynamic_library != None
+        ]
     else:
         # If precise information about transitive native libraries is not
         # available, fall back to an overapproximation that includes all
