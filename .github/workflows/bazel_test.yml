@@ -14,7 +14,20 @@
 
 name: Bazel Test
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+env:
+  # Run daily CI checks against a very recent Bazel commit, but use the version
+  # pinned in .bazelrc for regular PR checks.
+  # This is a hacky workaround for GitHub Action's lack of inline conditionals.
+  # It is important that the value in the true case is not the empty string,
+  # see:
+  # https://github.com/actions/runner/issues/409#issuecomment-1013325196
+  USE_BAZEL_VERSION: ${{ github.event.schedule != '' && 'last_green' || '' }}
 
 jobs:
   unit_tests:
