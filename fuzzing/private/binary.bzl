@@ -45,7 +45,7 @@ Provider for storing information about a fuzz test binary.
     },
 )
 
-def _fuzzing_binary_transition_impl(settings, attr):
+def _fuzzing_binary_transition_impl(settings, _attr):
     opts = instrum_opts.make(
         copts = settings["//command_line_option:copt"],
         conlyopts = settings["//command_line_option:conlyopt"],

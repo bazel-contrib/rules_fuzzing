@@ -66,7 +66,7 @@ Rule for creating a script to run the fuzzing test.
             default = Label("//fuzzing/tools:launcher"),
             doc = "The launcher script to start the fuzzing test.",
             executable = True,
-            cfg = "host",
+            cfg = "exec",
         ),
         "binary": attr.label(
             executable = True,
@@ -112,7 +112,7 @@ specified in the srcs attribute.
             default = Label("//fuzzing/tools:make_corpus_dir"),
             doc = "The tool script to copy and rename the corpus.",
             executable = True,
-            cfg = "host",
+            cfg = "exec",
         ),
         "srcs": attr.label_list(
             doc = "The corpus files for the fuzzing test.",
@@ -151,7 +151,7 @@ Rule to validate the fuzzing dictionaries and output a merged dictionary.
             default = Label("//fuzzing/tools:validate_dict"),
             doc = "The tool script to validate and merge the dictionaries.",
             executable = True,
-            cfg = "host",
+            cfg = "exec",
         ),
         "dicts": attr.label_list(
             doc = "The fuzzing dictionaries.",
