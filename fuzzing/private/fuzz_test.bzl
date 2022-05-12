@@ -32,7 +32,9 @@ def fuzzing_decoration(
         dicts = None,
         instrument_binary = True,
         define_regression_test = True,
-        test_tags = None):
+        test_size = None,
+        test_tags = None,
+        test_timeout = None):
     """Generates the standard targets associated to a fuzz test.
 
     This macro can be used to define custom fuzz test rules in case the default
@@ -62,7 +64,9 @@ def fuzzing_decoration(
           default instrumentation mode does not work for your use case, please
           file a Github issue to discuss.
         define_regression_test: If true, generate a regression test rule.
+        test_size: The size of the fuzzing regression test.
         test_tags: Tags set on the fuzzing regression test.
+        test_timeout: The timeout for the fuzzing regression test.
     """
 
     # We tag all non-test targets as "manual" in order to optimize the build
@@ -122,7 +126,9 @@ def fuzzing_decoration(
         fuzzing_regression_test(
             name = name,
             binary = instrum_binary_name,
+            size = test_size,
             tags = test_tags,
+            timeout = test_timeout,
         )
 
     oss_fuzz_package(
@@ -138,7 +144,9 @@ def cc_fuzz_test(
         corpus = None,
         dicts = None,
         engine = "@rules_fuzzing//fuzzing:cc_engine",
+        size = None,
         tags = None,
+        timeout = None,
         **binary_kwargs):
     """Defines a C++ fuzz test and a few associated tools and metadata.
 
@@ -164,7 +172,11 @@ def cc_fuzz_test(
         corpus: A list containing corpus files.
         dicts: A list containing dictionaries.
         engine: A label pointing to the fuzzing engine to use.
-        tags: Tags set on the fuzzing regression test.
+        size: The size of the regression test. This does *not* affect fuzzing
+          itself. Takes the [common size values](https://bazel.build/reference/be/common-definitions#test.size).
+        tags: Tags set on the regression test.
+        timeout: The timeout for the regression test. This does *not* affect
+          fuzzing itself. Takes the [common timeout values](https://docs.bazel.build/versions/main/be/common-definitions.html#test.timeout).
         **binary_kwargs: Keyword arguments directly forwarded to the fuzz test
           binary rule.
     """
@@ -194,9 +206,11 @@ def cc_fuzz_test(
         engine = engine,
         corpus = corpus,
         dicts = dicts,
+        test_size = size,
         test_tags = (tags or []) + [
             "fuzz-test",
         ],
+        test_timeout = timeout,
     )
 
 def java_fuzz_test(
@@ -206,7 +220,9 @@ def java_fuzz_test(
         corpus = None,
         dicts = None,
         engine = "@rules_fuzzing//fuzzing:java_engine",
+        size = None,
         tags = None,
+        timeout = None,
         **binary_kwargs):
     """Defines a Java fuzz test and a few associated tools and metadata.
 
@@ -235,7 +251,11 @@ def java_fuzz_test(
         corpus: A list containing corpus files.
         dicts: A list containing dictionaries.
         engine: A label pointing to the fuzzing engine to use.
-        tags: Tags set on the fuzzing regression test.
+        size: The size of the regression test. This does *not* affect fuzzing
+          itself. Takes the [common size values](https://bazel.build/reference/be/common-definitions#test.size).
+        tags: Tags set on the regression test.
+        timeout: The timeout for the regression test. This does *not* affect
+          fuzzing itself. Takes the [common timeout values](https://docs.bazel.build/versions/main/be/common-definitions.html#test.timeout).
         **binary_kwargs: Keyword arguments directly forwarded to the fuzz test
           binary rule.
     """
@@ -316,7 +336,9 @@ def java_fuzz_test(
         engine = engine,
         corpus = corpus,
         dicts = dicts,
+        test_size = size,
         test_tags = (tags or []) + [
             "fuzz-test",
         ],
+        test_timeout = timeout,
     )

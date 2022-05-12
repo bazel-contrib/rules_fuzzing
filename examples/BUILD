@@ -21,6 +21,7 @@ load("//fuzzing:cc_defs.bzl", "cc_fuzz_test")
 
 cc_fuzz_test(
     name = "empty_fuzz_test",
+    size = "small",
     srcs = ["empty_fuzz_test.cc"],
 )
 
@@ -32,6 +33,7 @@ filegroup(
 # This target shows how to create a fuzz test target with corpus files.
 cc_fuzz_test(
     name = "empty_fuzz_test_with_corpus",
+    timeout = "short",
     srcs = ["empty_fuzz_test.cc"],
     corpus = [
         "corpus_0.txt",
