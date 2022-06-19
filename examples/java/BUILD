@@ -29,6 +29,7 @@ filegroup(
 
 java_fuzz_test(
     name = "EmptyFuzzTest",
+    size = "small",
     srcs = ["com/example/EmptyFuzzTest.java"],
     corpus = [
         "corpus_0.txt",
@@ -37,6 +38,7 @@ java_fuzz_test(
 
 java_fuzz_test(
     name = "FuzzTest",
+    timeout = "short",
     srcs = ["com/example/FuzzTest.java"],
     tags = [
         "no-oss-fuzz",
