@@ -18,6 +18,8 @@
 extern "C" int main(int argc, char** argv) __attribute__((weak));
 
 int main(int argc, char** argv) {
+  (void)argc;
+  (void)argv;
   fprintf(stderr, "*** ERROR *** This is a stub *** ERROR ***\n");
   fprintf(stderr,
           " * You have attempted to build a libFuzzer fuzz test, but did not "
