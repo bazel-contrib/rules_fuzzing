@@ -105,6 +105,19 @@ instrum_defaults = struct(
             "-fno-sanitize=fuzzer",
         ],
     ),
+    centipede = _make_opts(
+        copts = [
+            "-gline-tables-only",
+            "-fno-builtin",
+            "-fsanitize-coverage=trace-pc-guard,pc-table,trace-loads,trace-cmp",
+        ],
+        linkopts = [
+            # "-Wl,--warn-backrefs-exclude=*/centipede/*runner*.o",
+
+            # TODO(sbucur): Should be added to centipede/runner.cc linkopts.
+            "-lpthread",
+        ],
+    ),
     asan = _make_opts(
         copts = ["-fsanitize=address"],
         linkopts = ["-fsanitize=address"],

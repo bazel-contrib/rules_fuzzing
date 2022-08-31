@@ -35,6 +35,7 @@ instrum_configs = {
     "libfuzzer": instrum_defaults.libfuzzer,
     "jazzer": instrum_defaults.jazzer,
     "honggfuzz": instrum_defaults.honggfuzz,
+    "centipede": instrum_defaults.centipede,
     "oss-fuzz": oss_fuzz_opts,
 }
 

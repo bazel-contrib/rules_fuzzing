@@ -34,7 +34,10 @@ exec "{launcher}" \
     script_content = script_template.format(
         environment = "\n".join([
             "export %s='%s'" % (var, file.short_path)
-            for var, file in binary_info.engine_info.launcher_environment.items()
+            for var, file in binary_info.engine_info.launcher_environment_files.items()
+        ] + [
+            "export %s='%s'" % (var, value)
+            for var, value in binary_info.engine_info.launcher_environment_vars.items()
         ]),
         launcher = ctx.executable._launcher.short_path,
         binary_path = ctx.executable.binary.short_path,

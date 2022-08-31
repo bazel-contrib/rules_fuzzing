@@ -14,6 +14,8 @@
 
 """The implementation of the {cc, java}_fuzzing_engine rules."""
 
+load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
+
 FuzzingEngineInfo = provider(
     doc = """
 Provider for storing the language-independent part of the specification of a fuzzing engine.
@@ -22,7 +24,8 @@ Provider for storing the language-independent part of the specification of a fuz
         "display_name": "A string representing the human-readable name of the fuzzing engine.",
         "launcher": "A file representing the shell script that launches the fuzz target.",
         "launcher_runfiles": "The runfiles needed by the launcher script on the fuzzing engine side, such as helper tools and their data dependencies.",
-        "launcher_environment": "A dictionary from environment variables to files used by the launcher script.",
+        "launcher_environment_files": "A dictionary from environment variables to files used by the launcher script.",
+        "launcher_environment_vars": "A dictionary from environment variables to values used by the launcher script.",
     },
 )
 
@@ -32,22 +35,31 @@ def _make_fuzzing_engine_info(ctx):
 
     launcher_runfiles = ctx.runfiles(files = [ctx.file.launcher])
     env_vars = {}
+    env_files = {}
     for data_label, data_env_var in ctx.attr.launcher_data.items():
-        data_files = data_label.files.to_list()
-        if data_env_var:
-            if data_env_var in env_vars:
-                fail("Multiple data dependencies map to variable '%s'." % data_env_var)
-            if len(data_files) != 1:
-                fail("Data dependency for variable '%s' doesn't map to exactly one file." % data_env_var)
-            env_vars[data_env_var] = data_files[0]
-        launcher_runfiles = launcher_runfiles.merge(ctx.runfiles(files = data_files))
-        launcher_runfiles = launcher_runfiles.merge(data_label[DefaultInfo].default_runfiles)
+        if data_env_var in env_vars or data_env_var in env_files:
+            fail("Multiple data dependencies map to variable '%s'." % data_env_var)
+
+        # We assume data dependencies are either build setting value, or targets representing exactly one file.
+        if BuildSettingInfo in data_label:
+            if not data_env_var:
+                fail("Build setting '%s' must map to an environment variable" % data_label)
+            env_vars[data_env_var] = data_label[BuildSettingInfo].value
+        else:
+            data_files = data_label.files.to_list()
+            if data_env_var:
+                if len(data_files) != 1:
+                    fail("Data dependency for variable '%s' doesn't map to exactly one file." % data_env_var)
+                env_files[data_env_var] = data_files[0]
+            launcher_runfiles = launcher_runfiles.merge(ctx.runfiles(files = data_files))
+            launcher_runfiles = launcher_runfiles.merge(data_label[DefaultInfo].default_runfiles)
 
     return FuzzingEngineInfo(
         display_name = ctx.attr.display_name,
         launcher = ctx.file.launcher,
         launcher_runfiles = launcher_runfiles,
-        launcher_environment = env_vars,
+        launcher_environment_files = env_files,
+        launcher_environment_vars = env_vars,
     )
 
 def _cc_fuzzing_engine_impl(ctx):

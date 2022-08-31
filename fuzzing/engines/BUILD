@@ -15,6 +15,7 @@
 load("//fuzzing:cc_defs.bzl", "cc_fuzzing_engine")
 load("//fuzzing:java_defs.bzl", "java_fuzzing_engine")
 load("@rules_cc//cc:defs.bzl", "cc_library")
+load("@bazel_skylib//rules:common_settings.bzl", "string_flag")
 
 # libFuzzer specification.
 ##########################
@@ -48,6 +49,27 @@ cc_fuzzing_engine(
         "@honggfuzz//:honggfuzz": "HONGGFUZZ_PATH",
     },
     library = "@honggfuzz//:honggfuzz_engine",
+    visibility = ["//visibility:public"],
+)
+
+# Centipede specification.
+##########################
+
+string_flag(
+    name = "llvm_symbolizer",
+    build_setting_default = "llvm-symbolizer",
+    visibility = ["//visibility:public"],
+)
+
+cc_fuzzing_engine(
+    name = "centipede",
+    display_name = "Centipede",
+    launcher = "centipede_launcher.sh",
+    launcher_data = {
+        "@centipede//:centipede": "CENTIPEDE_PATH",
+        ":llvm_symbolizer": "LLVM_SYMBOLIZER_PATH",
+    },
+    library = "@centipede//:fuzz_target_runner",
     visibility = ["//visibility:public"],
 )
 
