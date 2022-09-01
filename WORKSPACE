@@ -38,9 +38,9 @@ jazzer_init()
 
 http_archive(
     name = "re2",
-    sha256 = "8903cc66c9d34c72e2bc91722288ebc7e3ec37787ecfef44d204b2d6281954d7",
-    strip_prefix = "re2-2020-11-01",
-    url = "https://github.com/google/re2/archive/2020-11-01.tar.gz",
+    sha256 = "f89c61410a072e5cbcf8c27e3a778da7d6fd2f2b5b1445cd4f4508bee946ab0f",
+    strip_prefix = "re2-2022-06-01",
+    url = "https://github.com/google/re2/archive/2022-06-01.tar.gz",
 )
 
 http_archive(
