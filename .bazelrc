@@ -87,3 +87,15 @@ build:ubsan-jazzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=jazzer
 build:ubsan-jazzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=ubsan
 # Workaround for https://github.com/bazelbuild/bazel/issues/11128
 build:ubsan-jazzer --//fuzzing:cc_engine_sanitizer=ubsan
+
+# Coverage with Replay (C/C++ only)
+coverage --//fuzzing:cc_engine=//fuzzing/engines:replay
+coverage --@rules_fuzzing//fuzzing:cc_engine_instrumentation=none
+coverage --@rules_fuzzing//fuzzing:cc_engine_sanitizer=none
+coverage --instrument_test_targets
+coverage --action_env=BAZEL_USE_LLVM_NATIVE_COVERAGE=1
+coverage --action_env=GCOV=llvm-profdata-10
+coverage --action_env=BAZEL_LLVM_COV=llvm-cov-10
+coverage --combined_report=lcov
+coverage --experimental_use_llvm_covmap
+coverage --experimental_generate_llvm_lcov

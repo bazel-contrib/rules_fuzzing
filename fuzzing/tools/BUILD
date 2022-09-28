@@ -47,6 +47,25 @@ py_binary(
     ],
 )
 
+sh_binary(
+    name = "noop_lcov_merger",
+    srcs = ["noop_lcov_merger.sh"],
+)
+
+config_setting(
+    name = "is_collecting_code_coverage",
+    values = {"collect_code_coverage": "true"},
+)
+
+alias(
+    name = "lcov_merger",
+    actual = select({
+        ":is_collecting_code_coverage": "@bazel_tools//tools/test:lcov_merger",
+        "//conditions:default": ":noop_lcov_merger",
+    }),
+    visibility = ["//visibility:public"],
+)
+
 # Libraries.
 ############
 

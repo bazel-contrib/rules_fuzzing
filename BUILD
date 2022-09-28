@@ -15,4 +15,5 @@
 config_setting(
     name = "clang",
     flag_values = {"@bazel_tools//tools/cpp:compiler": "clang"},
+    visibility = ["//:__subpackages__"],
 )
