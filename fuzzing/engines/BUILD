@@ -29,7 +29,6 @@ cc_fuzzing_engine(
 
 cc_library(
     name = "libfuzzer_stub",
-    srcs = ["libfuzzer_stub.cc"],
     linkopts = [
         # We add the linker options to the library, so only the fuzz test binary
         # is linked with libfuzzer.
