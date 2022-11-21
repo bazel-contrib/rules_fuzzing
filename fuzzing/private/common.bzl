@@ -94,6 +94,9 @@ def _fuzzing_corpus_impl(ctx):
         outputs = [corpus_dir],
         arguments = [cp_args, corpus_list_file_args],
         executable = ctx.executable._corpus_tool,
+        # Use the default rather than an empty environment so that PATH is
+        # set and python can be found.
+        use_default_shell_env = True,
     )
 
     return [DefaultInfo(
@@ -132,6 +135,9 @@ def _fuzzing_dictionary_impl(ctx):
         outputs = [output_dict],
         arguments = [args],
         executable = ctx.executable._validation_tool,
+        # Use the default rather than an empty environment so that PATH is
+        # set and python can be found.
+        use_default_shell_env = True,
     )
 
     runfiles = ctx.runfiles(files = [output_dict])
