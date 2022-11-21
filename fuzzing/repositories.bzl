@@ -14,19 +14,17 @@
 
 """Contains the external dependencies."""
 
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_jar")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 load("//fuzzing/private/oss_fuzz:repository.bzl", "oss_fuzz_repository")
 
-def rules_fuzzing_dependencies(oss_fuzz = True, honggfuzz = True, jazzer = False):
+def rules_fuzzing_dependencies(oss_fuzz = True, honggfuzz = True, jazzer = True):
     """Instantiates the dependencies of the fuzzing rules.
 
     Args:
       oss_fuzz: Include OSS-Fuzz dependencies.
       honggfuzz: Include Honggfuzz dependencies.
-      jazzer: Include Jazzer repository. Instantiating all Jazzer dependencies
-        additionally requires invoking jazzer_dependencies() in
-        @jazzer//:repositories.bzl and jazzer_init() in @jazzer//:init.bzl.
+      jazzer: Include Jazzer dependencies.
     """
 
     maybe(
@@ -80,9 +78,15 @@ def rules_fuzzing_dependencies(oss_fuzz = True, honggfuzz = True, jazzer = False
 
     if jazzer:
         maybe(
-            http_archive,
-            name = "jazzer",
-            sha256 = "c55889c235501498ca7436f57974ea59f0dc43e9effd64e13ce0c535265b8224",
-            strip_prefix = "jazzer-4434041f088365acf2a561e678bf9d61a7aa5dff",
-            url = "https://github.com/CodeIntelligenceTesting/jazzer/archive/4434041f088365acf2a561e678bf9d61a7aa5dff.zip",
+            http_jar,
+            name = "maven_jazzer",
+            sha256 = "ccf5379c8c296bdcf0dda9b2253a7a34ce0726aa69c00a09bc66c38146167a30",
+            url = "https://repo1.maven.org/maven2/com/code-intelligence/jazzer/0.17.1/jazzer-0.17.1.jar",
+        )
+
+        maybe(
+            http_jar,
+            name = "maven_jazzer_api",
+            sha256 = "b73cbbbda3b9eba14b3060d706f173e59c3512fb84fd0a4f3b0906541232d6e4",
+            url = "https://repo1.maven.org/maven2/com/code-intelligence/jazzer-api/0.17.1/jazzer-api-0.17.1.jar",
         )

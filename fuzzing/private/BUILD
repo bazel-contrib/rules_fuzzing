@@ -29,28 +29,6 @@ exports_files([
     "util.bzl",
 ])
 
-# Config settings needed for prebuilt engines.
-config_setting(
-    name = "use_sanitizer_none",
-    flag_values = {
-        "@rules_fuzzing//fuzzing:cc_engine_sanitizer": "none",
-    },
-)
-
-config_setting(
-    name = "use_sanitizer_asan",
-    flag_values = {
-        "@rules_fuzzing//fuzzing:cc_engine_sanitizer": "asan",
-    },
-)
-
-config_setting(
-    name = "use_sanitizer_ubsan",
-    flag_values = {
-        "@rules_fuzzing//fuzzing:cc_engine_sanitizer": "ubsan",
-    },
-)
-
 config_setting(
     name = "use_oss_fuzz",
     flag_values = {

@@ -20,3 +20,5 @@ oss_fuzz_opts = instrum_opts.make(
     conlyopts = [%{conlyopts}],
     cxxopts = [%{cxxopts}],
 )
+
+native_library_sanitizer = "%{sanitizer}"

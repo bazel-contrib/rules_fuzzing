@@ -68,6 +68,14 @@ java_fuzzing_engine(
     name = "jazzer",
     display_name = "Jazzer",
     launcher = "jazzer_launcher.sh",
-    library = "@jazzer//agent:jazzer_api_compile_only",
+    library = ":jazzer_stub",
     visibility = ["//visibility:public"],
+)
+
+java_library(
+    name = "jazzer_stub",
+    exports = [
+        "@maven_jazzer//jar",
+        "@maven_jazzer_api//jar",
+    ],
 )

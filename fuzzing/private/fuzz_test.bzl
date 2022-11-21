@@ -213,6 +213,7 @@ def cc_fuzz_test(
         test_timeout = timeout,
     )
 
+# buildifier: disable=list-append
 def java_fuzz_test(
         name,
         srcs = None,
@@ -264,6 +265,8 @@ def java_fuzz_test(
     # this target directly. Instead, the binary should be built through the
     # instrumented configuration.
     raw_target_name = name + "_target_"
+    metadata_binary_name = name + "_metadata_"
+    metadata_deploy_jar_name = metadata_binary_name + "_deploy.jar"
 
     # Determine a value for target_class heuristically using the same rules as
     # those used by Bazel internally for main_class.
@@ -277,62 +280,66 @@ def java_fuzz_test(
             name = name,
         ))
     target_class_manifest_line = "Jazzer-Fuzz-Target-Class: %s" % target_class
-    binary_kwargs.setdefault("deps", [])
 
-    # Use += rather than append to allow users to pass in select() expressions for
+    native.java_binary(
+        name = metadata_binary_name,
+        deploy_manifest_lines = [target_class_manifest_line],
+        tags = ["manual"],
+    )
+
+    # use += rather than append to allow users to pass in select() expressions for
     # deps, which only support concatenation with +.
-    # Workaround for https://github.com/bazelbuild/bazel/issues/14157.
-    # buildifier: disable=list-append
-    binary_kwargs["deps"] += [engine]
-    binary_kwargs.setdefault("deploy_manifest_lines", [])
+    # workaround for https://github.com/bazelbuild/bazel/issues/14157.
+    if srcs:
+        binary_kwargs.setdefault("deps", [])
+        binary_kwargs["deps"] += [engine, metadata_deploy_jar_name]
+    else:
+        binary_kwargs.setdefault("runtime_deps", [])
+        binary_kwargs["runtime_deps"] += [engine, metadata_deploy_jar_name]
 
-    # buildifier: disable=list-append
-    binary_kwargs["deploy_manifest_lines"] += [target_class_manifest_line]
+    binary_kwargs.setdefault("jvm_flags", [])
+    binary_kwargs["jvm_flags"] = [
+        # Ensures that full stack traces are emitted for findings even in highly
+        # optimized code.
+        "-XX:-OmitStackTraceInFastThrow",
+        # Optimized for throughput rather than latency.
+        "-XX:+UseParallelGC",
+        # Ignore CriticalJNINatives if not available (JDK 18+).
+        "-XX:+IgnoreUnrecognizedVMOptions",
+        # Improves performance of Jazzer's native compare instrumentation.
+        "-XX:+CriticalJNINatives",
+    ] + binary_kwargs["jvm_flags"]
 
     # tags is not configurable and can thus use append.
     binary_kwargs.setdefault("tags", []).append("manual")
     native.java_binary(
         name = raw_target_name,
         srcs = srcs,
-        create_executable = False,
+        main_class = "com.code_intelligence.jazzer.Jazzer",
+        args = [
+            "--target_class=" + target_class,
+        ],
         **binary_kwargs
     )
 
     raw_binary_name = name + "_raw_"
     jazzer_fuzz_binary(
         name = raw_binary_name,
-        agent = select({
-            "@rules_fuzzing//fuzzing/private:use_oss_fuzz": "@rules_fuzzing_oss_fuzz//:jazzer_agent_deploy.jar",
-            "//conditions:default": "@jazzer//agent:jazzer_agent_deploy.jar",
-        }),
-        # Since the choice of sanitizer is explicit for local fuzzing, we also
-        # let it apply to projects with no native dependencies.
-        driver_java_only = select({
-            "@rules_fuzzing//fuzzing/private:use_oss_fuzz": "@rules_fuzzing_oss_fuzz//:jazzer_driver",
-            "@rules_fuzzing//fuzzing/private:use_sanitizer_none": "@jazzer//driver:jazzer_driver",
-            "@rules_fuzzing//fuzzing/private:use_sanitizer_asan": "@jazzer//driver:jazzer_driver_asan",
-            "@rules_fuzzing//fuzzing/private:use_sanitizer_ubsan": "@jazzer//driver:jazzer_driver_ubsan",
-        }, no_match_error = "Jazzer only supports the sanitizer settings: \"none\", \"asan\", \"ubsan\""),
-        driver_with_native = select({
-            "@rules_fuzzing//fuzzing/private:use_oss_fuzz": "@rules_fuzzing_oss_fuzz//:jazzer_driver_with_sanitizer",
-            "@rules_fuzzing//fuzzing/private:use_sanitizer_none": "@jazzer//driver:jazzer_driver",
-            "@rules_fuzzing//fuzzing/private:use_sanitizer_asan": "@jazzer//driver:jazzer_driver_asan",
-            "@rules_fuzzing//fuzzing/private:use_sanitizer_ubsan": "@jazzer//driver:jazzer_driver_ubsan",
-        }, no_match_error = "Jazzer only supports the sanitizer settings: \"none\", \"asan\", \"ubsan\""),
         sanitizer_options = select({
-            "@rules_fuzzing//fuzzing/private:use_oss_fuzz": "@rules_fuzzing//fuzzing/private:oss_fuzz_jazzer_sanitizer_options.sh",
-            "//conditions:default": "@rules_fuzzing//fuzzing/private:local_jazzer_sanitizer_options.sh",
+            "@rules_fuzzing//fuzzing/private:use_oss_fuzz": Label("//fuzzing/private:oss_fuzz_jazzer_sanitizer_options.sh"),
+            "//conditions:default": Label("//fuzzing/private:local_jazzer_sanitizer_options.sh"),
+        }),
+        target = raw_target_name,
+        use_oss_fuzz = select({
+            "@rules_fuzzing//fuzzing/private:use_oss_fuzz": True,
+            "//conditions:default": False,
         }),
         tags = ["manual"],
-        target = raw_target_name,
-        target_deploy_jar = raw_target_name + "_deploy.jar",
     )
 
     fuzzing_decoration(
         name = name,
         raw_binary = raw_binary_name,
-        # jazzer_fuzz_binary already instrumented the native dependencies.
-        instrument_binary = False,
         engine = engine,
         corpus = corpus,
         dicts = dicts,

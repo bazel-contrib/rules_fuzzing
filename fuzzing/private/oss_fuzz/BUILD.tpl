@@ -13,6 +13,7 @@
 # limitations under the License.
 
 load("@rules_fuzzing//fuzzing:cc_defs.bzl", "cc_fuzzing_engine")
+load("@rules_fuzzing//fuzzing:java_defs.bzl", "java_fuzzing_engine")
 load("@rules_cc//cc:defs.bzl", "cc_library")
 
 cc_fuzzing_engine(
@@ -29,6 +30,18 @@ cc_library(
     linkopts = [%{stub_linkopts}],
 )
 
-exports_files([
-    "instrum.bzl", %{exported_files}
-])
+java_fuzzing_engine(
+    name = "oss_fuzz_java_engine",
+    display_name = "OSS-Fuzz (Java)",
+    launcher = "oss_fuzz_launcher.sh",
+    library = ":oss_fuzz_java_stub",
+    visibility = ["//visibility:public"],
+)
+
+java_import(
+    name = "oss_fuzz_java_stub",
+    jars = [%{jazzer_jars}],
+)
+
+
+exports_files(["instrum.bzl"])
