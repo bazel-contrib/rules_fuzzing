@@ -32,7 +32,7 @@ env:
 jobs:
   unit_tests:
     name: All unit tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     timeout-minutes: 30
     steps:
       - name: Checkout repository
@@ -51,7 +51,7 @@ jobs:
           bazel test --test_tag_filters=-fuzz-test --build_tests_only --config=asan //...
   fuzzer_run_tests:
     name: Brief fuzz test runs (C++)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     timeout-minutes: 30
     strategy:
       matrix:
@@ -75,7 +75,7 @@ jobs:
           bazel run ${{ matrix.target }} --config=${{ matrix.config }} -- --clean --timeout_secs=5
   regression_tests:
     name: Regression tests (C++)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     timeout-minutes: 30
     strategy:
       matrix:
@@ -96,7 +96,7 @@ jobs:
               //examples:all
   fuzzer_run_tests_java:
     name: Brief fuzz test runs (Java)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     timeout-minutes: 30
     strategy:
       matrix:
@@ -112,7 +112,7 @@ jobs:
           bazel run ${{ matrix.target }} --config=${{ matrix.config }} -- --clean --timeout_secs=5
   regression_tests_java:
     name: Regression tests (Java)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     timeout-minutes: 30
     strategy:
       matrix:
@@ -129,7 +129,7 @@ jobs:
               //examples/java/...
   regression_tests_gcc:
     name: Regression tests (GCC)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     timeout-minutes: 30
     steps:
       - name: Checkout repository
