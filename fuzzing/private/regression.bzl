@@ -46,7 +46,14 @@ exec '{engine_launcher}'
     runfiles = ctx.runfiles()
     runfiles = runfiles.merge(ctx.attr.binary[DefaultInfo].default_runfiles)
     runfiles = runfiles.merge(binary_info.engine_info.launcher_runfiles)
-    return [DefaultInfo(executable = script, runfiles = runfiles)]
+
+    return [
+        DefaultInfo(executable = script, runfiles = runfiles),
+        coverage_common.instrumented_files_info(
+            ctx,
+            dependency_attributes = ["binary"],
+        ),
+    ]
 
 fuzzing_regression_test = rule(
     implementation = _fuzzing_regression_test_impl,
@@ -60,6 +67,24 @@ Executes a fuzz test on its seed corpus.
             providers = [FuzzingBinaryInfo],
             cfg = "target",
             mandatory = True,
+        ),
+        "_lcov_merger": attr.label(
+            # As of Bazel 5.1.0, the following would work instead of the alias used below:
+            # default = configuration_field(fragment = "coverage", name = "output_generator")
+            default = "//fuzzing/tools:lcov_merger",
+            executable = True,
+            # This needs to be built in the target configuration so that the alias it points to can
+            # select on the value of --collect_code_coverage, which is disabled in the exec
+            # configuration. Since target and exec platform usually coincide for test execution,
+            # this should not cause any problems.
+            cfg = "target",
+        ),
+        "_collect_cc_coverage": attr.label(
+            # This target is just a shell script and can thus be depended on unconditionally
+            # without any effect on build times.
+            default = "@bazel_tools//tools/test:collect_cc_coverage",
+            executable = True,
+            cfg = "target",
         ),
     },
     test = True,
