@@ -123,14 +123,6 @@ instrum_defaults = struct(
     ubsan = _make_opts(
         copts = [
             "-fsanitize=undefined",
-            # Enable most of the checks enabled in OSS-Fuzz:
-            # https://github.com/google/oss-fuzz/blob/a896ee749769bd236299041461784f483649fe80/infra/base-images/base-builder/Dockerfile#L77
-            # The only exception is unsigned-integer-overflow, which is not UB,
-            # but enabled in OSS-Fuzz in silent mode as an additional coverage
-            # signal. We do not do this here as it would introduce additional
-            # complexity (setting UBSAN_OPTIONS) to the local mode.
-            "-fsanitize=array-bounds,bool,builtin,enum,float-divide-by-zero,function,integer-divide-by-zero,null,object-size,return,returns-nonnull-attribute,shift,signed-integer-overflow,unreachable,vla-bound,vptr",
-            "-fno-sanitize-recover=all",
         ],
         linkopts = [
             "-fsanitize=undefined",
