@@ -16,6 +16,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <string>
 
 #include "tools/cpp/runfiles/runfiles.h"
@@ -25,7 +26,7 @@ Java_com_example_NativeRunfileFuzzTest_loadCppRunfile(JNIEnv *env,
                                                           jobject o) {
   using ::bazel::tools::cpp::runfiles::Runfiles;
   std::string error;
-  Runfiles *runfiles = Runfiles::Create("", &error);
+  auto runfiles = std::unique_ptr<Runfiles>(Runfiles::Create("", &error));
   if (runfiles == nullptr) {
     std::cerr << error;
     abort();
