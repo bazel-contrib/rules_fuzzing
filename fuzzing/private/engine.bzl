@@ -37,9 +37,12 @@ def _make_fuzzing_engine_info(ctx):
         if data_env_var:
             if data_env_var in env_vars:
                 fail("Multiple data dependencies map to variable '%s'." % data_env_var)
-            if len(data_files) != 1:
-                fail("Data dependency for variable '%s' doesn't map to exactly one file." % data_env_var)
-            env_vars[data_env_var] = data_files[0]
+            if len(data_files) == 1:
+                env_vars[data_env_var] = data_files[0]
+            elif data_label.files_to_run.executable:
+                env_vars[data_env_var] = data_label.files_to_run.executable
+            else:
+                fail("Data dependency for variable '%s' is not a single file or executable." % data_env_var)
         launcher_runfiles = launcher_runfiles.merge(ctx.runfiles(files = data_files))
         launcher_runfiles = launcher_runfiles.merge(data_label[DefaultInfo].default_runfiles)
 

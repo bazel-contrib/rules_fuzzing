@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     https://www.apache.org/licenses/LICENSE-2.0
+#    https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,13 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-if (( ! FUZZER_IS_REGRESSION )); then
-    echo "NOTE: Non-regression mode is not supported by the replay engine."
-fi
+# Lint as: python3
+"""
+Gets the realpath of a input path.
 
-command_line=("$("${REALPATH_PATH}" ${FUZZER_BINARY})")
-if [[ -n "${FUZZER_SEED_CORPUS_DIR}" ]]; then
-    command_line+=("${FUZZER_SEED_CORPUS_DIR}")
-fi
+This is a portable replacement of `readlink -f`/`realpath`.
+"""
 
-exec "${command_line[@]}" "$@"
+import os, sys
+
+if len(sys.argv) < 2:
+    print("Need an argument for the input path.", file=sys.stderr)
+    sys.exit(1)
+print(os.path.realpath(sys.argv[1]))
