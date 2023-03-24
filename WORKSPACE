@@ -26,6 +26,10 @@ load("@rules_fuzzing//fuzzing:init.bzl", "rules_fuzzing_init")
 
 rules_fuzzing_init()
 
+load("@fuzzing_py_deps//:requirements.bzl", "install_deps")
+
+install_deps()
+
 load("@jazzer//:repositories.bzl", "jazzer_dependencies")
 
 jazzer_dependencies()
