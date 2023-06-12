@@ -316,9 +316,6 @@ def java_fuzz_test(
         name = raw_target_name,
         srcs = srcs,
         main_class = "com.code_intelligence.jazzer.Jazzer",
-        args = [
-            "--target_class=" + target_class,
-        ],
         **binary_kwargs
     )
 
@@ -328,6 +325,11 @@ def java_fuzz_test(
         sanitizer_options = select({
             "@rules_fuzzing//fuzzing/private:use_oss_fuzz": Label("//fuzzing/private:oss_fuzz_jazzer_sanitizer_options.sh"),
             "//conditions:default": Label("//fuzzing/private:local_jazzer_sanitizer_options.sh"),
+        }),
+        sanitizer_runtime = select({
+            "@rules_fuzzing//fuzzing/private:use_asan": Label("//fuzzing/private/runtime:asan"),
+            "@rules_fuzzing//fuzzing/private:use_ubsan": Label("//fuzzing/private/runtime:ubsan"),
+            "//conditions:default": None,
         }),
         target = raw_target_name,
         use_oss_fuzz = select({

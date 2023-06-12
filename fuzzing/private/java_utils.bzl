@@ -118,6 +118,9 @@ fi
 
     script_format_part = """
 source "$(rlocation {sanitizer_options})"
+if [[ ! -z "{sanitizer_runtime}" ]]; then
+  export JAZZER_NATIVE_SANITIZERS_DIR=$(dirname "$(rlocation "{sanitizer_runtime}")")
+fi
 exec "$(rlocation {target})" {sanitizer_flags} "$@"
 """
 
@@ -125,6 +128,7 @@ exec "$(rlocation {target})" {sanitizer_flags} "$@"
         target = runfile_path(ctx, target),
         sanitizer_flags = " ".join(sanitizer_flags),
         sanitizer_options = runfile_path(ctx, ctx.file.sanitizer_options),
+        sanitizer_runtime = runfile_path(ctx, ctx.file.sanitizer_runtime) if ctx.file.sanitizer_runtime else "",
     )
     ctx.actions.write(script, script_content, is_executable = True)
     return script
@@ -147,12 +151,17 @@ def _jazzer_fuzz_binary_impl(ctx):
     if not sanitizer_flags and ctx.attr.target[0][JavaInfo].transitive_native_libraries:
         sanitizer_flags.append("--native")
 
-    runfiles = ctx.runfiles()
-
     # Used by the wrapper script created in _jazzer_fuzz_binary_script.
-    runfiles = runfiles.merge(ctx.attr._bash_runfiles_library[DefaultInfo].default_runfiles)
-    runfiles = runfiles.merge(ctx.attr.target[0][DefaultInfo].default_runfiles)
-    runfiles = runfiles.merge(ctx.runfiles([ctx.file.sanitizer_options]))
+    transitive_runfiles = [
+        ctx.attr.target[0][DefaultInfo].default_runfiles,
+        ctx.attr._bash_runfiles_library[DefaultInfo].default_runfiles,
+        ctx.runfiles(
+            [
+                ctx.file.sanitizer_options,
+            ] + ([ctx.file.sanitizer_runtime] if ctx.file.sanitizer_runtime else []),
+        ),
+    ]
+    runfiles = ctx.runfiles().merge_all(transitive_runfiles)
 
     target = ctx.attr.target[0][DefaultInfo].files_to_run.executable
     script = _jazzer_fuzz_binary_script(ctx, target, sanitizer_flags)
@@ -168,6 +177,10 @@ Rule that creates a binary that invokes Jazzer on the specified target.
             doc = "A shell script that can export environment variables with " +
                   "sanitizer options.",
             allow_single_file = [".sh"],
+        ),
+        "sanitizer_runtime": attr.label(
+            doc = "The sanitizer runtime to preload.",
+            allow_single_file = [".dylib", ".so"],
         ),
         "target": attr.label(
             doc = "The fuzz target.",

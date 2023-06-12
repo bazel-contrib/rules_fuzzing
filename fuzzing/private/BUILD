@@ -33,10 +33,24 @@ config_setting(
     name = "use_oss_fuzz",
     flag_values = {
         "@rules_fuzzing//fuzzing:cc_engine": "@rules_fuzzing_oss_fuzz//:oss_fuzz_engine",
-        # This is required to make the setting an unambiguous specialization of
-        # the use_sanitizer_* settings.
-        "@rules_fuzzing//fuzzing:cc_engine_sanitizer": "none",
     },
+    visibility = ["//visibility:public"],
+)
+
+config_setting(
+    name = "use_asan",
+    flag_values = {
+        "@rules_fuzzing//fuzzing:cc_engine_sanitizer": "asan",
+    },
+    visibility = ["//visibility:public"],
+)
+
+config_setting(
+    name = "use_ubsan",
+    flag_values = {
+        "@rules_fuzzing//fuzzing:cc_engine_sanitizer": "ubsan",
+    },
+    visibility = ["//visibility:public"],
 )
 
 exports_files([
