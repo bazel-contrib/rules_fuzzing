@@ -109,7 +109,10 @@ def _oss_fuzz_repository(repository_ctx):
         {
             "%{conlyopts}": _to_list_repr(build_params.instrum_conlyopts),
             "%{cxxopts}": _to_list_repr(build_params.instrum_cxxopts),
-            "%{sanitizer}": sanitizer or "",
+            "%{sanitizer}": {
+                "address": "asan",
+                "undefined": "ubsan",
+            }.get(sanitizer, "none"),
         },
     )
     repository_ctx.file(

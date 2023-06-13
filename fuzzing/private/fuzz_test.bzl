@@ -14,6 +14,7 @@
 
 """The implementation of the {cc, java}_fuzz_test rules."""
 
+load("@rules_fuzzing_oss_fuzz//:instrum.bzl", "native_library_sanitizer")
 load("@rules_cc//cc:defs.bzl", "cc_binary")
 
 # FIXME: Including this leads to a Stardoc error since defs.bzl is not visible. As a workaround, use native.java_binary.
@@ -213,6 +214,14 @@ def cc_fuzz_test(
         test_timeout = timeout,
     )
 
+_ASAN_RUNTIME = Label("//fuzzing/private/runtime:asan")
+_UBSAN_RUNTIME = Label("//fuzzing/private/runtime:ubsan")
+_RUNTIME_BY_NAME = {
+    "asan": _ASAN_RUNTIME,
+    "ubsan": _UBSAN_RUNTIME,
+    "none": None,
+}
+
 # buildifier: disable=list-append
 def java_fuzz_test(
         name,
@@ -322,20 +331,23 @@ def java_fuzz_test(
     raw_binary_name = name + "_raw_"
     jazzer_fuzz_binary(
         name = raw_binary_name,
+        sanitizer = select({
+            "@rules_fuzzing//fuzzing/private:is_oss_fuzz": native_library_sanitizer,
+            "@rules_fuzzing//fuzzing/private:use_asan": "asan",
+            "@rules_fuzzing//fuzzing/private:use_ubsan": "ubsan",
+            "//conditions:default": "none",
+        }),
         sanitizer_options = select({
-            "@rules_fuzzing//fuzzing/private:use_oss_fuzz": Label("//fuzzing/private:oss_fuzz_jazzer_sanitizer_options.sh"),
+            "@rules_fuzzing//fuzzing/private:is_oss_fuzz": Label("//fuzzing/private:oss_fuzz_jazzer_sanitizer_options.sh"),
             "//conditions:default": Label("//fuzzing/private:local_jazzer_sanitizer_options.sh"),
         }),
         sanitizer_runtime = select({
-            "@rules_fuzzing//fuzzing/private:use_asan": Label("//fuzzing/private/runtime:asan"),
-            "@rules_fuzzing//fuzzing/private:use_ubsan": Label("//fuzzing/private/runtime:ubsan"),
+            "@rules_fuzzing//fuzzing/private:is_oss_fuzz": _RUNTIME_BY_NAME[native_library_sanitizer],
+            "@rules_fuzzing//fuzzing/private:use_asan": _ASAN_RUNTIME,
+            "@rules_fuzzing//fuzzing/private:use_ubsan": _UBSAN_RUNTIME,
             "//conditions:default": None,
         }),
         target = raw_target_name,
-        use_oss_fuzz = select({
-            "@rules_fuzzing//fuzzing/private:use_oss_fuzz": True,
-            "//conditions:default": False,
-        }),
         tags = ["manual"],
     )
 

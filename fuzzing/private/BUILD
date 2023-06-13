@@ -30,7 +30,7 @@ exports_files([
 ])
 
 config_setting(
-    name = "use_oss_fuzz",
+    name = "is_oss_fuzz",
     flag_values = {
         "@rules_fuzzing//fuzzing:cc_engine": "@rules_fuzzing_oss_fuzz//:oss_fuzz_engine",
     },

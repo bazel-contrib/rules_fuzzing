@@ -16,8 +16,6 @@
 
 load("//fuzzing/private:binary.bzl", "fuzzing_binary_transition")
 load("//fuzzing/private:util.bzl", "runfile_path")
-load("@bazel_skylib//rules:common_settings.bzl", "BuildSettingInfo")
-load("@rules_fuzzing_oss_fuzz//:instrum.bzl", "native_library_sanitizer")
 
 # A Starlark reimplementation of a part of Bazel's JavaCommon#determinePrimaryClass.
 def determine_primary_class(srcs, name):
@@ -134,20 +132,10 @@ exec "$(rlocation {target})" {sanitizer_flags} "$@"
     return script
 
 def _jazzer_fuzz_binary_impl(ctx):
-    sanitizer = ctx.attr._cc_sanitizer[BuildSettingInfo].value
-    if ctx.attr.use_oss_fuzz:
-        if native_library_sanitizer == "address":
-            sanitizer = "asan"
-        elif native_library_sanitizer == "undefined":
-            sanitizer = "ubsan"
-        else:
-            fail("Jazzer only supports the OSS-Fuzz sanitizers \"address\" and \"undefined\", got: " + native_library_sanitizer)
-
+    sanitizer = ctx.attr.sanitizer
     sanitizer_flags = []
     if sanitizer in ["asan", "ubsan"]:
         sanitizer_flags.append("--" + sanitizer)
-    elif sanitizer != "none":
-        fail("Jazzer only supports the sanitizer settings \"none\", \"asan\", \"ubsan\", got: " + sanitizer)
     if not sanitizer_flags and ctx.attr.target[0][JavaInfo].transitive_native_libraries:
         sanitizer_flags.append("--native")
 
@@ -173,6 +161,9 @@ jazzer_fuzz_binary = rule(
 Rule that creates a binary that invokes Jazzer on the specified target.
 """,
     attrs = {
+        "sanitizer": attr.string(
+            values = ["asan", "ubsan", "none"],
+        ),
         "sanitizer_options": attr.label(
             doc = "A shell script that can export environment variables with " +
                   "sanitizer options.",
@@ -194,9 +185,6 @@ Rule that creates a binary that invokes Jazzer on the specified target.
         ),
         "_bash_runfiles_library": attr.label(
             default = "@bazel_tools//tools/bash/runfiles",
-        ),
-        "_cc_sanitizer": attr.label(
-            default = "//fuzzing:cc_engine_sanitizer",
         ),
     },
     executable = True,
