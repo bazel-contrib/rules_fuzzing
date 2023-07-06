@@ -72,10 +72,12 @@ java_fuzzing_engine(
     visibility = ["//visibility:public"],
 )
 
+# This wrapper target is needed as Jazzer consists of two separate Java targets,
+# but java_fuzzing_engine's library attribute only accepts a single target.
 java_library(
     name = "jazzer_stub",
     exports = [
-        "@maven_jazzer//jar",
-        "@maven_jazzer_api//jar",
+        "@rules_fuzzing_jazzer//jar",
+        "@rules_fuzzing_jazzer_api//jar",
     ],
 )

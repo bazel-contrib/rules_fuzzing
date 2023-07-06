@@ -15,13 +15,15 @@
 """Macro that extracts clang runtime libraries from the current cc_toolchain."""
 
 def clang_runtime_lib(*, name, basenames, **kwargs):
-    """Provide the first available clang runtime library with any of the given basenames."""
+    """Provide the first available clang runtime library with any of the given basenames as output.
+
+    The basename of the output file is always the first of the given basenames.
+    """
     native.genrule(
         name = name,
         outs = basenames[:1],
         cmd = "\n".join(["""cp -f "$$($(CC) --print-file-name {})" $@ 2> /dev/null || true""".format(basename) for basename in basenames]),
         toolchains = ["@bazel_tools//tools/cpp:current_cc_toolchain"],
         tools = ["@bazel_tools//tools/cpp:current_cc_toolchain"],
-        tags = ["manual"],
         **kwargs
     )

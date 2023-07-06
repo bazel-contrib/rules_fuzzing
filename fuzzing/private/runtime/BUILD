@@ -26,11 +26,13 @@ clang_runtime_lib(
         # LLVM 14 and earlier
         "libclang_rt.asan-x86_64.so",
     ],
+    tags = ["manual"],
 )
 
 clang_runtime_lib(
     name = "asan_macos",
     basenames = ["libclang_rt.asan_osx_dynamic.dylib"],
+    tags = ["manual"],
 )
 
 clang_runtime_lib(
@@ -41,9 +43,11 @@ clang_runtime_lib(
         # LLVM 14 and earlier
         "libclang_rt.ubsan_standalone-x86_64.so",
     ],
+    tags = ["manual"],
 )
 
 clang_runtime_lib(
     name = "ubsan_macos",
     basenames = ["libclang_rt.ubsan_osx_dynamic.dylib"],
+    tags = ["manual"],
 )
