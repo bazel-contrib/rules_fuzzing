@@ -68,6 +68,16 @@ java_fuzzing_engine(
     name = "jazzer",
     display_name = "Jazzer",
     launcher = "jazzer_launcher.sh",
-    library = "@jazzer//agent:jazzer_api_compile_only",
+    library = ":jazzer_stub",
     visibility = ["//visibility:public"],
+)
+
+# This wrapper target is needed as Jazzer consists of two separate Java targets,
+# but java_fuzzing_engine's library attribute only accepts a single target.
+java_library(
+    name = "jazzer_stub",
+    exports = [
+        "@rules_fuzzing_jazzer//jar",
+        "@rules_fuzzing_jazzer_api//jar",
+    ],
 )

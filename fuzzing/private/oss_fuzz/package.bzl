@@ -34,8 +34,9 @@ def _oss_fuzz_package_impl(ctx):
         # the runfiles here. This deviates from the usual Bazel runfiles layout,
         # but is required since ClusterFuzz executes fuzz targets in
         # subdirectories and would thus duplicate every C++ fuzz target.
+        # We also exclude the local JDK as OSS-Fuzz provides one.
         for runfile in binary_runfiles
-        if runfile != binary_info.binary_file
+        if runfile != binary_info.binary_file and not runfile_path(ctx, runfile).startswith("local_jdk/")
     ])
     ctx.actions.write(runfiles_manifest, runfiles_manifest_content, False)
     archive_inputs.append(runfiles_manifest)

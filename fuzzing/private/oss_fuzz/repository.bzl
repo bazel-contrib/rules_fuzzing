@@ -70,22 +70,13 @@ def _extract_build_params(
         instrum_cxxopts = instrum_cxxopts,
     )
 
-# The filenames under which the various Jazzer binaries are available in $OUT
-# and in @rules_fuzzing_oss_fuzz.
-_JAZZER_BINARIES = [
-    "jazzer_agent_deploy.jar",
-    "jazzer_driver",
-    "jazzer_driver_with_sanitizer",
-]
+_JAZZER_JAR = "jazzer_agent_deploy.jar"
 
-def _export_jazzer(repository_ctx, out_path):
+def _link_jazzer_jars(repository_ctx, out_path):
     if out_path == None:
         return []
-    exported_files = []
-    for jazzer_binary in _JAZZER_BINARIES:
-        repository_ctx.symlink(out_path + "/" + jazzer_binary, jazzer_binary)
-        exported_files.append(jazzer_binary)
-    return exported_files
+    repository_ctx.symlink(out_path + "/" + _JAZZER_JAR, _JAZZER_JAR)
+    return [_JAZZER_JAR]
 
 def _oss_fuzz_repository(repository_ctx):
     environ = repository_ctx.os.environ
@@ -102,7 +93,6 @@ def _oss_fuzz_repository(repository_ctx):
         cflags.split(" "),
         cxxflags.split(" "),
     )
-    exported_files = _export_jazzer(repository_ctx, out_path)
 
     repository_ctx.template(
         "BUILD",
@@ -110,7 +100,7 @@ def _oss_fuzz_repository(repository_ctx):
         {
             "%{stub_srcs}": _to_list_repr(build_params.stub_srcs),
             "%{stub_linkopts}": _to_list_repr(build_params.stub_linkopts),
-            "%{exported_files}": _to_list_repr(exported_files),
+            "%{jazzer_jars}": _to_list_repr(_link_jazzer_jars(repository_ctx, out_path)),
         },
     )
     repository_ctx.template(
@@ -119,6 +109,10 @@ def _oss_fuzz_repository(repository_ctx):
         {
             "%{conlyopts}": _to_list_repr(build_params.instrum_conlyopts),
             "%{cxxopts}": _to_list_repr(build_params.instrum_cxxopts),
+            "%{sanitizer}": {
+                "address": "asan",
+                "undefined": "ubsan",
+            }.get(sanitizer, "none"),
         },
     )
     repository_ctx.file(

@@ -16,6 +16,9 @@
 build --action_env=CC=clang-10
 build --action_env=CXX=clang++-10
 
+# Workaround for https://github.com/bazelbuild/bazel/issues/3236
+build --sandbox_tmpfs_path=/tmp
+
 # Strict dependency check for C++ includes.
 build --features=layering_check
 
@@ -64,6 +67,7 @@ build:asan-replay --@rules_fuzzing//fuzzing:cc_engine_instrumentation=none
 build:asan-replay --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
 
 build:oss-fuzz --//fuzzing:cc_engine=@rules_fuzzing_oss_fuzz//:oss_fuzz_engine
+build:oss-fuzz --//fuzzing:java_engine=@rules_fuzzing_oss_fuzz//:oss_fuzz_java_engine
 build:oss-fuzz --@rules_fuzzing//fuzzing:cc_engine_instrumentation=oss-fuzz
 build:oss-fuzz --@rules_fuzzing//fuzzing:cc_engine_sanitizer=none
 
