@@ -45,4 +45,5 @@ sanitizer_configs = {
     "msan": instrum_defaults.msan,
     "msan-origin-tracking": instrum_defaults.msan_origin_tracking,
     "ubsan": instrum_defaults.ubsan,
+    "asan-ubsan": instrum_opts.merge(instrum_defaults.asan, instrum_defaults.ubsan),
 }

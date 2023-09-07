@@ -46,6 +46,11 @@ build:ubsan-libfuzzer --//fuzzing:cc_engine=//fuzzing/engines:libfuzzer
 build:ubsan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=libfuzzer
 build:ubsan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=ubsan
 
+# LibFuzzer + ASAN + UBSAN
+build:asan-ubsan-libfuzzer --//fuzzing:cc_engine=//fuzzing/engines:libfuzzer
+build:asan-ubsan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=libfuzzer
+build:asan-ubsan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan-ubsan
+
 # Honggfuzz + ASAN
 build:asan-honggfuzz --//fuzzing:cc_engine=//fuzzing/engines:honggfuzz
 build:asan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine_instrumentation=honggfuzz
@@ -65,6 +70,11 @@ build:ubsan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine_sanitizer=ubsan
 build:asan-replay --//fuzzing:cc_engine=//fuzzing/engines:replay
 build:asan-replay --@rules_fuzzing//fuzzing:cc_engine_instrumentation=none
 build:asan-replay --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
+
+# Replay + ASAN + UBSAN
+build:asan-ubsan-replay --//fuzzing:cc_engine=//fuzzing/engines:replay
+build:asan-ubsan-replay --@rules_fuzzing//fuzzing:cc_engine_instrumentation=none
+build:asan-ubsan-replay --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan-ubsan
 
 build:oss-fuzz --//fuzzing:cc_engine=@rules_fuzzing_oss_fuzz//:oss_fuzz_engine
 build:oss-fuzz --//fuzzing:java_engine=@rules_fuzzing_oss_fuzz//:oss_fuzz_java_engine
