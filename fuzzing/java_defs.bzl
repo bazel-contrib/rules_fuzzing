@@ -19,14 +19,14 @@ change without notice.
 """
 
 load(
-    "//fuzzing/private:fuzz_test.bzl",
-    _fuzzing_decoration = "fuzzing_decoration",
-    _java_fuzz_test = "java_fuzz_test",
-)
-load(
     "//fuzzing/private:engine.bzl",
     _FuzzingEngineInfo = "FuzzingEngineInfo",
     _java_fuzzing_engine = "java_fuzzing_engine",
+)
+load(
+    "//fuzzing/private:fuzz_test.bzl",
+    _fuzzing_decoration = "fuzzing_decoration",
+    _java_fuzz_test = "java_fuzz_test",
 )
 
 java_fuzz_test = _java_fuzz_test

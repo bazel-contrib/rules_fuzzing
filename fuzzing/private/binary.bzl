@@ -15,16 +15,16 @@
 """Defines a rule for creating an instrumented fuzzing executable."""
 
 load("@bazel_skylib//lib:dicts.bzl", "dicts")
+load(
+    "//fuzzing:instrum_opts.bzl",
+    "instrum_configs",
+    "sanitizer_configs",
+)
 load("//fuzzing/private:engine.bzl", "FuzzingEngineInfo")
 load(
     "//fuzzing/private:instrum_opts.bzl",
     "instrum_defaults",
     "instrum_opts",
-)
-load(
-    "//fuzzing:instrum_opts.bzl",
-    "instrum_configs",
-    "sanitizer_configs",
 )
 
 FuzzingBinaryInfo = provider(
