@@ -14,10 +14,10 @@
 
 """Unit tests for the fuzzing engine rules and providers."""
 
-load("@bazel_skylib//lib:unittest.bzl", "analysistest", "asserts")
 load("@bazel_skylib//lib:new_sets.bzl", "sets")
-load(":engine.bzl", "FuzzingEngineInfo", "cc_fuzzing_engine")
+load("@bazel_skylib//lib:unittest.bzl", "analysistest", "asserts")
 load("@rules_cc//cc:defs.bzl", "cc_library")
+load(":engine.bzl", "FuzzingEngineInfo", "cc_fuzzing_engine")
 load(":util.bzl", "generate_file")
 
 # Shared fixtures.

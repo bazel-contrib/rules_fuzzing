@@ -14,8 +14,8 @@
 
 """Dependency initialization utilities."""
 
-load("@rules_python//python:pip.bzl", "pip_parse")
 load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
+load("@rules_python//python:pip.bzl", "pip_parse")
 
 def rules_fuzzing_init():
     pip_parse(
