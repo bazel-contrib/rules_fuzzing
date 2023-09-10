@@ -57,6 +57,8 @@ string_flag(
         # Undefined Behavior sanitizer (UBSAN).
         # See https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
         "ubsan",
+        # ASAN + UBSAN in a single build.
+        "asan-ubsan",
     ],
     visibility = ["//visibility:public"],
 )

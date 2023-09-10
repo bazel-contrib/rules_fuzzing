@@ -186,6 +186,11 @@ build:ubsan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine=@rules_fuzzing//fuzzin
 build:ubsan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=libfuzzer
 build:ubsan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=ubsan
 
+# --config=asan-ubsan-libfuzzer
+build:asan-ubsan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine=@rules_fuzzing//fuzzing/engines:libfuzzer
+build:asan-ubsan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=libfuzzer
+build:asan-ubsan-libfuzzer --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan-ubsan
+
 # --config=asan-honggfuzz
 build:asan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine=@rules_fuzzing//fuzzing/engines:honggfuzz
 build:asan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine_instrumentation=honggfuzz
@@ -205,6 +210,11 @@ build:ubsan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine_sanitizer=ubsan
 build:asan-replay --@rules_fuzzing//fuzzing:cc_engine=@rules_fuzzing//fuzzing/engines:replay
 build:asan-replay --@rules_fuzzing//fuzzing:cc_engine_instrumentation=none
 build:asan-replay --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
+
+# --config=asan-ubsan-replay
+build:asan-ubsan-replay --@rules_fuzzing//fuzzing:cc_engine=@rules_fuzzing//fuzzing/engines:replay
+build:asan-ubsan-replay --@rules_fuzzing//fuzzing:cc_engine_instrumentation=none
+build:asan-ubsan-replay --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan-ubsan
 
 # --config=jazzer (Jazzer without sanitizer - Java only)
 build:jazzer --@rules_fuzzing//fuzzing:java_engine=@rules_fuzzing//fuzzing/engines:jazzer
