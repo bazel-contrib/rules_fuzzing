@@ -292,6 +292,7 @@ def java_fuzz_test(
 
     native.java_binary(
         name = metadata_binary_name,
+        create_executable = False,
         deploy_manifest_lines = [target_class_manifest_line],
         tags = ["manual"],
     )
