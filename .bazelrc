@@ -16,6 +16,9 @@
 build --action_env=CC=clang-10
 build --action_env=CXX=clang++-10
 
+# Needed for abseil-cpp until https://github.com/bazelbuild/bazel/pull/19794 is released.
+build --cxxopt=-std=c++14
+
 # Workaround for https://github.com/bazelbuild/bazel/issues/3236
 build --sandbox_tmpfs_path=/tmp
 
