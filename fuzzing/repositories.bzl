@@ -39,9 +39,9 @@ def rules_fuzzing_dependencies(oss_fuzz = True, honggfuzz = True, jazzer = True)
     maybe(
         http_archive,
         name = "rules_python",
-        sha256 = "a644da969b6824cc87f8fe7b18101a8a6c57da5db39caa6566ec6109f37d2141",
-        strip_prefix = "rules_python-0.20.0",
-        url = "https://github.com/bazelbuild/rules_python/archive/refs/tags/0.20.0.tar.gz",
+        sha256 = "9d04041ac92a0985e344235f5d946f71ac543f1b1565f2cdbc9a2aaee8adf55b",
+        strip_prefix = "rules_python-0.26.0",
+        url = "https://github.com/bazelbuild/rules_python/releases/download/0.26.0/rules_python-0.26.0.tar.gz",
     )
     maybe(
         http_archive,
