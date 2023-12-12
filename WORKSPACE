@@ -45,9 +45,9 @@ http_archive(
 
 http_archive(
     name = "com_google_googletest",
-    sha256 = "763e20249e76417bed7ebc44aa85fedf5fbac6f9fb6d30bddb628ab07ebf04f5",
-    strip_prefix = "googletest-389cb68b87193358358ae87cc56d257fd0d80189",
-    urls = ["https://github.com/google/googletest/archive/389cb68b87193358358ae87cc56d257fd0d80189.zip"],
+    integrity = "sha256-itWYxzrXluDYKAsILOvYKmMNc+c808cAV5OKZQG7pdc=",
+    strip_prefix = "googletest-1.14.0",
+    urls = ["https://github.com/google/googletest/archive/refs/tags/v1.14.0.tar.gz"],
 )
 
 # Stardoc dependencies.
