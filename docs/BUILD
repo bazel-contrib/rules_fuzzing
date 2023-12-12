@@ -22,18 +22,6 @@ load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@io_bazel_stardoc//stardoc:stardoc.bzl", "stardoc")
 
 bzl_library(
-    name = "rules_cc",
-    srcs = [
-        "@rules_cc//cc:action_names.bzl",
-        "@rules_cc//cc:defs.bzl",
-        "@rules_cc//cc:find_cc_toolchain.bzl",
-        "@rules_cc//cc/private/rules_impl:cc_flags_supplier.bzl",
-        "@rules_cc//cc/private/rules_impl:cc_flags_supplier_lib.bzl",
-        "@rules_cc//cc/private/rules_impl:compiler_flag.bzl",
-    ],
-)
-
-bzl_library(
     name = "bazel_skylib",
     deps = [
         "@bazel_skylib//lib:dicts",
@@ -61,7 +49,6 @@ bzl_library(
     ],
     deps = [
         ":bazel_skylib",
-        ":rules_cc",
     ],
 )
 

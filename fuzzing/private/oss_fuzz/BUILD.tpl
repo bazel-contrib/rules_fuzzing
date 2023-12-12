@@ -14,7 +14,6 @@
 
 load("@rules_fuzzing//fuzzing:cc_defs.bzl", "cc_fuzzing_engine")
 load("@rules_fuzzing//fuzzing:java_defs.bzl", "java_fuzzing_engine")
-load("@rules_cc//cc:defs.bzl", "cc_library")
 
 cc_fuzzing_engine(
     name = "oss_fuzz_engine",

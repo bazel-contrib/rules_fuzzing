@@ -14,12 +14,8 @@
 
 """The implementation of the {cc, java}_fuzz_test rules."""
 
-load("@rules_cc//cc:defs.bzl", "cc_binary")
 load("@rules_fuzzing_oss_fuzz//:instrum.bzl", "native_library_sanitizer")
 load("//fuzzing/private:binary.bzl", "fuzzing_binary", "fuzzing_binary_uninstrumented")
-
-# FIXME: Including this leads to a Stardoc error since defs.bzl is not visible. As a workaround, use native.java_binary.
-#load("@rules_java//java:defs.bzl", "java_binary")
 load("//fuzzing/private:common.bzl", "fuzzing_corpus", "fuzzing_dictionary", "fuzzing_launcher")
 load("//fuzzing/private:java_utils.bzl", "determine_primary_class", "jazzer_fuzz_binary")
 load("//fuzzing/private:regression.bzl", "fuzzing_regression_test")
@@ -196,7 +192,7 @@ def cc_fuzz_test(
 
     # tags is not configurable and can thus use append.
     binary_kwargs.setdefault("tags", []).append("manual")
-    cc_binary(
+    native.cc_binary(
         name = raw_binary_name,
         **binary_kwargs
     )
