@@ -12,6 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# rules_fuzzing is not yet compatible with Bzlmod.
+# Use the experimental version of the flag for Bazel 5 compatibility.
+common --noexperimental_enable_bzlmod
+
 # Force the use of Clang for all builds.
 build --repo_env=CC=clang
 
