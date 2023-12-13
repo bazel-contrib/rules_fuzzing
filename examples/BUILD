@@ -38,8 +38,7 @@ cc_fuzz_test(
     corpus = [
         "corpus_0.txt",
         ":corpus_filegroup",
-        "test_corpus_dir",
-    ],
+    ] + glob(["test_corpus_dir/**"]),
 )
 
 # This target shows how to create a fuzz test target with dictionaries.
@@ -49,8 +48,7 @@ cc_fuzz_test(
     corpus = [
         "corpus_0.txt",
         ":corpus_filegroup",
-        "test_corpus_dir",
-    ],
+    ] + glob(["test_corpus_dir/**"]),
     dicts = [
         "dictionaries/valid_part1.dict",
         "dictionaries/valid_part2.dict",

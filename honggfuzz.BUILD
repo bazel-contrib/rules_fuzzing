@@ -22,8 +22,6 @@
 # Disable the layering check for including the external headers.
 package(features = ["-layering_check"])
 
-load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
-
 HF_ARCH = select({
     "@platforms//os:osx": ["-D_HF_ARCH_DARWIN"],
     "//conditions:default": ["-D_HF_ARCH_LINUX"],
