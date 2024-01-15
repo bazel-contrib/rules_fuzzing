@@ -1,0 +1,5 @@
+bazel_dep(name = "rules_fuzzing")
+local_path_override(
+    module_name = "rules_fuzzing",
+    path = "../..",
+)

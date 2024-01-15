@@ -169,3 +169,23 @@ jobs:
       - name: Run regression tests on macOS
         run: |
           bazel test --verbose_failures --test_output=all //examples/...
+  bzlmod_examples_libfuzzer:
+    name: Bzlmod examples (libFuzzer)
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Run regression tests on macOS
+        run: |
+          cd examples/bzlmod
+          bazel test --verbose_failures --test_output=all --@rules_fuzzing//fuzzing:cc_engine=@rules_fuzzing//fuzzing/engines:libfuzzer //...
+  bzlmod_examples_replay:
+    name: Bzlmod examples (replay)
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Run regression tests on macOS
+        run: |
+          cd examples/bzlmod
+          bazel test --verbose_failures --test_output=all --@rules_fuzzing//fuzzing:cc_engine=@rules_fuzzing//fuzzing/engines:replay //...

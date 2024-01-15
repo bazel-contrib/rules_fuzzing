@@ -18,7 +18,7 @@ Unit tests for dict_validator.py
 """
 
 import unittest
-from dict_validation import validate_line
+from fuzzing.tools.dict_validation import validate_line
 
 
 class DictValidatorTest(unittest.TestCase):
