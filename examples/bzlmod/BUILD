@@ -12,6 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Intentionally left blank as all deps are defined in MODULE.bazel.
-# By having this file exist, Bazel will not add the repositories defined in the implicit
-# "WORKSPACE suffix" with --enable_bzlmod.
+load("@rules_fuzzing//fuzzing:cc_defs.bzl", "cc_fuzz_test")
+load("@rules_fuzzing//fuzzing:java_defs.bzl", "java_fuzz_test")
+
+cc_fuzz_test(
+    name = "cc_fuzz_test",
+    srcs = ["cc_fuzz_test.cc"],
+)
+
+java_fuzz_test(
+    name = "java_fuzz_test",
+    srcs = ["JavaFuzzTest.java"],
+    target_class = "com.example.JavaFuzzTest",
+)
