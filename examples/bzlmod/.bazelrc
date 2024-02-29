@@ -13,5 +13,5 @@
 # limitations under the License.
 
 common --repo_env=CC=clang
-common --@rules_fuzzing//fuzzing:cc_engine_instrumentation=libfuzzer
-common --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
+common --@my_rules_fuzzing//fuzzing:cc_engine_instrumentation=libfuzzer
+common --@my_rules_fuzzing//fuzzing:cc_engine_sanitizer=asan

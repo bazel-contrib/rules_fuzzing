@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("@rules_fuzzing//fuzzing:cc_defs.bzl", "cc_fuzz_test")
-load("@rules_fuzzing//fuzzing:java_defs.bzl", "java_fuzz_test")
+load("@my_rules_fuzzing//fuzzing:cc_defs.bzl", "cc_fuzz_test")
+load("@my_rules_fuzzing//fuzzing:java_defs.bzl", "java_fuzz_test")
 
 cc_fuzz_test(
     name = "cc_fuzz_test",
