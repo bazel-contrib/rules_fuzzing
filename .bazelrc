@@ -22,7 +22,7 @@ build --cxxopt=-std=c++14
 build --sandbox_tmpfs_path=/tmp
 
 # Strict dependency check for C++ includes.
-build:ci --features=layering_check
+build --features=layering_check
 
 # Target Java 11 to squelch warnings about Java 8 being deprecated.
 build --java_language_version=11
