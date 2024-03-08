@@ -25,6 +25,7 @@ def _oss_fuzz_package_impl(ctx):
     archive_inputs = binary_runfiles
 
     runfiles_manifest = ctx.actions.declare_file(ctx.label.name + "_runfiles")
+    local_jdk_prefix = Label("@local_jdk//:unused").workspace_name + "/"
     runfiles_manifest_content = "".join([
         "{runfile_path} {real_path}\n".format(
             real_path = runfile.path,
@@ -36,7 +37,7 @@ def _oss_fuzz_package_impl(ctx):
         # subdirectories and would thus duplicate every C++ fuzz target.
         # We also exclude the local JDK as OSS-Fuzz provides one.
         for runfile in binary_runfiles
-        if runfile != binary_info.binary_file and not runfile_path(ctx, runfile).startswith("local_jdk/")
+        if runfile != binary_info.binary_file and not runfile_path(ctx, runfile).startswith(local_jdk_prefix)
     ])
     ctx.actions.write(runfiles_manifest, runfiles_manifest_content, False)
     archive_inputs.append(runfiles_manifest)
