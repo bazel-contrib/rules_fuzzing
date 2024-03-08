@@ -22,6 +22,7 @@ bazel_dep(name = "abseil-cpp", version = "20240116.1", repo_name = "com_google_a
 bazel_dep(name = "bazel_skylib", version = "1.5.0")
 bazel_dep(name = "platforms", version = "0.0.8")
 bazel_dep(name = "rules_python", version = "0.28.0")
+bazel_dep(name = "rules_java", version = "6.5.2")
 
 bazel_dep(name = "stardoc", version = "0.6.2", dev_dependency = True, repo_name = "io_bazel_stardoc")
 bazel_dep(name = "googletest", version = "1.14.0.bcr.1", dev_dependency = True, repo_name = "com_google_googletest")
@@ -69,3 +70,6 @@ pip = use_extension("@rules_python//python/extensions:pip.bzl", "pip")
 ]
 
 use_repo(pip, fuzzing_py_deps = "rules_fuzzing_py_deps")
+
+java_toolchains = use_extension("@rules_java//java:extensions.bzl", "toolchains")
+use_repo(java_toolchains, "local_jdk")
