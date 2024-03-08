@@ -41,6 +41,8 @@ def _oss_fuzz_package_impl(ctx):
     ctx.actions.write(runfiles_manifest, runfiles_manifest_content, False)
     archive_inputs.append(runfiles_manifest)
 
+    if binary_info.binary_repo_mapping_manifest:
+        archive_inputs.append(binary_info.binary_repo_mapping_manifest)
     if binary_info.corpus_dir:
         archive_inputs.append(binary_info.corpus_dir)
     if binary_info.dictionary_file:
@@ -61,6 +63,9 @@ def _oss_fuzz_package_impl(ctx):
               mkdir -p "$(dirname "$STAGING_DIR/{binary_runfiles_dir}/$link")"
               ln -s "$(pwd)/$target" "$STAGING_DIR/{binary_runfiles_dir}/$link"
             done <{runfiles_manifest_path}
+            if [[ -n "{binary_repo_mapping_manifest}" ]]; then
+                ln -s "$(pwd)/{binary_repo_mapping_manifest}" "$STAGING_DIR/{binary_runfiles_dir}/_repo_mapping"
+            fi
             if [[ -n "{corpus_dir}" ]]; then
                 pushd "{corpus_dir}" >/dev/null
                 zip --quiet -r "$STAGING_DIR/{base_name}_seed_corpus.zip" ./*
@@ -77,6 +82,7 @@ def _oss_fuzz_package_impl(ctx):
             base_name = ctx.attr.base_name,
             binary_path = binary_info.binary_file.path,
             binary_runfiles_dir = ctx.attr.base_name + ".runfiles",
+            binary_repo_mapping_manifest = binary_info.binary_repo_mapping_manifest.path if binary_info.binary_repo_mapping_manifest else "",
             corpus_dir = binary_info.corpus_dir.path if binary_info.corpus_dir else "",
             dictionary_path = binary_info.dictionary_file.path if binary_info.dictionary_file else "",
             options_path = binary_info.options_file.path if binary_info.options_file else "",
