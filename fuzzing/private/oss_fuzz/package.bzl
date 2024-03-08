@@ -65,6 +65,7 @@ def _oss_fuzz_package_impl(ctx):
               ln -s "$(pwd)/$target" "$STAGING_DIR/{binary_runfiles_dir}/$link"
             done <{runfiles_manifest_path}
             if [[ -n "{binary_repo_mapping_manifest}" ]]; then
+                mkdir -p "$STAGING_DIR/{binary_runfiles_dir}"
                 ln -s "$(pwd)/{binary_repo_mapping_manifest}" "$STAGING_DIR/{binary_runfiles_dir}/_repo_mapping"
             fi
             if [[ -n "{corpus_dir}" ]]; then
