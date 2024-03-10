@@ -1,0 +1,12 @@
+{
+  "homepage": "https://github.com/bazelbuild/rules_fuzzing",
+  "maintainers": [
+    {
+      "email": "281483+stefanbucur@users.noreply.github.com",
+      "github": "stefanbucur",
+      "name": "Stefan Bucur"
+    }
+  ],
+  "versions": [],
+  "yanked_versions": {}
+}
