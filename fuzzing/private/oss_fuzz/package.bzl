@@ -25,6 +25,7 @@ def _oss_fuzz_package_impl(ctx):
     archive_inputs = binary_runfiles
 
     runfiles_manifest = ctx.actions.declare_file(ctx.label.name + "_runfiles")
+    local_jdk_prefix = Label("@local_jdk//:unused").workspace_name + "/"
     runfiles_manifest_content = "".join([
         "{runfile_path} {real_path}\n".format(
             real_path = runfile.path,
@@ -36,11 +37,13 @@ def _oss_fuzz_package_impl(ctx):
         # subdirectories and would thus duplicate every C++ fuzz target.
         # We also exclude the local JDK as OSS-Fuzz provides one.
         for runfile in binary_runfiles
-        if runfile != binary_info.binary_file and not runfile_path(ctx, runfile).startswith("local_jdk/")
+        if runfile != binary_info.binary_file and not runfile_path(ctx, runfile).startswith(local_jdk_prefix)
     ])
     ctx.actions.write(runfiles_manifest, runfiles_manifest_content, False)
     archive_inputs.append(runfiles_manifest)
 
+    if binary_info.binary_repo_mapping_manifest:
+        archive_inputs.append(binary_info.binary_repo_mapping_manifest)
     if binary_info.corpus_dir:
         archive_inputs.append(binary_info.corpus_dir)
     if binary_info.dictionary_file:
@@ -61,6 +64,10 @@ def _oss_fuzz_package_impl(ctx):
               mkdir -p "$(dirname "$STAGING_DIR/{binary_runfiles_dir}/$link")"
               ln -s "$(pwd)/$target" "$STAGING_DIR/{binary_runfiles_dir}/$link"
             done <{runfiles_manifest_path}
+            if [[ -n "{binary_repo_mapping_manifest}" ]]; then
+                mkdir -p "$STAGING_DIR/{binary_runfiles_dir}"
+                ln -s "$(pwd)/{binary_repo_mapping_manifest}" "$STAGING_DIR/{binary_runfiles_dir}/_repo_mapping"
+            fi
             if [[ -n "{corpus_dir}" ]]; then
                 pushd "{corpus_dir}" >/dev/null
                 zip --quiet -r "$STAGING_DIR/{base_name}_seed_corpus.zip" ./*
@@ -77,6 +84,7 @@ def _oss_fuzz_package_impl(ctx):
             base_name = ctx.attr.base_name,
             binary_path = binary_info.binary_file.path,
             binary_runfiles_dir = ctx.attr.base_name + ".runfiles",
+            binary_repo_mapping_manifest = binary_info.binary_repo_mapping_manifest.path if binary_info.binary_repo_mapping_manifest else "",
             corpus_dir = binary_info.corpus_dir.path if binary_info.corpus_dir else "",
             dictionary_path = binary_info.dictionary_file.path if binary_info.dictionary_file else "",
             options_path = binary_info.options_file.path if binary_info.options_file else "",

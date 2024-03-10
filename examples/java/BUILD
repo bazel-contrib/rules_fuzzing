@@ -16,7 +16,6 @@
 # serve as regression tests. Targets that are expected to crash or hang are
 # disabled in the OSS-Fuzz integration using the "no-oss-fuzz" tag.
 
-load("@rules_cc//cc:defs.bzl", "cc_binary")
 load("//fuzzing:java_defs.bzl", "java_fuzz_test")
 
 filegroup(
