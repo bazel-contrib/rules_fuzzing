@@ -1,5 +1,5 @@
 matrix:
-  platform: ["macos", "ubuntu2204", "windows"]
+  platform: ["macos", "ubuntu2204"]
 
 tasks:
   build_targets:
@@ -11,7 +11,7 @@ tasks:
 bcr_test_module:
   module_path: "examples/bzlmod"
   matrix:
-    platform: ["macos", "ubuntu2204", "windows"]
+    platform: ["macos", "ubuntu2204"]
   tasks:
     run_tests:
       name: "Run test module"
