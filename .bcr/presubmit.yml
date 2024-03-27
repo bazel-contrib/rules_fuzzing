@@ -1,0 +1,20 @@
+matrix:
+  platform: ["macos", "ubuntu2204"]
+
+tasks:
+  build_targets:
+    name: "Build targets"
+    platform: ${{ platform }}
+    build_targets:
+      - "@rules_fuzzing//fuzzing/..."
+
+bcr_test_module:
+  module_path: "examples/bzlmod"
+  matrix:
+    platform: ["macos", "ubuntu2204"]
+  tasks:
+    run_tests:
+      name: "Run test module"
+      platform: ${{ platform }}
+      test_targets:
+        - "//..."
