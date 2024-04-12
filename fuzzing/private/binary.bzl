@@ -114,7 +114,7 @@ def _fuzzing_binary_impl(ctx):
     else:
         default_info = ctx.attr.binary[DefaultInfo]
     binary_runfiles = default_info.default_runfiles
-    binary_repo_mapping_manifest = getattr(default_info.files_to_run, "repo_mapping_manifest")
+    binary_repo_mapping_manifest = getattr(default_info.files_to_run, "repo_mapping_manifest", None)
     other_runfiles = []
     if ctx.file.corpus:
         other_runfiles.append(ctx.file.corpus)
