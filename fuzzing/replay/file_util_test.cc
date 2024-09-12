@@ -97,6 +97,22 @@ TEST(YieldFilesTest, YieldsDeepFiles) {
   EXPECT_THAT(collected_paths, testing::SizeIs(4));
 }
 
+TEST(YieldFilesTest, YieldsHiddenFilesAndDirs) {
+  const std::string root_dir =
+      absl::StrCat(getenv("TEST_TMPDIR"), "/dir-with-hidden");
+  ASSERT_EQ(mkdir(root_dir.c_str(), 0755), 0);
+  ASSERT_TRUE(SetFileContents(absl::StrCat(root_dir, "/.a"), "foo").ok());
+  const std::string child_dir = absl::StrCat(root_dir, "/.hidden");
+  ASSERT_EQ(mkdir(child_dir.c_str(), 0755), 0);
+  ASSERT_TRUE(SetFileContents(absl::StrCat(child_dir, "/b"), "bar").ok());
+
+  std::vector<std::string> collected_paths;
+  const absl::Status status =
+      YieldFiles(root_dir, CollectPathsCallback(&collected_paths));
+  EXPECT_TRUE(status.ok());
+  EXPECT_THAT(collected_paths, testing::SizeIs(2));
+}
+
 }  // namespace
 
 }  // namespace fuzzing
