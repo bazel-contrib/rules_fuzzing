@@ -40,7 +40,7 @@ jobs:
         fuzz-seconds: 60
         dry-run: false
     - name: Upload crashes
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v4
       if: failure() && steps.build.outcome == 'success'
       with:
         name: artifacts
@@ -66,7 +66,7 @@ jobs:
         fuzz-seconds: 60
         dry-run: false
     - name: Upload crashes
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v4
       if: failure() && steps.build.outcome == 'success'
       with:
         name: artifacts

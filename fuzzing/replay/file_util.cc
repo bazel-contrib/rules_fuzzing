@@ -53,10 +53,11 @@ absl::Status TraverseDirectory(
       }
       break;
     }
-    if (absl::StartsWith(entry->d_name, ".")) {
+    auto entry_name = absl::string_view(entry->d_name);
+    if (entry_name == "." || entry_name == "..") {
       continue;
     }
-    const std::string entry_path = absl::StrCat(path, "/", entry->d_name);
+    const std::string entry_path = absl::StrCat(path, "/", entry_name);
     status.Update(YieldFiles(entry_path, callback));
   }
   closedir(dir);
