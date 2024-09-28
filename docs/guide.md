@@ -1,13 +1,22 @@
+<!-- omit from toc -->
 # Bazel Rules User Guide
 
+<!-- omit from toc -->
 ## Contents
 
-* [Defining fuzz tests](#defining-fuzz-tests)
-* [Integrating in your project](#integrating-in-your-project)
-* [Advanced topics](#advanced-topics)
-  * [Defining fuzzing engines](#defining-fuzzing-engines)
-  * [Customizing fuzz tests](#customizing-fuzz-tests)
-* [Rule reference](#rule-reference)
+- [Defining fuzz tests](#defining-fuzz-tests)
+  - [Defining fuzz tests](#defining-fuzz-tests-1)
+  - [Building and running](#building-and-running)
+  - [Specifying seed corpora](#specifying-seed-corpora)
+  - [Specifying dictionaries](#specifying-dictionaries)
+  - [The fuzz test launcher](#the-fuzz-test-launcher)
+  - [Built-in fuzzing engines](#built-in-fuzzing-engines)
+  - [Configuration flags](#configuration-flags)
+- [Integrating in your project](#integrating-in-your-project)
+  - [Configuring the .bazelrc file](#configuring-the-bazelrc-file)
+- [Advanced topics](#advanced-topics)
+  - [Defining fuzzing engines](#defining-fuzzing-engines)
+- [Rule reference](#rule-reference)
 
 ## Defining fuzz tests
 
@@ -121,11 +130,11 @@ Currently, the launcher offers the following options:
 
 * `@rules_fuzzing//fuzzing/engines:libfuzzer` provides libFuzzer support. Must be used with the `libfuzzer` engine instrumentation.
 
-* `@rules_fuzzing//fuzzing/engines:honggfuzz` provides Honggfuzz support. Must be used with the `honggfuzz` engine instrumentation. Requires importing its dependencies using the `honggfuzz_dependencies()` WORKSPACE function.
+* `@rules_fuzzing//fuzzing/engines:honggfuzz` provides Honggfuzz support. Must be used with the `honggfuzz` engine instrumentation. When using WORKSPACE, requires importing its dependencies using the `honggfuzz_dependencies()` WORKSPACE function.
 
 * `@rules_fuzzing//fuzzing/engines:replay` provides a simple engine that just executes a set of test files. It can be combined with a sanitizer and can be used for regression tests or replaying crashes.
 
-* `@rules_fuzzing_oss_fuzz//:oss_fuzz_engine` provides a fuzzing engine that reflects the environment configuration of an [OSS-Fuzz build][bazel-oss-fuzz]. This engine is useful in the `build.sh` script of an OSS-Fuzz project. Requires importing its dependencies using the `oss_fuzz_dependencies()` WORKSPACE function.
+* `@rules_fuzzing//fuzzing/engines:oss_fuzz` and `:oss_fuzz_java` provide fuzzing engines that reflect the environment configuration of an [OSS-Fuzz build][bazel-oss-fuzz]. These engines are useful in the `build.sh` script of an OSS-Fuzz project. When using WORKSPACE, this requires importing its dependencies using the `oss_fuzz_dependencies()` function.
 
 ### Configuration flags
 

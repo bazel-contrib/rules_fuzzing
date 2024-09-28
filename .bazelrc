@@ -84,8 +84,8 @@ build:asan-ubsan-replay --//fuzzing:cc_engine=//fuzzing/engines:replay
 build:asan-ubsan-replay --@rules_fuzzing//fuzzing:cc_engine_instrumentation=none
 build:asan-ubsan-replay --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan-ubsan
 
-build:oss-fuzz --//fuzzing:cc_engine=@rules_fuzzing_oss_fuzz//:oss_fuzz_engine
-build:oss-fuzz --//fuzzing:java_engine=@rules_fuzzing_oss_fuzz//:oss_fuzz_java_engine
+build:oss-fuzz --//fuzzing:cc_engine=@rules_fuzzing//fuzzing/engines:oss_fuzz
+build:oss-fuzz --//fuzzing:java_engine=@rules_fuzzing//fuzzing/engines:oss_fuzz_java
 build:oss-fuzz --@rules_fuzzing//fuzzing:cc_engine_instrumentation=oss-fuzz
 build:oss-fuzz --@rules_fuzzing//fuzzing:cc_engine_sanitizer=none
 

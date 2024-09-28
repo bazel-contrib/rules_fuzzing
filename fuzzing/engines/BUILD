@@ -80,3 +80,18 @@ java_library(
         "@rules_fuzzing_jazzer_api//jar",
     ],
 )
+
+# OSS-Fuzz specification.
+#########################
+
+alias(
+    name = "oss_fuzz",
+    actual = "@rules_fuzzing_oss_fuzz//:oss_fuzz_engine",
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "oss_fuzz_java",
+    actual = "@rules_fuzzing_oss_fuzz//:oss_fuzz_java_engine",
+    visibility = ["//visibility:public"],
+)
