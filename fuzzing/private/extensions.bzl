@@ -14,9 +14,15 @@
 
 """Internal dependencies that are not Bazel modules."""
 
+load("@bazel_features//:features.bzl", "bazel_features")
 load("//fuzzing:repositories.bzl", "rules_fuzzing_dependencies")
 
-def _non_module_dependencies(_):
+def _non_module_dependencies(mctx):
     rules_fuzzing_dependencies()
+
+    if bazel_features.external_deps.extension_metadata_has_reproducible:
+        return mctx.extension_metadata(reproducible = True)
+
+    return None
 
 non_module_dependencies = module_extension(_non_module_dependencies)
