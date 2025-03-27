@@ -116,6 +116,10 @@ SYMBOL_WRAP_LINKOPTS = select({
         "-Wl,--wrap=Curl_safe_strcasecompare",
         "-Wl,--wrap=Curl_strncasecompare",
         "-Wl,--wrap=curl_strnequal",
+        # SQLite3
+        "-Wl,--wrap=sqlite3_stricmp",
+        "-Wl,--wrap=sqlite3_strnicmp",
+        "-Wl,--wrap=sqlite3StrICmp",
     ],
 })
 
