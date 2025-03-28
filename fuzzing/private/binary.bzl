@@ -54,22 +54,23 @@ def _fuzzing_binary_transition_impl(settings, _attr):
         cxxopts = settings["//command_line_option:cxxopt"],
         linkopts = settings["//command_line_option:linkopt"],
     )
+    compiler_type = settings["@rules_fuzzing//fuzzing:compiler_type"]
 
     is_fuzzing_build_mode = settings["@rules_fuzzing//fuzzing:cc_fuzzing_build_mode"]
     if is_fuzzing_build_mode:
         opts = instrum_opts.merge(opts, instrum_defaults.fuzzing_build)
 
     instrum_config = settings["@rules_fuzzing//fuzzing:cc_engine_instrumentation"]
-    if instrum_config in instrum_configs:
-        opts = instrum_opts.merge(opts, instrum_configs[instrum_config])
+    if instrum_config in instrum_configs[compiler_type]:
+        opts = instrum_opts.merge(opts, instrum_configs[compiler_type][instrum_config])
     else:
-        fail("unsupported engine instrumentation '%s'" % instrum_config)
+        fail("unsupported engine instrumentation '%s' for compiler '%s'" % (instrum_config, compiler_type))
 
     sanitizer_config = settings["@rules_fuzzing//fuzzing:cc_engine_sanitizer"]
-    if sanitizer_config in sanitizer_configs:
-        opts = instrum_opts.merge(opts, sanitizer_configs[sanitizer_config])
+    if sanitizer_config in sanitizer_configs[compiler_type]:
+        opts = instrum_opts.merge(opts, sanitizer_configs[compiler_type][sanitizer_config])
     else:
-        fail("unsupported sanitizer '%s'" % sanitizer_config)
+        fail("unsupported sanitizer '%s' for compiler '%s'" % (sanitizer_config, compiler_type))
 
     return {
         "//command_line_option:copt": opts.copts,
@@ -87,6 +88,7 @@ fuzzing_binary_transition = transition(
         "@rules_fuzzing//fuzzing:cc_engine_instrumentation",
         "@rules_fuzzing//fuzzing:cc_engine_sanitizer",
         "@rules_fuzzing//fuzzing:cc_fuzzing_build_mode",
+        "@rules_fuzzing//fuzzing:compiler_type",
         "//command_line_option:copt",
         "//command_line_option:conlyopt",
         "//command_line_option:cxxopt",

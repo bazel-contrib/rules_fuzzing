@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Force the use of Clang for all builds.
+# Set clang as the default compiler for most configurations.
 build --repo_env=CC=clang
 
 # Needed for abseil-cpp until https://github.com/bazelbuild/bazel/pull/19794 is released.
@@ -73,6 +73,13 @@ build:msan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine_sanitizer=msan
 build:ubsan-honggfuzz --//fuzzing:cc_engine=//fuzzing/engines:honggfuzz
 build:ubsan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine_instrumentation=honggfuzz
 build:ubsan-honggfuzz --@rules_fuzzing//fuzzing:cc_engine_sanitizer=ubsan
+
+# Honggfuzz + ASAN (GCC)
+build:asan-honggfuzz-gcc --//fuzzing:cc_engine=//fuzzing/engines:honggfuzz
+build:asan-honggfuzz-gcc --@rules_fuzzing//fuzzing:cc_engine_instrumentation=honggfuzz
+build:asan-honggfuzz-gcc --@rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
+build:asan-honggfuzz-gcc --repo_env=CC=gcc
+build:asan-honggfuzz-gcc --@rules_fuzzing//fuzzing:compiler_type=gcc
 
 # Replay + ASAN
 build:asan-replay --//fuzzing:cc_engine=//fuzzing/engines:replay

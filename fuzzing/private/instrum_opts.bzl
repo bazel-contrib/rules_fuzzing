@@ -91,7 +91,7 @@ instrum_defaults = struct(
     ),
     # Reflects the set of options at
     # https://github.com/google/honggfuzz/blob/master/hfuzz_cc/hfuzz-cc.c
-    honggfuzz = _make_opts(
+    honggfuzz_clang = _make_opts(
         copts = [
             "-mllvm",
             "-inline-threshold=2000",
@@ -104,6 +104,16 @@ instrum_defaults = struct(
         linkopts = [
             "-fno-sanitize=fuzzer",
         ],
+    ),
+    honggfuzz_gcc = _make_opts(
+        copts = [
+            "-finline-limit=1000",
+            "-fsanitize-coverage=trace-pc,trace-cmp",
+            "-fno-builtin",
+            "-fno-omit-frame-pointer",
+            "-D__NO_STRING_INLINES",
+        ],
+        linkopts = [],
     ),
     asan = _make_opts(
         copts = ["-fsanitize=address"],
@@ -120,7 +130,7 @@ instrum_defaults = struct(
         ],
         linkopts = ["-fsanitize=memory"],
     ),
-    ubsan = _make_opts(
+    ubsan_clang = _make_opts(
         copts = [
             "-fsanitize=undefined",
         ],
@@ -131,6 +141,14 @@ instrum_defaults = struct(
             # do so with a flag.
             # https://github.com/bazelbuild/bazel/issues/11122#issuecomment-896613570
             "-fsanitize-link-c++-runtime",
+        ],
+    ),
+    ubsan_gcc = _make_opts(
+        copts = [
+            "-fsanitize=undefined",
+        ],
+        linkopts = [
+            "-fsanitize=undefined",
         ],
     ),
 )

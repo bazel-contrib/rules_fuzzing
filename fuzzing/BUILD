@@ -73,6 +73,22 @@ bool_flag(
     visibility = ["//visibility:public"],
 )
 
+string_flag(
+    name = "compiler_type",
+    build_setting_default = "clang",
+    values = [
+        "clang",
+        "gcc",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+config_setting(
+    name = "is_gcc",
+    flag_values = {":compiler_type": "gcc"},
+    visibility = ["//visibility:public"],
+)
+
 exports_files([
     "cc_defs.bzl",
     "java_defs.bzl",

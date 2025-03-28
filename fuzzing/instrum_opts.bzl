@@ -29,21 +29,35 @@ load(
     "oss_fuzz_opts",
 )
 
-# Fuzz test binary instrumentation configurations.
+# Fuzz test binary instrumentation configurations by compiler type.
 instrum_configs = {
-    "none": instrum_opts.make(),
-    "libfuzzer": instrum_defaults.libfuzzer,
-    "jazzer": instrum_defaults.jazzer,
-    "honggfuzz": instrum_defaults.honggfuzz,
-    "oss-fuzz": oss_fuzz_opts,
+    "clang": {
+        "none": instrum_opts.make(),
+        "libfuzzer": instrum_defaults.libfuzzer,
+        "jazzer": instrum_defaults.jazzer,
+        "honggfuzz": instrum_defaults.honggfuzz_clang,
+        "oss-fuzz": oss_fuzz_opts,
+    },
+    "gcc": {
+        "none": instrum_opts.make(),
+        "honggfuzz": instrum_defaults.honggfuzz_gcc,
+    },
 }
 
-# Sanitizer configurations.
+# Sanitizer configurations by compiler type.
 sanitizer_configs = {
-    "none": instrum_opts.make(),
-    "asan": instrum_defaults.asan,
-    "msan": instrum_defaults.msan,
-    "msan-origin-tracking": instrum_defaults.msan_origin_tracking,
-    "ubsan": instrum_defaults.ubsan,
-    "asan-ubsan": instrum_opts.merge(instrum_defaults.asan, instrum_defaults.ubsan),
+    "clang": {
+        "none": instrum_opts.make(),
+        "asan": instrum_defaults.asan,
+        "msan": instrum_defaults.msan,
+        "msan-origin-tracking": instrum_defaults.msan_origin_tracking,
+        "ubsan": instrum_defaults.ubsan_clang,
+        "asan-ubsan": instrum_opts.merge(instrum_defaults.asan, instrum_defaults.ubsan_clang),
+    },
+    "gcc": {
+        "none": instrum_opts.make(),
+        "asan": instrum_defaults.asan,
+        "ubsan": instrum_defaults.ubsan_gcc,
+        "asan-ubsan": instrum_opts.merge(instrum_defaults.asan, instrum_defaults.ubsan_gcc),
+    },
 }

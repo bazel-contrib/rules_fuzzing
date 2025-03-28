@@ -34,20 +34,31 @@ COMMON_COPTS = [
     "-Wall",
     "-Wextra",
     "-Werror",
-    "-Wno-override-init",
-    "-Wno-initializer-overrides",
-    "-Wno-gnu-empty-initializer",
-    "-Wno-format-pedantic",
-    "-Wno-gnu-statement-expression",
-    "-mllvm",
-    "-inline-threshold=2000",
-    "-fblocks",
-
-    # Do not instrument Honggfuzz itself, in order to avoid recursive
-    # instrumentation calls that would crash the fuzz test binary.
-    "-fsanitize-coverage=0",
-    "-fno-sanitize=all",
-]
+] + select({
+    "@rules_fuzzing//fuzzing:is_gcc": [
+        "-Wno-override-init",
+        "-Wno-format-truncation",
+        # Do not instrument Honggfuzz itself, in order to avoid recursive
+        # instrumentation calls that would crash the fuzz test binary.
+        "-fno-sanitize-coverage=trace-pc,trace-cmp",
+        "-fno-sanitize=all",
+    ],
+    # Default to clang compiler flags
+    "//conditions:default": [
+        "-mllvm",
+        "-inline-threshold=2000",
+        "-fblocks",
+        "-Wno-override-init",
+        "-Wno-initializer-overrides",
+        "-Wno-gnu-empty-initializer",
+        "-Wno-format-pedantic",
+        "-Wno-gnu-statement-expression",
+        # Do not instrument Honggfuzz itself, in order to avoid recursive
+        # instrumentation calls that would crash the fuzz test binary.
+        "-fsanitize-coverage=0",
+        "-fno-sanitize=all",
+    ],
+})
 
 LIBRARY_COPTS = [
     "-fno-stack-protector",
