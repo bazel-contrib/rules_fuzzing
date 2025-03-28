@@ -71,9 +71,9 @@ def rules_fuzzing_dependencies(oss_fuzz = True, honggfuzz = True, jazzer = True)
             http_archive,
             name = "honggfuzz",
             build_file = "@rules_fuzzing//:honggfuzz.BUILD",
-            sha256 = "6b18ba13bc1f36b7b950c72d80f19ea67fbadc0ac0bb297ec89ad91f2eaa423e",
-            url = "https://github.com/google/honggfuzz/archive/2.5.zip",
-            strip_prefix = "honggfuzz-2.5",
+            integrity = "sha256-d+DpDrzBMqmSNCuz0+/Vi3jTUiIFNnulWGAeBJaaHJM=",
+            url = "https://github.com/google/honggfuzz/archive/4cfa62f4fdb56e3027c1cb3aecf04812e786f0fd.zip",
+            strip_prefix = "honggfuzz-4cfa62f4fdb56e3027c1cb3aecf04812e786f0fd",
         )
 
     if jazzer:
