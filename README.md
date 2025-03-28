@@ -35,10 +35,10 @@ This section will walk you through the steps to set up fuzzing in your Bazel pro
 
 The fuzzing rules have been tested on Bazel 4.0.0 or later. Check your Bazel version by running `bazel --version`.
 
-C++ fuzzing requires a Clang compiler. The libFuzzer engine requires at least Clang 6.0. In addition, the Honggfuzz engine requires the `libunwind-dev` and `libblocksruntime-dev` packages:
+The libFuzzer engine requires at least Clang 6.0. Honggfuzz works with both clang and gcc (8 or later) and requires the `libunwind-dev` and `libblocksruntime-dev` packages:
 
 ```sh
-$ sudo apt-get install clang libunwind-dev libblocksruntime-dev
+$ sudo apt-get install libunwind-dev libblocksruntime-dev
 ```
 
 Java fuzzing requires Clang and the LLD linker:
