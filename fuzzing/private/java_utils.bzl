@@ -110,7 +110,7 @@ runfiles_export_envvars
 
 # When the runfiles tree exists but does not contain local_jdk, this script may
 # be executing on OSS-Fuzz. Link the current JAVA_HOME into the runfiles tree.
-if [ -d "$0.runfiles" ] && [ ! -d "$0.runfiles/local_jdk" ] && [ -n "${JAVA_HOME+x} ]; then
+if [ -d "$0.runfiles" ] && [ ! -d "$0.runfiles/local_jdk" ] && [ -n "${JAVA_HOME+x}" ]; then
     ln -s "$JAVA_HOME" "$0.runfiles/local_jdk"
 fi
 """
