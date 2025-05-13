@@ -108,9 +108,9 @@ source "${RUNFILES_DIR:-/dev/null}/$f" 2>/dev/null || \
 # Export the env variables required for subprocesses to find their runfiles.
 runfiles_export_envvars
 
-# When the runfiles tree exists but does not contain local_jdk, this script is
-# executing on OSS-Fuzz. Link the current JAVA_HOME into the runfiles tree.
-if [ -d "$0.runfiles" ] && [ ! -d "$0.runfiles/local_jdk" ]; then
+# When the runfiles tree exists but does not contain local_jdk, this script may
+# be executing on OSS-Fuzz. Link the current JAVA_HOME into the runfiles tree.
+if [ -d "$0.runfiles" ] && [ ! -d "$0.runfiles/local_jdk" ] && [ -n "${JAVA_HOME+x} ]; then
     ln -s "$JAVA_HOME" "$0.runfiles/local_jdk"
 fi
 """
