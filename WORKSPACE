@@ -54,9 +54,9 @@ http_archive(
 
 http_archive(
     name = "io_bazel_stardoc",
-    sha256 = "9b09b3ee6181aa4b56c8bc863b1f1c922725298047d243cf19bc69e455ffa7c3",
-    strip_prefix = "stardoc-5986d24c478e81242627c6d688fdc547567bc93c",
-    url = "https://github.com/bazelbuild/stardoc/archive/5986d24c478e81242627c6d688fdc547567bc93c.zip",
+    sha256 = "8b8fb2df4dcaef328e40cd833df1df263cb694999130e684b089956abd264c0b",
+    strip_prefix = "stardoc-ee7f82841a96fc9a88cee42ff9d18719d51a792f",
+    url = "https://github.com/bazelbuild/stardoc/archive/ee7f82841a96fc9a88cee42ff9d18719d51a792f.zip",
 )
 
 load("@io_bazel_stardoc//:setup.bzl", "stardoc_repositories")
