@@ -32,7 +32,7 @@ env:
 jobs:
   unit_tests:
     name: All unit tests
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - name: Checkout repository
@@ -51,7 +51,7 @@ jobs:
           bazel test --test_tag_filters=-fuzz-test --build_tests_only --config=asan //...
   fuzzer_run_tests:
     name: Brief fuzz test runs (C++)
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
       matrix:
@@ -75,7 +75,7 @@ jobs:
           bazel run ${{ matrix.target }} --config=${{ matrix.config }} -- --clean --timeout_secs=5
   regression_tests:
     name: Regression tests (C++)
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
       matrix:
@@ -96,7 +96,7 @@ jobs:
               //examples:all
   coverage:
     name: Coverage gathering (C++)
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - name: Checkout repository
@@ -116,7 +116,7 @@ jobs:
           grep "SF:examples/re2_fuzz_test.cc" bazel-out/_coverage/_coverage_report.dat
   fuzzer_run_tests_java:
     name: Brief fuzz test runs (Java)
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
       matrix:
@@ -132,7 +132,7 @@ jobs:
           bazel run ${{ matrix.target }} --config=${{ matrix.config }} -- --clean --timeout_secs=5
   regression_tests_java:
     name: Regression tests (Java)
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
       matrix:
@@ -149,7 +149,7 @@ jobs:
               //examples/java/...
   regression_tests_gcc:
     name: Regression tests (GCC)
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - name: Checkout repository
@@ -171,7 +171,7 @@ jobs:
           bazel test --verbose_failures --test_output=all //examples/...
   bzlmod_examples_libfuzzer:
     name: Bzlmod examples (libFuzzer)
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -181,7 +181,7 @@ jobs:
           bazel test --verbose_failures --test_output=all --@my_rules_fuzzing//fuzzing:cc_engine=@my_rules_fuzzing//fuzzing/engines:libfuzzer //...
   bzlmod_examples_replay:
     name: Bzlmod examples (replay)
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
