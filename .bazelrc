@@ -18,9 +18,6 @@ build --repo_env=CC=clang
 # Needed for abseil-cpp until https://github.com/bazelbuild/bazel/pull/19794 is released.
 build --cxxopt=-std=c++14
 
-# Workaround for https://github.com/bazelbuild/bazel/issues/3236
-build --sandbox_tmpfs_path=/tmp
-
 # Strict dependency check for C++ includes.
 build --features=layering_check
 
