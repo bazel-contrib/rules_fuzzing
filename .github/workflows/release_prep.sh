@@ -20,7 +20,7 @@ cat << EOF
 ## Using MODULE.bazel:
 
 \`\`\`starlark
-bazel_dep(name = "rules_fuzzing", version = "${VERSION}")
+bazel_dep(name = "rules_fuzzing", version = "${TAG:1}")
 \`\`\`
 
 ## Using WORKSPACE:
