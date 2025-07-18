@@ -16,6 +16,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <vector>
 
 // Workaround for
 // https://github.com/llvm/llvm-project/commit/0cccccf0d2cbd707503263785f9a0407d3e2bd5ea
