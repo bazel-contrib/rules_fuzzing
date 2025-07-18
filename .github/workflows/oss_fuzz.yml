@@ -15,9 +15,9 @@
 name: OSS-Fuzz CI Fuzz Test
 on:
   push:
-    branches:
-      - master
+    branches: [main]
   pull_request:
+    branches: [main]
   schedule:
     - cron: '0 0 * * *'
 
