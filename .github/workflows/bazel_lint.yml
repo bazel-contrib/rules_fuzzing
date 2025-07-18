@@ -18,15 +18,9 @@
 name: bazel_lint
 on:
   push:
-    paths:
-      - '**/BUILD'
-      - '**.bzl'
-      - '**/BUILD.bazel'
+    branches: [main]
   pull_request:
-    paths:
-      - '**/BUILD'
-      - '**.bzl'
-      - '**/BUILD.bazel'
+    branches: [main]
 jobs:
   bazel_lint:
     runs-on: ubuntu-latest
