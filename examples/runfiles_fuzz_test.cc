@@ -26,7 +26,7 @@
 using ::bazel::tools::cpp::runfiles::Runfiles;
 
 namespace {
-  Runfiles *runfiles = nullptr;
+Runfiles *runfiles = nullptr;
 }
 
 extern "C" void LLVMFuzzerInitialize(int *argc, char ***argv) {
