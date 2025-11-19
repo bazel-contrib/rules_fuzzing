@@ -174,20 +174,24 @@ jobs:
   bzlmod_examples_libfuzzer:
     name: Bzlmod examples (libFuzzer)
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        bazel: ["7.*", "8.*", "9.*"]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Run regression tests on macOS
-        run: |
-          cd examples/bzlmod
-          bazel test --verbose_failures --test_output=all --@my_rules_fuzzing//fuzzing:cc_engine=@my_rules_fuzzing//fuzzing/engines:libfuzzer //...
+      - name: Run Bzlmod tests with libFuzzer
+        working-directory: examples/bzlmod
+        run: USE_BAZEL_VERSION=${{ matrix.bazel }} bazel test --verbose_failures --test_output=all --@my_rules_fuzzing//fuzzing:cc_engine=@my_rules_fuzzing//fuzzing/engines:libfuzzer //...
   bzlmod_examples_replay:
     name: Bzlmod examples (replay)
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        bazel: ["7.*", "8.*", "9.*"]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Run regression tests on macOS
-        run: |
-          cd examples/bzlmod
-          bazel test --verbose_failures --test_output=all --@my_rules_fuzzing//fuzzing:cc_engine=@my_rules_fuzzing//fuzzing/engines:replay //...
+      - name: Run Bzlmod tests with replay
+        working-directory: examples/bzlmod
+        run: USE_BAZEL_VERSION=${{ matrix.bazel }} bazel test --verbose_failures --test_output=all --@my_rules_fuzzing//fuzzing:cc_engine=@my_rules_fuzzing//fuzzing/engines:replay //...

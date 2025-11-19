@@ -45,7 +45,7 @@ bzl_library(
         "//fuzzing/private:regression.bzl",
         "//fuzzing/private:util.bzl",
         "//fuzzing/private/oss_fuzz:package.bzl",
-        "@rules_cc//cc:bzl_srcs",
+        "@rules_cc//cc:core_rules",
         "@rules_fuzzing_oss_fuzz//:instrum.bzl",
         "@rules_java//java:rules",
     ],
