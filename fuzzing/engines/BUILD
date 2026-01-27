@@ -48,6 +48,9 @@ cc_fuzzing_engine(
         "@honggfuzz//:honggfuzz": "HONGGFUZZ_PATH",
     },
     library = "@honggfuzz//:honggfuzz_engine",
+    target_compatible_with = [
+        "@platforms//os:linux",
+    ],
     visibility = ["//visibility:public"],
 )
 
