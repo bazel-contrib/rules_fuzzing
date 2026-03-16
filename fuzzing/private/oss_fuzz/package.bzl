@@ -39,6 +39,21 @@ def _oss_fuzz_package_impl(ctx):
         for runfile in binary_runfiles
         if runfile != binary_info.binary_file and not runfile_path(ctx, runfile).startswith(local_jdk_prefix)
     ])
+
+    for symlink in binary_info.binary_runfiles.root_symlinks.to_list():
+        archive_inputs.append(symlink.target_file)
+        runfiles_manifest_content += "{path} {real_path}\n".format(
+            path = symlink.path,
+            real_path = symlink.target_file.path,
+        )
+
+    for symlink in binary_info.binary_runfiles.symlinks.to_list():
+        archive_inputs.append(symlink.target_file)
+        runfiles_manifest_content += "{path} {real_path}\n".format(
+            path = ctx.workspace_name + "/" + symlink.path,
+            real_path = symlink.target_file.path,
+        )
+
     ctx.actions.write(runfiles_manifest, runfiles_manifest_content, False)
     archive_inputs.append(runfiles_manifest)
 
