@@ -38,7 +38,7 @@ COMMON_COPTS = [
     "-Wextra",
     "-Werror",
 ] + select({
-    "@rules_fuzzing//fuzzing:is_gcc": [
+    "@rules_cc//cc/compiler:gcc": [
         "-Wno-override-init",
         "-Wno-format-truncation",
         # Do not instrument Honggfuzz itself, in order to avoid recursive
@@ -162,6 +162,10 @@ cc_library(
     deps = [
         ":honggfuzz_common",
     ],
+    target_compatible_with = select({
+        "@platforms//os:linux": [],
+        "//conditions:default": ["@platforms//:incompatible"],
+    }),
     alwayslink = 1,
 )
 

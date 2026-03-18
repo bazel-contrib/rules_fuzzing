@@ -88,6 +88,10 @@ def fuzzing_decoration(
         fuzzing_binary(
             name = instrum_binary_name,
             binary = raw_binary,
+            compiler = select({
+                str(Label("@rules_cc//cc/compiler:gcc")): "gcc",
+                "//conditions:default": "clang",
+            }),
             engine = engine,
             corpus = corpus_name,
             dictionary = dict_name if dicts else None,

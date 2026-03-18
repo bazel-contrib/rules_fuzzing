@@ -18,47 +18,49 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_jar")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 load("//fuzzing/private/oss_fuzz:repository.bzl", "oss_fuzz_repository")
 
-def rules_fuzzing_dependencies(oss_fuzz = True, honggfuzz = True, jazzer = True):
+def rules_fuzzing_dependencies(oss_fuzz = True, honggfuzz = True, jazzer = True, bzlmod = False):
     """Instantiates the dependencies of the fuzzing rules.
 
     Args:
       oss_fuzz: Include OSS-Fuzz dependencies.
       honggfuzz: Include Honggfuzz dependencies.
       jazzer: Include Jazzer dependencies.
+      bzlmod: Whether to exclude dependencies that are already provided by bazel_deps.
     """
 
-    maybe(
-        http_archive,
-        name = "platforms",
-        urls = [
-            "https://mirror.bazel.build/github.com/bazelbuild/platforms/releases/download/0.0.8/platforms-0.0.8.tar.gz",
-            "https://github.com/bazelbuild/platforms/releases/download/0.0.8/platforms-0.0.8.tar.gz",
-        ],
-        sha256 = "8150406605389ececb6da07cbcb509d5637a3ab9a24bc69b1101531367d89d74",
-    )
-    maybe(
-        http_archive,
-        name = "rules_python",
-        sha256 = "d70cd72a7a4880f0000a6346253414825c19cdd40a28289bdf67b8e6480edff8",
-        strip_prefix = "rules_python-0.28.0",
-        url = "https://github.com/bazelbuild/rules_python/releases/download/0.28.0/rules_python-0.28.0.tar.gz",
-    )
-    maybe(
-        http_archive,
-        name = "bazel_skylib",
-        sha256 = "cd55a062e763b9349921f0f5db8c3933288dc8ba4f76dd9416aac68acee3cb94",
-        urls = [
-            "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/1.5.0/bazel-skylib-1.5.0.tar.gz",
-            "https://github.com/bazelbuild/bazel-skylib/releases/download/1.5.0/bazel-skylib-1.5.0.tar.gz",
-        ],
-    )
-    maybe(
-        http_archive,
-        name = "com_google_absl",
-        urls = ["https://github.com/abseil/abseil-cpp/archive/refs/tags/20240116.1.zip"],
-        strip_prefix = "abseil-cpp-20240116.1",
-        integrity = "sha256-7capMWOvWyoYbUaHF/b+I2U6XLMaHmky8KugWvfXYuk=",
-    )
+    if not bzlmod:
+        maybe(
+            http_archive,
+            name = "platforms",
+            urls = [
+                "https://mirror.bazel.build/github.com/bazelbuild/platforms/releases/download/0.0.8/platforms-0.0.8.tar.gz",
+                "https://github.com/bazelbuild/platforms/releases/download/0.0.8/platforms-0.0.8.tar.gz",
+            ],
+            sha256 = "8150406605389ececb6da07cbcb509d5637a3ab9a24bc69b1101531367d89d74",
+        )
+        maybe(
+            http_archive,
+            name = "rules_python",
+            sha256 = "d70cd72a7a4880f0000a6346253414825c19cdd40a28289bdf67b8e6480edff8",
+            strip_prefix = "rules_python-0.28.0",
+            url = "https://github.com/bazelbuild/rules_python/releases/download/0.28.0/rules_python-0.28.0.tar.gz",
+        )
+        maybe(
+            http_archive,
+            name = "bazel_skylib",
+            sha256 = "cd55a062e763b9349921f0f5db8c3933288dc8ba4f76dd9416aac68acee3cb94",
+            urls = [
+                "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/1.5.0/bazel-skylib-1.5.0.tar.gz",
+                "https://github.com/bazelbuild/bazel-skylib/releases/download/1.5.0/bazel-skylib-1.5.0.tar.gz",
+            ],
+        )
+        maybe(
+            http_archive,
+            name = "com_google_absl",
+            urls = ["https://github.com/abseil/abseil-cpp/archive/refs/tags/20240116.1.zip"],
+            strip_prefix = "abseil-cpp-20240116.1",
+            integrity = "sha256-7capMWOvWyoYbUaHF/b+I2U6XLMaHmky8KugWvfXYuk=",
+        )
 
     if oss_fuzz:
         maybe(
