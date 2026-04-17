@@ -1,5 +1,5 @@
 {
-  "homepage": "https://github.com/bazelbuild/rules_fuzzing",
+  "homepage": "https://github.com/bazel-contrib/rules_fuzzing",
   "maintainers": [
     {
       "email": "fabian@meumertzhe.im",
@@ -13,7 +13,8 @@
     }
   ],
   "repository": [
-      "github:bazelbuild/rules_fuzzing"
+      "github:bazelbuild/rules_fuzzing",
+      "github:bazel-contrib/rules_fuzzing",
   ],
   "versions": [],
   "yanked_versions": {}
