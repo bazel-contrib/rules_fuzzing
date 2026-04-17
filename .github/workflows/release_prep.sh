@@ -32,7 +32,7 @@ http_archive(
     name = "rules_fuzzing",
     sha256 = "${SHA}",
     strip_prefix = "${PREFIX}",
-    url = "https://github.com/bazelbuild/rules_fuzzing/releases/download/${TAG}/${ARCHIVE}",
+    url = "https://github.com/bazel-contrib/rules_fuzzing/releases/download/${TAG}/${ARCHIVE}",
 )
 
 load("@rules_fuzzing//fuzzing:repositories.bzl", "rules_fuzzing_dependencies")
