@@ -20,7 +20,7 @@ def _fuzzing_launcher_script(ctx):
     binary_info = ctx.attr.binary[FuzzingBinaryInfo]
     script = ctx.actions.declare_file(ctx.label.name)
 
-    script_template = """
+    script_template = """#!/usr/bin/env bash
 {environment}
 echo "Launching {binary_path} as a {engine_name} fuzz test..."
 RUNFILES_DIR="$0.runfiles" \
