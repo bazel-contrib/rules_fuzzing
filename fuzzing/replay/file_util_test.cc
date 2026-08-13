@@ -16,8 +16,11 @@
 
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <unistd.h>
 
+#include <cerrno>
 #include <cstdlib>
+#include <cstring>
 #include <functional>
 #include <string>
 #include <vector>
@@ -111,6 +114,43 @@ TEST(YieldFilesTest, YieldsHiddenFilesAndDirs) {
       YieldFiles(root_dir, CollectPathsCallback(&collected_paths));
   EXPECT_TRUE(status.ok());
   EXPECT_THAT(collected_paths, testing::SizeIs(2));
+}
+
+TEST(YieldFilesTest, DoesNotRecurseThroughSymlinkLoop) {
+  const std::string root_dir =
+      absl::StrCat(getenv("TEST_TMPDIR"), "/symlink-loop-root");
+  ASSERT_EQ(mkdir(root_dir.c_str(), 0755), 0);
+  const std::string dir_a = absl::StrCat(root_dir, "/dirA");
+  ASSERT_EQ(mkdir(dir_a.c_str(), 0755), 0);
+  const std::string dir_b = absl::StrCat(root_dir, "/dirB");
+  ASSERT_EQ(mkdir(dir_b.c_str(), 0755), 0);
+
+  // Normal files that must each be yielded exactly once.
+  const std::string file_a = absl::StrCat(root_dir, "/a");
+  const std::string file_b = absl::StrCat(root_dir, "/b");
+  ASSERT_TRUE(SetFileContents(file_a, "foo").ok());
+  ASSERT_TRUE(SetFileContents(file_b, "bar").ok());
+
+  // Build a symlink cycle: dirA/toB -> dirB and dirB/toA -> dirA. Without cycle
+  // detection, traversal would recurse forever (dirA -> dirB -> dirA -> ...).
+  const std::string link_to_b = absl::StrCat(dir_a, "/toB");
+  if (symlink(dir_b.c_str(), link_to_b.c_str()) != 0) {
+    GTEST_SKIP() << "symlink unsupported in this environment: "
+                 << std::strerror(errno);
+  }
+  const std::string link_to_a = absl::StrCat(dir_b, "/toA");
+  ASSERT_EQ(symlink(dir_a.c_str(), link_to_a.c_str()), 0);
+
+  std::vector<std::string> collected_paths;
+  const absl::Status status =
+      YieldFiles(root_dir, CollectPathsCallback(&collected_paths));
+  EXPECT_TRUE(status.ok());
+  // Only the two regular files are yielded; directories (including those reached
+  // through the symlinks) never invoke the callback, and the cycle is visited
+  // at most once, so the result is fully deterministic regardless of readdir
+  // ordering.
+  EXPECT_THAT(collected_paths,
+              testing::UnorderedElementsAre(file_a, file_b));
 }
 
 }  // namespace
