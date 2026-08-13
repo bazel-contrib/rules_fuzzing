@@ -19,7 +19,7 @@ load("//fuzzing/private:binary.bzl", "FuzzingBinaryInfo")
 def _fuzzing_regression_test_impl(ctx):
     binary_info = ctx.attr.binary[FuzzingBinaryInfo]
     script = ctx.actions.declare_file(ctx.label.name)
-    script_template = """
+    script_template = """#!/usr/bin/env bash
 export FUZZER_OUTPUT_CORPUS_DIR="$TEST_TMPDIR/corpus"
 export FUZZER_ARTIFACTS_DIR="$TEST_TMPDIR/artifacts"
 export FUZZER_BINARY='{fuzzer_binary}'
