@@ -59,10 +59,22 @@ def main(argv):
                     corpus_line.rstrip("\n"), expanded_file_list)
 
     if expanded_file_list:
+        # Flattening a workspace-relative path with "/" -> "-" is not injective:
+        # distinct inputs such as "corpus/a/b.txt" and "corpus/a-b.txt" both map
+        # to "corpus-a-b.txt". Give each colliding destination a deterministic,
+        # unique name instead of failing the action.
+        used_names = set()
         for corpus in expanded_file_list:
-            dest = os.path.join(FLAGS.output_dir, corpus.replace("/", "-"))
-            # Whatever the separator we choose, there is an chance that
-            # the dest name conflicts with another file
+            base_name = corpus.replace("/", "-")
+            dest_name = base_name
+            counter = 1
+            while dest_name in used_names:
+                dest_name = "%s-%d" % (base_name, counter)
+                counter += 1
+            used_names.add(dest_name)
+
+            dest = os.path.join(FLAGS.output_dir, dest_name)
+            # Guard against an unexpected pre-existing file in the output dir.
             if os.path.exists(dest):
                 print("ERROR: file " + dest + " existed.", file=stderr)
                 return -1

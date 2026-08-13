@@ -83,3 +83,10 @@ py_test(
     srcs = ["dict_validation_test.py"],
     deps = [":dict_validation"],
 )
+
+py_test(
+    name = "make_corpus_dir_test",
+    srcs = ["make_corpus_dir_test.py"],
+    data = ["make_corpus_dir.py"],
+    deps = [requirement("absl-py")],
+)
