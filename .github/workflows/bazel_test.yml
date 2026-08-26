@@ -161,14 +161,21 @@ jobs:
           bazel test --action_env=CC=gcc --action_env=CXX=g++ \
               --verbose_failures --test_output=all \
               //examples/...
-  regression_tests_mac:
-    name: Regression tests (macOS)
-    runs-on: macos-latest
+  regression_tests_non_linux:
+    name: Regression tests (${{ matrix.os_name }})
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 30
+    strategy:
+      matrix:
+        include:
+          - os: macos-latest
+            os_name: macOS
+          - os: windows-latest
+            os_name: Windows
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Run regression tests on macOS
+      - name: Run regression tests on ${{ matrix.os_name }}
         run: |
           bazel test --verbose_failures --test_output=all //examples/...
   bzlmod_examples_libfuzzer:
