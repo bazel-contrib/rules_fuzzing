@@ -22,7 +22,17 @@
 
 extern "C" {
 int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size);
+
+#if defined(_MSC_VER)
+#pragma comment( \
+    linker, "/alternatename:LLVMFuzzerInitialize=DefaultLLVMFuzzerInitialize")
+int DefaultLLVMFuzzerInitialize(int* /*argc*/, char*** /*argv*/) { return 0; }
+int LLVMFuzzerInitialize(int* argc, char*** argv);
+#elif defined(__GNUC__) || defined(__clang__)
 int LLVMFuzzerInitialize(int* argc, char*** argv) __attribute__((weak));
+#else
+int LLVMFuzzerInitialize(int* argc, char*** argv);
+#endif
 }
 
 namespace {
@@ -32,9 +42,13 @@ constexpr size_t kMaxTestFileSize = 4 * 1024 * 1024;
 }  // namespace
 
 int main(int argc, char** argv) {
+#if defined(_MSC_VER)
+  LLVMFuzzerInitialize(&argc, &argv);
+#else
   if (LLVMFuzzerInitialize) {
     LLVMFuzzerInitialize(&argc, &argv);
   }
+#endif
 
   absl::Status overall_status = absl::OkStatus();
   fuzzing::TestReplayer replayer(&LLVMFuzzerTestOneInput, kMaxTestFileSize);
