@@ -28,6 +28,9 @@ def _extract_build_params(
     instrum_conlyopts = []
     instrum_cxxopts = []
 
+    if repository_ctx.os.environ.get("FUZZING_ENGINE") == "afl":
+        stub_linkopts.append("/src/aflplusplus/afl-compiler-rt.o")
+
     if sanitizer == "undefined":
         # Bazel uses clang, not clang++, as the linker, which does not link the
         # C++ UBSan runtime library by default, but can be instructed to do so
