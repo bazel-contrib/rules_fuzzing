@@ -21,7 +21,9 @@
 
 #include <cerrno>
 #include <cstdio>
+#include <set>
 #include <string>
+#include <utility>
 
 #include "absl/functional/function_ref.h"
 #include "absl/status/status.h"
@@ -36,7 +38,33 @@ namespace {
 
 absl::Status TraverseDirectory(
     absl::string_view path,
-    absl::FunctionRef<void(absl::string_view, const struct stat&)> callback) {
+    absl::FunctionRef<void(absl::string_view, const struct stat&)> callback,
+    std::set<std::pair<dev_t, ino_t>>& visited);
+
+absl::Status YieldFilesInternal(
+    absl::string_view path,
+    absl::FunctionRef<void(absl::string_view, const struct stat&)> callback,
+    std::set<std::pair<dev_t, ino_t>>& visited) {
+  struct stat path_stat;
+  if (stat(std::string(path).c_str(), &path_stat) < 0) {
+    return ErrnoStatus(absl::StrCat("could not stat ", path), errno);
+  }
+  if (S_ISDIR(path_stat.st_mode)) {
+    auto dir_id = std::make_pair(path_stat.st_dev, path_stat.st_ino);
+    // Prevent infinite recursion by tracking visited directories (dev,inode).
+    if (!visited.insert(dir_id).second) {
+      return absl::OkStatus();
+    }
+    return TraverseDirectory(path, callback, visited);
+  }
+  callback(path, path_stat);
+  return absl::OkStatus();
+}
+
+absl::Status TraverseDirectory(
+    absl::string_view path,
+    absl::FunctionRef<void(absl::string_view, const struct stat&)> callback,
+    std::set<std::pair<dev_t, ino_t>>& visited) {
   DIR* dir = opendir(std::string(path).c_str());
   if (!dir) {
     return ErrnoStatus(absl::StrCat("could not open directory ", path), errno);
@@ -58,7 +86,7 @@ absl::Status TraverseDirectory(
       continue;
     }
     const std::string entry_path = absl::StrCat(path, "/", entry_name);
-    status.Update(YieldFiles(entry_path, callback));
+    status.Update(YieldFilesInternal(entry_path, callback, visited));
   }
   closedir(dir);
   return status;
@@ -69,15 +97,8 @@ absl::Status TraverseDirectory(
 absl::Status YieldFiles(
     absl::string_view path,
     absl::FunctionRef<void(absl::string_view, const struct stat&)> callback) {
-  struct stat path_stat;
-  if (stat(std::string(path).c_str(), &path_stat) < 0) {
-    return ErrnoStatus(absl::StrCat("could not stat ", path), errno);
-  }
-  if (S_ISDIR(path_stat.st_mode)) {
-    return TraverseDirectory(path, callback);
-  }
-  callback(path, path_stat);
-  return absl::OkStatus();
+  std::set<std::pair<dev_t, ino_t>> visited;
+  return YieldFilesInternal(path, callback, visited);
 }
 
 absl::Status SetFileContents(absl::string_view path,
