@@ -16,7 +16,19 @@
 
 #include <string>
 
-__attribute__((optnone)) void parseInternal(const std::string &input) {
+#if defined(_MSC_VER)
+#pragma optimize("", off)
+#elif defined(__clang__)
+#define OPTNONE __attribute__((optnone))
+#elif defined(__GNUC__)
+#define OPTNONE __attribute__((optimize("O0")))
+#endif
+
+#ifndef OPTNONE
+#define OPTNONE
+#endif
+
+OPTNONE void parseInternal(const std::string &input) {
   if (input[0] == 'a' && input[1] == 'b' && input[5] == 'c') {
     if (input.find("secret_in_native_library") != std::string::npos) {
       // Read past null byte to trigger an OOB read.
@@ -26,6 +38,10 @@ __attribute__((optnone)) void parseInternal(const std::string &input) {
     }
   }
 }
+
+#if defined(_MSC_VER)
+#pragma optimize("", on)
+#endif
 
 JNIEXPORT jboolean JNICALL Java_com_example_NativeFuzzTest_parse(
     JNIEnv *env, jobject o, jstring bytes) {
