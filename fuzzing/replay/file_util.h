@@ -23,6 +23,13 @@
 #include "absl/status/status.h"
 #include "absl/strings/string_view.h"
 
+#ifndef S_ISDIR
+#define S_ISDIR(mode) (((mode) & S_IFMT) == S_IFDIR)
+#endif
+#ifndef S_ISREG
+#define S_ISREG(mode) (((mode) & S_IFMT) == S_IFREG)
+#endif
+
 namespace fuzzing {
 
 // Recursively traverses the directory at `path` and calls the provided

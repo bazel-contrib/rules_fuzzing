@@ -31,7 +31,7 @@ TestFileBuffer::TestFileBuffer(size_t max_size)
 }
 
 absl::Status TestFileBuffer::ReadFile(absl::string_view path) {
-  FILE* f = fopen(std::string(path).c_str(), "r");
+  FILE* f = fopen(std::string(path).c_str(), "rb");
   if (!f) {
     last_size_ = 0;
     return ErrnoStatus(absl::StrCat("could not open test file ", path), errno);

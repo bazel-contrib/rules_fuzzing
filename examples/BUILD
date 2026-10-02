@@ -85,7 +85,10 @@ cc_fuzz_test(
 cc_fuzz_test(
     name = "msan_fuzz_test",
     srcs = ["msan_fuzz_test.cc"],
-    copts = ["-Wno-uninitialized"],
+    copts = select({
+        "@rules_cc//cc/compiler:msvc-cl": ["/wd4700"],
+        "//conditions:default": ["-Wno-uninitialized"],
+    }),
     tags = [
         "no-oss-fuzz",
     ],
