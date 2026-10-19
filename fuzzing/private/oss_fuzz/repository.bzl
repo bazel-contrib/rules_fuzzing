@@ -99,7 +99,7 @@ def _oss_fuzz_repository(repository_ctx):
 
     repository_ctx.template(
         "BUILD",
-        repository_ctx.path(Label("@rules_fuzzing//fuzzing/private/oss_fuzz:BUILD.tpl")),
+        Label("@rules_fuzzing//fuzzing/private/oss_fuzz:BUILD.tpl"),
         {
             "%{stub_srcs}": _to_list_repr(build_params.stub_srcs),
             "%{stub_linkopts}": _to_list_repr(build_params.stub_linkopts),
@@ -108,7 +108,7 @@ def _oss_fuzz_repository(repository_ctx):
     )
     repository_ctx.template(
         "instrum.bzl",
-        repository_ctx.path(Label("@rules_fuzzing//fuzzing/private/oss_fuzz:instrum.bzl.tpl")),
+        Label("@rules_fuzzing//fuzzing/private/oss_fuzz:instrum.bzl.tpl"),
         {
             "%{conlyopts}": _to_list_repr(build_params.instrum_conlyopts),
             "%{cxxopts}": _to_list_repr(build_params.instrum_cxxopts),
