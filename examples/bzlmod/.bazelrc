@@ -15,3 +15,7 @@
 common --repo_env=CC=clang
 common --@my_rules_fuzzing//fuzzing:cc_engine_instrumentation=libfuzzer
 common --@my_rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
+
+# Use a hermetic JDK instead of the host's, which may be too new for javac in
+# the default Java toolchain (e.g. GitHub runners now ship JDK 25).
+common --java_runtime_version=remotejdk_21
