@@ -87,3 +87,10 @@ py_test(
     legacy_create_init = 0,
     deps = [":dict_validation"],
 )
+
+py_test(
+    name = "make_corpus_dir_test",
+    srcs = ["make_corpus_dir_test.py"],
+    data = ["make_corpus_dir.py"],
+    deps = [requirement("absl-py")],
+)
