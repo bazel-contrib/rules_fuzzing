@@ -24,6 +24,7 @@ load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
 py_binary(
     name = "launcher",
     srcs = ["launcher.py"],
+    legacy_create_init = 0,
     python_version = "PY3",
     visibility = ["//visibility:public"],
     deps = [requirement("absl-py")],
@@ -32,6 +33,7 @@ py_binary(
 py_binary(
     name = "make_corpus_dir",
     srcs = ["make_corpus_dir.py"],
+    legacy_create_init = 0,
     python_version = "PY3",
     visibility = ["//visibility:public"],
     deps = [requirement("absl-py")],
@@ -40,6 +42,7 @@ py_binary(
 py_binary(
     name = "validate_dict",
     srcs = ["validate_dict.py"],
+    legacy_create_init = 0,
     python_version = "PY3",
     visibility = ["//visibility:public"],
     deps = [
@@ -81,5 +84,6 @@ py_library(
 py_test(
     name = "dict_validation_test",
     srcs = ["dict_validation_test.py"],
+    legacy_create_init = 0,
     deps = [":dict_validation"],
 )
