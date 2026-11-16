@@ -15,3 +15,5 @@
 common --repo_env=CC=clang
 common --@my_rules_fuzzing//fuzzing:cc_engine_instrumentation=libfuzzer
 common --@my_rules_fuzzing//fuzzing:cc_engine_sanitizer=asan
+
+common --java_runtime_version=remotejdk_21
