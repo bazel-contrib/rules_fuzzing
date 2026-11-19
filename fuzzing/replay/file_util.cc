@@ -14,10 +14,15 @@
 
 #include "fuzzing/replay/file_util.h"
 
-#include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <dirent.h>
 #include <unistd.h>
+#endif
 
 #include <cerrno>
 #include <cstdio>
@@ -34,6 +39,40 @@ namespace fuzzing {
 
 namespace {
 
+#ifdef _WIN32
+absl::Status TraverseDirectory(
+    absl::string_view path,
+    absl::FunctionRef<void(absl::string_view, const struct stat&)> callback) {
+  std::string search_path = absl::StrCat(path, "/*");
+  WIN32_FIND_DATAA find_data;
+  HANDLE find_handle = FindFirstFileA(search_path.c_str(), &find_data);
+  if (find_handle == INVALID_HANDLE_VALUE) {
+    DWORD err = GetLastError();
+    if (err == ERROR_FILE_NOT_FOUND || err == ERROR_PATH_NOT_FOUND) {
+      return absl::OkStatus();
+    }
+    return absl::UnknownError(
+        absl::StrCat("could not open directory ", path, " (error ", err, ")"));
+  }
+  absl::Status status = absl::OkStatus();
+  do {
+    absl::string_view entry_name(find_data.cFileName);
+    if (entry_name == "." || entry_name == "..") {
+      continue;
+    }
+    const std::string entry_path = absl::StrCat(path, "/", entry_name);
+    status.Update(YieldFiles(entry_path, callback));
+  } while (FindNextFileA(find_handle, &find_data));
+  DWORD err = GetLastError();
+  if (err != ERROR_NO_MORE_FILES) {
+    status.Update(absl::UnknownError(
+        absl::StrCat("could not complete directory traversal for ", path,
+                     " (error ", err, ")")));
+  }
+  FindClose(find_handle);
+  return status;
+}
+#else
 absl::Status TraverseDirectory(
     absl::string_view path,
     absl::FunctionRef<void(absl::string_view, const struct stat&)> callback) {
@@ -63,6 +102,7 @@ absl::Status TraverseDirectory(
   closedir(dir);
   return status;
 }
+#endif
 
 }  // namespace
 
@@ -82,7 +122,7 @@ absl::Status YieldFiles(
 
 absl::Status SetFileContents(absl::string_view path,
                              absl::string_view contents) {
-  FILE* f = fopen(std::string(path).c_str(), "w");
+  FILE* f = fopen(std::string(path).c_str(), "wb");
   if (!f) {
     return ErrnoStatus("could not open file", errno);
   }
